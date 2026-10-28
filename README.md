@@ -19,7 +19,8 @@ npm run build
 - Search, category filtering, and saved-item interactions currently use local demo state only.
 - Listing cards are illustrative examples, not live marketplace inventory.
 - Login, registration, database persistence, photo uploads, seller/buyer dashboards, messaging, moderation, listing credits, and payment verification are not yet connected.
-- `database/migrations/001_marketplace_foundation.sql` is a provider-neutral PostgreSQL schema draft only. It has **not** been applied to a database; authentication integration, row-level security/server authorization, and migration testing are still required.
+- `database/migrations/001_marketplace_foundation.sql` and `002_platform_operations.sql` are provider-neutral PostgreSQL schema drafts only. They have **not** been applied to a database; authentication integration, row-level security/server authorization, and migration testing are still required.
+- The second draft adds staff membership/permission data, configurable fee settings, listing-credit packs, promotion products, and moderation audit records. Permission arrays are not sufficient by themselves: every privileged action must be checked on the server.
 - At launch, buyers contact sellers directly for item purchases. Aloko listing-credit and promotion payments are separate platform fees.
 - Do not enter real customer data until authentication, server-side authorization, storage, and database are implemented and tested.
 
