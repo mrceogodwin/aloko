@@ -16,6 +16,7 @@ function App() {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [savedOnly, setSavedOnly] = useState(false);
+  const [sortOrder, setSortOrder] = useState("recent");
   const [saved, setSaved] = useState(() => {
     try {
       const stored = window.localStorage.getItem("aloko:saved-items");
@@ -44,6 +45,12 @@ function App() {
     (!savedOnly || saved.includes(p.id)) &&
     (p.title + " " + p.place + " " + p.category).toLowerCase().includes(query.toLowerCase())
   ), [query, activeCategory, savedOnly, saved]);
+
+  const visibleProducts = useMemo(() => [...filtered].sort((a, b) => {
+    if (sortOrder === "price-low") return (a.price === "Free" ? 0 : Number(a.price.replace(/[^0-9]/g, ""))) - (b.price === "Free" ? 0 : Number(b.price.replace(/[^0-9]/g, "")));
+    if (sortOrder === "price-high") return (b.price === "Free" ? 0 : Number(b.price.replace(/[^0-9]/g, ""))) - (a.price === "Free" ? 0 : Number(a.price.replace(/[^0-9]/g, "")));
+    return products.findIndex(p => p.id === a.id) - products.findIndex(p => p.id === b.id);
+  }), [filtered, sortOrder]);
 
   const showNotice = (message) => {
     setNotice(message);
@@ -79,8 +86,8 @@ function App() {
       <section className="category-section wrap" id="explore"><div className="section-heading"><div><span className="eyebrow">Find your next favourite</span><h2>Explore categories</h2></div><button className="view-all" onClick={() => {setActiveCategory("All");setQuery("");setSavedOnly(false);}}>View all ↗</button></div>
         <div className="category-grid">{categories.map(([icon,name]) => <button key={name} className={activeCategory === name ? "category active" : "category"} onClick={() => {setActiveCategory(name); setSavedOnly(false); if(name === "Free items") document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}}><span className="category-icon">{icon}</span><span>{name}</span><span className="category-arrow">↗</span></button>)}</div>
       </section>
-      <section className="listings-section wrap"><div className="section-heading"><div><span className="eyebrow">A second chance at something good</span><h2>{savedOnly ? "Your saved items" : query ? "Search results" : activeCategory === "All" ? "Freshly listed" : activeCategory}</h2></div><span className="listing-count">{filtered.length} demo listings</span></div>
-        <div className="product-grid">{filtered.map(p => <article className="product-card" key={p.id}><div className="product-image"><img src={`https://images.unsplash.com/${p.image}?auto=format&fit=crop&w=700&q=80`} alt={p.title}/><span className="condition">{p.condition}</span><button className={saved.includes(p.id) ? "save saved" : "save"} aria-label={saved.includes(p.id) ? "Remove from saved" : "Save item"} onClick={() => toggleSaved(p.id)}>{saved.includes(p.id) ? "♥" : "♡"}</button></div><div className="product-info"><span className="product-place">⌖ {p.place}</span><h3>{p.title}</h3><div className="product-bottom"><strong>{p.price}</strong><button onClick={() => showNotice("Seller contact and messaging will be enabled when accounts are connected.")}>View item ↗</button></div></div></article>)}</div>
+      <section className="listings-section wrap"><div className="section-heading"><div><span className="eyebrow">A second chance at something good</span><h2>{savedOnly ? "Your saved items" : query ? "Search results" : activeCategory === "All" ? "Freshly listed" : activeCategory}</h2></div><div className="listing-tools"><label className="sort-control">Sort <select value={sortOrder} onChange={e => setSortOrder(e.target.value)} aria-label="Sort listings"><option value="recent">Recently added</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option></select></label><span className="listing-count">{visibleProducts.length} demo listings</span></div></div>
+        <div className="product-grid">{visibleProducts.map(p => <article className="product-card" key={p.id}><div className="product-image"><img src={`https://images.unsplash.com/${p.image}?auto=format&fit=crop&w=700&q=80`} alt={p.title}/><span className="condition">{p.condition}</span><button className={saved.includes(p.id) ? "save saved" : "save"} aria-label={saved.includes(p.id) ? "Remove from saved" : "Save item"} onClick={() => toggleSaved(p.id)}>{saved.includes(p.id) ? "♥" : "♡"}</button></div><div className="product-info"><span className="product-place">⌖ {p.place}</span><h3>{p.title}</h3><div className="product-bottom"><strong>{p.price}</strong><button onClick={() => showNotice("Seller contact and messaging will be enabled when accounts are connected.")}>View item ↗</button></div></div></article>)}</div>
         {filtered.length === 0 && <div className="empty-state"><span>⌕</span><h3>No matches just yet</h3><p>Try another search or explore all categories.</p><button onClick={() => {setQuery("");setActiveCategory("All");setSavedOnly(false);}}>Clear filters</button></div>}
         <p className="demo-note">Preview content only — these listings are examples, not live seller listings.</p>
       </section>
