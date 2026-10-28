@@ -14,6 +14,7 @@ const products = [
 function App() {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [savedOnly, setSavedOnly] = useState(false);
   const [saved, setSaved] = useState(() => {
     try {
       const stored = window.localStorage.getItem("aloko:saved-items");
@@ -39,8 +40,9 @@ function App() {
   const [notice, setNotice] = useState("");
   const filtered = useMemo(() => products.filter(p =>
     (activeCategory === "All" || p.category === activeCategory) &&
+    (!savedOnly || saved.includes(p.id)) &&
     (p.title + " " + p.place + " " + p.category).toLowerCase().includes(query.toLowerCase())
-  ), [query, activeCategory]);
+  ), [query, activeCategory, savedOnly, saved]);
 
   const showNotice = (message) => {
     setNotice(message);
@@ -59,7 +61,7 @@ function App() {
     <header className="topbar"><div className="nav-inner">
       <a className="brand" href="#" aria-label="Aloko home">aloko<span>.</span></a>
       <nav className="desktop-nav" aria-label="Main navigation">
-        <a href="#explore">Explore</a><a href="#free">Free finds</a><a href="#services">Services</a>
+        <a href="#explore">Explore</a><a href="#free">Free finds</a><a href="#services">Services</a><button className="nav-link-button" onClick={() => { setSavedOnly(value => !value); setActiveCategory("All"); document.getElementById("explore")?.scrollIntoView({behavior:"smooth"}); }}>{savedOnly ? "All items" : `Saved (${saved.length})`}</button>
       </nav>
       <div className="nav-actions"><button className="text-button" onClick={() => showNotice("Account sign-in will be connected when authentication is implemented.")}>Log in</button><button className="post-button" onClick={() => showNotice("Seller accounts and listing creation are coming in the next build step.")}>＋ Sell an item</button></div>
     </div></header>
@@ -73,12 +75,12 @@ function App() {
         </form>
         <div className="hero-note"><span>✓</span> Discover finds near you <span>·</span> Give items a second life</div>
       </div><div className="hero-art"><div className="art-orbit orbit-one"></div><div className="art-orbit orbit-two"></div><div className="art-label label-top">A little less waste</div><div className="art-photo"><img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=85" alt="Warm, thoughtfully styled living room"/></div><div className="art-label label-bottom"><span>↗</span> Pass it on.</div><div className="art-sticker">GOOD<br/>FINDS<br/>LIVE ON.</div></div></section>
-      <section className="category-section wrap" id="explore"><div className="section-heading"><div><span className="eyebrow">Find your next favourite</span><h2>Explore categories</h2></div><button className="view-all" onClick={() => {setActiveCategory("All");setQuery("");}}>View all ↗</button></div>
+      <section className="category-section wrap" id="explore"><div className="section-heading"><div><span className="eyebrow">Find your next favourite</span><h2>Explore categories</h2></div><button className="view-all" onClick={() => {setActiveCategory("All");setQuery("");setSavedOnly(false);}}>View all ↗</button></div>
         <div className="category-grid">{categories.map(([icon,name]) => <button key={name} className={activeCategory === name ? "category active" : "category"} onClick={() => {setActiveCategory(name === "Free items" ? "All" : name); if(name === "Free items") document.getElementById("free")?.scrollIntoView({behavior:"smooth"});}}><span className="category-icon">{icon}</span><span>{name}</span><span className="category-arrow">↗</span></button>)}</div>
       </section>
-      <section className="listings-section wrap"><div className="section-heading"><div><span className="eyebrow">A second chance at something good</span><h2>{query ? "Search results" : activeCategory === "All" ? "Freshly listed" : activeCategory}</h2></div><span className="listing-count">{filtered.length} demo listings</span></div>
+      <section className="listings-section wrap"><div className="section-heading"><div><span className="eyebrow">A second chance at something good</span><h2>{savedOnly ? "Your saved items" : query ? "Search results" : activeCategory === "All" ? "Freshly listed" : activeCategory}</h2></div><span className="listing-count">{filtered.length} demo listings</span></div>
         <div className="product-grid">{filtered.map(p => <article className="product-card" key={p.id}><div className="product-image"><img src={`https://images.unsplash.com/${p.image}?auto=format&fit=crop&w=700&q=80`} alt={p.title}/><span className="condition">{p.condition}</span><button className={saved.includes(p.id) ? "save saved" : "save"} aria-label={saved.includes(p.id) ? "Remove from saved" : "Save item"} onClick={() => toggleSaved(p.id)}>{saved.includes(p.id) ? "♥" : "♡"}</button></div><div className="product-info"><span className="product-place">⌖ {p.place}</span><h3>{p.title}</h3><div className="product-bottom"><strong>{p.price}</strong><button onClick={() => showNotice("Seller contact and messaging will be enabled when accounts are connected.")}>View item ↗</button></div></div></article>)}</div>
-        {filtered.length === 0 && <div className="empty-state"><span>⌕</span><h3>No matches just yet</h3><p>Try another search or explore all categories.</p><button onClick={() => {setQuery("");setActiveCategory("All");}}>Clear filters</button></div>}
+        {filtered.length === 0 && <div className="empty-state"><span>⌕</span><h3>No matches just yet</h3><p>Try another search or explore all categories.</p><button onClick={() => {setQuery("");setActiveCategory("All");setSavedOnly(false);}}>Clear filters</button></div>}
         <p className="demo-note">Preview content only — these listings are examples, not live seller listings.</p>
       </section>
       <section className="giveaway-section wrap" id="free"><div className="giveaway-card"><div><span className="eyebrow">One person's extra is another's treasure</span><h2>Good things, given freely.</h2><p>Find free items in your community or pass something useful along to someone who needs it.</p><button onClick={() => showNotice("Giveaway requests will be available after account and messaging setup.")}>Explore free finds ↗</button></div><div className="giveaway-symbol" aria-hidden="true">♡</div></div></section>
