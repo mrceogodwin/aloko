@@ -31,10 +31,11 @@ function App() {
     } catch {
       // Browser storage can be unavailable in private or restricted contexts.
     }
-    return () => {
-      if (noticeTimer.current !== null) window.clearTimeout(noticeTimer.current);
-    };
   }, [saved]);
+
+  useEffect(() => () => {
+    if (noticeTimer.current !== null) window.clearTimeout(noticeTimer.current);
+  }, []);
   const [notice, setNotice] = useState("");
   const filtered = useMemo(() => products.filter(p =>
     (activeCategory === "All" || p.category === activeCategory) &&
