@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const categories = [
   ["⌂", "Home & Living"], ["▣", "Phones & Tech"], ["♧", "Fashion"], ["◈", "Appliances"],
@@ -14,15 +14,45 @@ const products = [
 function App() {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
-  const [saved, setSaved] = useState([]);
+  const [saved, setSaved] = useState(() => {
+    try {
+      const stored = window.localStorage.getItem("aloko:saved-items");
+      const parsed = stored ? JSON.parse(stored) : [];
+      return Array.isArray(parsed) ? parsed.filter(id => Number.isInteger(id)) : [];
+    } catch {
+      return [];
+    }
+  });
+  const noticeTimer = useRef(null);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem("aloko:saved-items", JSON.stringify(saved));
+    } catch {
+      // Browser storage can be unavailable in private or restricted contexts.
+    }
+    return () => {
+      if (noticeTimer.current !== null) window.clearTimeout(noticeTimer.current);
+    };
+  }, [saved]);
   const [notice, setNotice] = useState("");
   const filtered = useMemo(() => products.filter(p =>
     (activeCategory === "All" || p.category === activeCategory) &&
     (p.title + " " + p.place + " " + p.category).toLowerCase().includes(query.toLowerCase())
   ), [query, activeCategory]);
 
-  const showNotice = (message) => { setNotice(message); window.setTimeout(() => setNotice(""), 2800); };
-  const toggleSaved = (id) => setSaved(old => old.includes(id) ? old.filter(x => x !== id) : [...old, id]);
+  const showNotice = (message) => {
+    setNotice(message);
+    if (noticeTimer.current !== null) window.clearTimeout(noticeTimer.current);
+    noticeTimer.current = window.setTimeout(() => {
+      setNotice("");
+      noticeTimer.current = null;
+    }, 2800);
+  };
+  const toggleSaved = (id) => {
+    setSaved(old => old.includes(id) ? old.filter(x => x !== id) : [...old, id]);
+    showNotice(saved.includes(id) ? "Item removed from your saved list." : "Item saved on this device.");
+  };
 
   return <div className="app-shell">
     <header className="topbar"><div className="nav-inner">
