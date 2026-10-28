@@ -5,3 +5,6 @@
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important}}
 
 .nav-link-button{border:0;background:transparent;color:#effaf3;font:inherit;font-size:14px;padding:0}.nav-link-button:hover,.desktop-nav a:hover{color:var(--lime)}
+
+.mobile-saved-toggle{display:none;border:1px solid #ffffff55;border-radius:999px;padding:8px 10px;background:transparent;color:white;font-size:11px;font-weight:700;white-space:nowrap}.mobile-saved-toggle[aria-pressed="true"]{background:#d8f477;color:#24482e;border-color:#d8f477}
+@media(max-width:600px){.mobile-saved-toggle{display:inline-flex;align-items:center;justify-content:center}.nav-actions{gap:8px}.text-button{font-size:11px}.post-button{padding:10px 11px;font-size:11px}}
