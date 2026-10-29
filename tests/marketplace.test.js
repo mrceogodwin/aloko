@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { matchesListingQuery, parseListingPrice, sortListings } from "../src/marketplace.js";
+import { matchesListingQuery, parseListingPrice, sortListings, validateListingDraft } from "../src/marketplace.js";
 
 const listings = [
   { id: 1, title: "Desk lamp", description: "Warm LED reading light", place: "Lagos", category: "Home & Living", condition: "Like new", price: "₦9,000" },
@@ -35,4 +35,36 @@ test("unknown price labels are placed after known prices in low-to-high sorting"
   assert.equal(parseListingPrice("Free"), 0);
   assert.equal(parseListingPrice("₦1,500"), 1500);
   assert.equal(parseListingPrice("Negotiable"), Number.POSITIVE_INFINITY);
+});
+
+const validDraft = {
+  title: "Wooden study desk", kind: "sale", price: "18000", category: "Home & Living",
+  condition: "Good", quantity: "2", fulfillment: "pickup", place: "Benin City",
+  description: "Used desk in good condition, collection arranged with seller."
+};
+
+test("valid sale draft passes business validation", () => {
+  assert.deepEqual(validateListingDraft(validDraft), { valid: true, errors: {} });
+});
+test("giveaway draft must be free and use the Free items category", () => {
+  const giveaway = { ...validDraft, kind: "giveaway", price: "0", category: "Free items" };
+  assert.equal(validateListingDraft(giveaway).valid, true);
+  assert.equal(validateListingDraft({ ...giveaway, price: "500" }).errors.price, "Giveaway listings must be free.");
+  assert.ok(validateListingDraft({ ...giveaway, category: "Fashion" }).errors.category);
+});
+test("rejects invalid prices, quantities and short text", () => {
+  const result = validateListingDraft({ ...validDraft, price: "0", quantity: "1.5", title: "Desk", description: "short" });
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.price);
+  assert.ok(result.errors.quantity);
+  assert.ok(result.errors.title);
+  assert.ok(result.errors.description);
+});
+test("rejects unsupported listing options and missing location", () => {
+  const result = validateListingDraft({ ...validDraft, kind: "admin", condition: "Unknown", fulfillment: "drone", place: " " });
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.kind);
+  assert.ok(result.errors.condition);
+  assert.ok(result.errors.fulfillment);
+  assert.ok(result.errors.place);
 });
