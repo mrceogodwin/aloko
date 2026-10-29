@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { matchesListingQuery, sortListings } from "./marketplace.js";
 
 const categories = [
   ["⌂", "Home & Living"], ["▣", "Phones & Tech"], ["♧", "Fashion"], ["◈", "Appliances"],
@@ -100,14 +101,10 @@ function App() {
     (selectedLocation === "All locations" || p.place === selectedLocation) &&
     (selectedCondition === "Any condition" || p.condition === selectedCondition) &&
     (!savedOnly || saved.includes(p.id)) &&
-    (p.title + " " + p.description + " " + p.place + " " + p.category + " " + p.condition + " " + p.price).toLowerCase().includes(query.trim().toLowerCase())
+    matchesListingQuery(p, query)
   ), [query, activeCategory, selectedLocation, selectedCondition, savedOnly, saved]);
 
-  const visibleProducts = useMemo(() => [...filtered].sort((a, b) => {
-    if (sortOrder === "price-low") return (a.price === "Free" ? 0 : Number(a.price.replace(/[^0-9]/g, ""))) - (b.price === "Free" ? 0 : Number(b.price.replace(/[^0-9]/g, "")));
-    if (sortOrder === "price-high") return (b.price === "Free" ? 0 : Number(b.price.replace(/[^0-9]/g, ""))) - (a.price === "Free" ? 0 : Number(a.price.replace(/[^0-9]/g, "")));
-    return products.findIndex(p => p.id === a.id) - products.findIndex(p => p.id === b.id);
-  }), [filtered, sortOrder]);
+  const visibleProducts = useMemo(() => sortListings(filtered, sortOrder, products), [filtered, sortOrder]);
 
   const showNotice = (message) => {
     setNotice(message);
