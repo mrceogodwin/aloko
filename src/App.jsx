@@ -77,13 +77,20 @@ function App() {
   }, [listingFormOpen]);
 
   useEffect(() => {
-    if (!selectedListing) return undefined;
+    const anyDialogOpen = selectedListing || listingFormOpen || draftReviewOpen || accountModalOpen || dashboardPreviewOpen;
+    if (!anyDialogOpen) return undefined;
     const handleKeyDown = event => {
-      if (event.key === "Escape") setSelectedListing(null);
+      if (event.key !== "Escape") return;
+      // Close the topmost dialog first, preserving the seller draft when its review is dismissed.
+      if (draftReviewOpen) setDraftReviewOpen(false);
+      else if (accountModalOpen) setAccountModalOpen(false);
+      else if (dashboardPreviewOpen) setDashboardPreviewOpen(false);
+      else if (listingFormOpen) setListingFormOpen(false);
+      else if (selectedListing) setSelectedListing(null);
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedListing]);
+  }, [selectedListing, listingFormOpen, draftReviewOpen, accountModalOpen, dashboardPreviewOpen]);
   const filtered = useMemo(() => products.filter(p =>
     (activeCategory === "All" || p.category === activeCategory) &&
     (selectedLocation === "All locations" || p.place === selectedLocation) &&
