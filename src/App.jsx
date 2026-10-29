@@ -100,7 +100,7 @@ function App() {
     (selectedLocation === "All locations" || p.place === selectedLocation) &&
     (selectedCondition === "Any condition" || p.condition === selectedCondition) &&
     (!savedOnly || saved.includes(p.id)) &&
-    (p.title + " " + p.place + " " + p.category).toLowerCase().includes(query.toLowerCase())
+    (p.title + " " + p.description + " " + p.place + " " + p.category + " " + p.condition + " " + p.price).toLowerCase().includes(query.trim().toLowerCase())
   ), [query, activeCategory, selectedLocation, selectedCondition, savedOnly, saved]);
 
   const visibleProducts = useMemo(() => [...filtered].sort((a, b) => {
