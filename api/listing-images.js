@@ -5,7 +5,8 @@ import { rateLimit } from "./_lib/rate-limit.js";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const MAX_IMAGES = 8;
-const KEY_RE = /^[a-zA-Z0-9/_\-.]{8,200}$/;
+// Object-storage relative keys only: no absolute paths, no ".." segments.
+const KEY_RE = /^(?!.*\.\.)(?!\/)[a-zA-Z0-9][a-zA-Z0-9/_\-.]{6,198}[a-zA-Z0-9]$/;
 
 /**
  * Registers storage keys for listing images after client-side upload to object storage.
@@ -106,7 +107,7 @@ export function createListingImagesHandler({ getDatabase = getPool } = {}) {
         }
         if (!KEY_RE.test(storageKey)) {
           return res.status(400).json({
-            error: "storage_key must be a safe object-storage path (8–200 chars)",
+            error: "storage_key must be a safe object-storage path (no .. or absolute paths)",
           });
         }
 
