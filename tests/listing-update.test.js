@@ -21,15 +21,29 @@ const body = {
 };
 
 test("listing update requires seller authentication and a valid listing ID", async () => {
-  let dbCalled = false;
-  const handler = createListingUpdateHandler({ getDatabase: () => { dbCalled = true; return null; } });
+  let queryCalled = false;
+  const handler = createListingUpdateHandler({
+    getDatabase: () => ({
+      async query() {
+        queryCalled = true;
+        return { rows: [] };
+      },
+    }),
+  });
   const noAuth = responseRecorder();
-  await handler({ method: "PATCH", query: { id: listingId }, body }, noAuth);
+  await handler({ method: "PATCH", query: { id: listingId }, body, headers: {} }, noAuth);
   assert.equal(noAuth.statusCode, 401);
+  assert.equal(queryCalled, false);
+
   const badId = responseRecorder();
-  await handler({ method: "PATCH", query: { id: ["bad", listingId] }, body, auth: { user: { id: sellerId, role: "seller" } } }, badId);
+  await handler({
+    method: "PATCH",
+    query: { id: ["bad", listingId] },
+    body,
+    auth: { user: { id: sellerId, role: "seller" } },
+  }, badId);
   assert.equal(badId.statusCode, 400);
-  assert.equal(dbCalled, false);
+  assert.equal(queryCalled, false);
 });
 
 test("listing update only permits PATCH or PUT and is not cached", async () => {
@@ -78,13 +92,20 @@ test("listing update hides missing or non-owned listing details", async () => {
 });
 
 test("invalid listing updates are rejected before database access", async () => {
-  let dbCalled = false;
-  const handler = createListingUpdateHandler({ getDatabase: () => { dbCalled = true; return null; } });
+  let queryCalled = false;
+  const handler = createListingUpdateHandler({
+    getDatabase: () => ({
+      async query() {
+        queryCalled = true;
+        return { rows: [] };
+      },
+    }),
+  });
   const res = responseRecorder();
   await handler({
     method: "PATCH", query: { id: listingId }, body: { ...body, quantity: "2" },
     auth: { user: { id: sellerId, role: "seller" } },
   }, res);
   assert.equal(res.statusCode, 400);
-  assert.equal(dbCalled, false);
+  assert.equal(queryCalled, false);
 });
