@@ -6,7 +6,7 @@ Serverless handlers for a Vercel-compatible runtime. Deployment remains restrict
 
 | Route | Purpose |
 | --- | --- |
-| `GET /api/health` | DB connectivity check |
+| `GET /api/health` | DB connectivity + schema readiness |
 | `GET /api/listings` | Active listings with search/filter |
 | `GET /api/listings-detail?id=` | Single active listing |
 
@@ -21,6 +21,8 @@ Serverless handlers for a Vercel-compatible runtime. Deployment remains restrict
 | `GET /api/my-listings` | seller, business | Seller inventory |
 | `GET/POST/DELETE /api/saved-listings` | any | Server-side saved items |
 | `POST /api/report-listing` | any | Abuse report |
+| `GET/POST /api/conversations` | any | List threads / open thread on a listing |
+| `GET/POST /api/messages` | any | Read or send messages in a thread |
 
 ## Staff
 
@@ -36,6 +38,13 @@ Serverless handlers for a Vercel-compatible runtime. Deployment remains restrict
 - `api/_lib/populate-auth.js` — token → profile → `req.auth.user`
 - `api/_lib/rate-limit.js` — in-process rate limits (pair with edge limits at launch)
 - `api/_lib/db.js` — shared pool
+
+## Messaging rules
+
+- Only the buyer or seller on a conversation can read or write it.
+- Opening a conversation requires an **active** listing and `buyer_id <> seller_id`.
+- Message body is 1–4000 characters; rate-limited.
+- Reading a thread marks the other party's unread messages as read.
 
 ## Environment
 
