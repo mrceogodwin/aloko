@@ -28,7 +28,7 @@ test("free items sort before paid listings and prices sort numerically", () => {
 });
 test("recent sorting preserves the original listing order without mutating input", () => {
   const shuffled = [listings[2], listings[0], listings[1]];
-  assert.deepEqual(sortListings(shuffled, "recent", listings).map(item => item.id), [3, 1, 2]);
+  assert.deepEqual(sortListings(shuffled, "recent", listings).map(item => item.id), [1, 2, 3]);
   assert.deepEqual(shuffled.map(item => item.id), [3, 1, 2]);
 });
 test("unknown price labels are placed after known prices in low-to-high sorting", () => {
