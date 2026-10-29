@@ -43,6 +43,15 @@ function App() {
   }, []);
   const [notice, setNotice] = useState("");
   const [selectedListing, setSelectedListing] = useState(null);
+
+  useEffect(() => {
+    if (!selectedListing) return undefined;
+    const handleKeyDown = event => {
+      if (event.key === "Escape") setSelectedListing(null);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedListing]);
   const filtered = useMemo(() => products.filter(p =>
     (activeCategory === "All" || p.category === activeCategory) &&
     (selectedLocation === "All locations" || p.place === selectedLocation) &&
