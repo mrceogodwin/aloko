@@ -3,30 +3,37 @@
 Aloko is a mobile-first Nigerian reuse marketplace: **Sell it. Give it. Pass it on.**
 
 ## Frontend
+
 The project uses React and Vite. The original static HTML homepage is preserved in `legacy-homepage.html` as a reference. The active homepage is served by the React application in `src/`.
 
 ### Run locally
+
 Requires Node.js 20 or newer.
 
 ```bash
 npm install
 npm run dev
+npm test
 npm run build
 ```
 
 ## Current status — not production-ready
+
 - React/Vite frontend foundation with responsive marketplace homepage.
-- Search, category filtering, and saved-item interactions currently use local demo state only.
+- Search, category filtering, saved-item interactions, listing preview, and listing-draft validation are currently local/demo interactions.
 - Listing cards are illustrative examples, not live marketplace inventory.
-- Login, registration, database persistence, photo uploads, seller/buyer dashboards, messaging, moderation, listing credits, and payment verification are not yet connected.
-- `database/migrations/001_marketplace_foundation.sql` and `002_platform_operations.sql` are provider-neutral PostgreSQL schema drafts only. They have **not** been applied to a database; authentication integration, row-level security/server authorization, and migration testing are still required.
-- The second draft adds staff membership/permission data, configurable fee settings, listing-credit packs, promotion products, and moderation audit records. Permission arrays are not sufficient by themselves: every privileged action must be checked on the server.
-- At launch, buyers contact sellers directly for item purchases. Aloko listing-credit and promotion payments are separate platform fees.
-- Do not enter real customer data until authentication, server-side authorization, storage, and database are implemented and tested.
+- Login, registration, database-backed listing persistence, secure photo uploads, messaging, moderation workflows, live dashboards, and payment verification are not yet connected.
+- The dedicated Neon database has the **core marketplace foundation migration** applied and verified. It includes profiles, listings, listing images, saved listings, conversations, messages, listing-credit accounts, platform payments, credit ledger, promotions, reports, audit logs, and decluttering service requests.
+- `database/migrations/002_platform_operations.sql` remains unapplied. It adds staff membership/permission data, configurable fee settings, listing-credit packs, promotion products, and moderation audit records. It must be reviewed and applied before those operational features are connected.
+- Database tables are not yet exposed through an application API. Before launch, implement authentication integration, row-level security and/or trusted server authorization, safe storage, and migration/authorization tests. Permission arrays alone are not authorization.
+- At launch, buyers contact sellers directly for item purchases. Aloko listing-credit and promotion payments are separate platform fees; item checkout/escrow is not part of the current design.
+- Do not enter real customer data until authentication, server-side authorization, storage, and the application API are implemented and tested.
 
 ## Planned implementation order
-1. Establish and verify the React/Vite production build and deployment.
-2. Connect managed database, authentication, and secure image storage.
-3. Implement listings, search, profiles, enquiries, and moderation with server-side access control.
-4. Build buyer, seller, moderator, and super-admin dashboards.
-5. Implement verified listing-credit and promotion payments, audit logs, and launch testing.
+
+1. Connect authentication and define the trusted server-side identity/role model.
+2. Add a protected application API for profiles, listings, saved items, conversations, and service requests.
+3. Add secure image storage and enforce authorization for all reads/writes.
+4. Apply and verify the operational schema, then implement moderation and the role-specific dashboards.
+5. Add verified listing-credit and promotion payments, audit logs, and launch tests.
+6. Deploy to Vercel only after permission is given, then verify the actual deployment and its environment configuration.
