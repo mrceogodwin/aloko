@@ -30,6 +30,10 @@ Accepts listing details from an authenticated seller or business account. The ha
 
 **Important:** this route requires trusted authentication middleware to set `req.auth.user` with a verified user ID, server-derived role, and suspension state. No provider/middleware is currently wired into the deployed application, so the endpoint is not launch-ready and must fail closed until that adapter exists. Unit tests inject trusted auth context directly; that does not constitute a real login system. The seller profile must already exist in `public.profiles`.
 
+## `PATCH /api/listings-update?id=<uuid>` (also accepts PUT)
+
+Updates a seller's own listing using the same validated listing fields as submission. Ownership is enforced in the SQL update using the trusted authenticated user ID, and the seller profile must be active and match the seller/business role. Edited listings return to `pending_review`; publication time is cleared and the moderation note is reset. A missing or non-owned listing returns the same 404 response to avoid revealing other users' listing IDs. This route requires the same real authentication middleware described above and is not launch-ready until that middleware is wired and verified.
+
 ## Environment
 
 Configure `DATABASE_URL` in the server environment only. Never place it in a `VITE_*` variable, frontend source, browser storage, or public repository. The connection uses TLS certificate verification. Do not commit credentials to GitHub.
