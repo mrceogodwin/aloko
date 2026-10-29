@@ -152,3 +152,33 @@ test("numeric listing filters accept digit strings and cap oversized limits", ()
   assert.deepEqual(query.values, [0, 10000, 49, 100000]);
   assert.equal(query.limit, 48);
 });
+
+
+test("numeric filters reject values outside JavaScript safe integer range", () => {
+  const query = buildPublicListingsQuery({
+    minPrice: "9007199254740992",
+    maxPrice: "999999999999999999999999",
+    limit: "9007199254740992",
+    offset: "9007199254740992",
+  });
+  assert.deepEqual(query.values, [25, 0]);
+  assert.equal(query.limit, 24);
+});
+
+test("unknown query parameters cannot affect SQL or pagination", () => {
+  const query = buildPublicListingsQuery({
+    admin: "true",
+    status: "draft",
+    owner_id: "attacker",
+    sort: "published_at; DROP TABLE public.listings",
+  });
+  assert.match(query.text, /l\.status = 'active'/);
+  assert.doesNotMatch(query.text, /DROP TABLE|owner_id|admin =|status = \$/);
+  assert.deepEqual(query.values, [25, 0]);
+});
+
+test("invalid empty numeric filters fall back to default pagination", () => {
+  const query = buildPublicListingsQuery({ minPrice: "", maxPrice: null, limit: "", offset: null });
+  assert.deepEqual(query.values, [25, 0]);
+  assert.equal(query.limit, 24);
+});
