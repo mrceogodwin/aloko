@@ -24,6 +24,12 @@ Reads only listings whose status is `active`. Supported query parameters:
 
 The response includes `price_kobo` from the database and `price_naira` as a display convenience. No buyer-to-seller checkout is implemented. Listing-credit and promotion fees are separate platform payments.
 
+## `POST /api/listings-create`
+
+Accepts listing details from an authenticated seller or business account. The handler validates the request, derives ownership only from trusted server auth context, and always creates the listing with `pending_review` status. It never accepts caller-supplied seller identity, publication status, or moderation decisions. It returns field-level validation errors for invalid input and does not expose database exceptions.
+
+**Important:** this route requires trusted authentication middleware to set `req.auth.user` with a verified user ID, server-derived role, and suspension state. No provider/middleware is currently wired into the deployed application, so the endpoint is not launch-ready and must fail closed until that adapter exists. Unit tests inject trusted auth context directly; that does not constitute a real login system. The seller profile must already exist in `public.profiles`.
+
 ## Environment
 
 Configure `DATABASE_URL` in the server environment only. Never place it in a `VITE_*` variable, frontend source, browser storage, or public repository. The connection uses TLS certificate verification. Do not commit credentials to GitHub.
