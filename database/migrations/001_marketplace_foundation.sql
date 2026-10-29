@@ -4,7 +4,7 @@ BEGIN;
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
-CREATE TYPE public.account_role AS ENUM ('buyer', 'seller', 'moderator', 'admin');
+CREATE TYPE public.account_role AS ENUM ('buyer', 'seller', 'business', 'service_provider', 'moderator', 'admin');
 CREATE TYPE public.listing_status AS ENUM ('draft', 'pending_review', 'active', 'rejected', 'paused', 'sold', 'expired', 'removed');
 CREATE TYPE public.listing_kind AS ENUM ('sale', 'giveaway', 'bulk');
 CREATE TYPE public.item_condition AS ENUM ('new', 'like_new', 'good', 'fair', 'for_parts');
