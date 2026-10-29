@@ -31,13 +31,16 @@ export function createListingsHandler({ getDatabase = getPool } = {}) {
     try {
       const query = buildPublicListingsQuery(req.query ?? {});
       const result = await database.query(query.text, query.values);
+      const hasMore = result.rows.length > query.limit;
+      const pageRows = result.rows.slice(0, query.limit);
       res.setHeader("Cache-Control", "public, s-maxage=30, stale-while-revalidate=60");
       return res.status(200).json({
-        items: result.rows.map((row) => ({
+        items: pageRows.map((row) => ({
           ...row,
           price_naira: row.price_kobo === null ? null : Number(row.price_kobo) / 100,
         })),
-        count: result.rowCount,
+        count: pageRows.length,
+        has_more: hasMore,
       });
     } catch {
       return res.status(500).json({ error: "Could not load marketplace listings" });
