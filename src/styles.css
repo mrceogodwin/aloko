@@ -47,3 +47,22 @@
 .draft-review-modal .listing-modal-content h2{overflow-wrap:anywhere}
 .draft-review-modal .listing-modal-meta{flex-wrap:wrap}
 .draft-review-modal .listing-modal-image{max-height:300px;object-fit:contain;background:#f4f7f4}
+
+.account-create-button{border:1px solid #1d4a36;background:#1d4a36;color:#fff;border-radius:999px;padding:12px 17px;font:inherit;font-weight:650;cursor:pointer}
+.account-create-button:hover,.account-submit:hover{filter:brightness(.94)}
+.account-modal{max-width:470px}
+.account-modal-content{padding:34px}
+.account-modal-content h2{margin:8px 0;font-size:clamp(1.8rem,5vw,2.5rem)}
+.account-modal-content>p{color:#68736b;line-height:1.55}
+.account-mode-switch{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:4px;background:#f0f4ef;border-radius:12px;margin:22px 0}
+.account-mode-switch button{border:0;background:transparent;color:#536056;padding:11px 8px;border-radius:9px;font:inherit;cursor:pointer}
+.account-mode-switch button.active{background:#fff;color:#1d4a36;box-shadow:0 1px 4px #1d4a3618;font-weight:700}
+.account-modal .listing-create-form{gap:15px}
+.account-modal .listing-create-form>label{gap:7px}
+.account-modal .listing-create-form input:not([type=checkbox]){width:100%;box-sizing:border-box}
+.account-terms{display:flex!important;flex-direction:row!important;align-items:flex-start;gap:9px!important;font-size:.9rem}
+.account-terms input{margin-top:4px}
+.account-submit{width:100%;margin-top:3px}
+.account-switch-copy{text-align:center;font-size:.92rem;margin-top:20px}
+.inline-link-button{border:0;background:transparent;color:#1d6947;text-decoration:underline;font:inherit;font-weight:700;cursor:pointer}
+@media(max-width:560px){.account-create-button{padding:10px 12px;font-size:.86rem}.account-modal-content{padding:25px 20px}}
