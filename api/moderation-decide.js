@@ -1,8 +1,16 @@
 import { getPool } from "./_lib/db.js";
 import { authorizeStaff } from "./_lib/authz.js";
 import { populateAuth } from "./_lib/populate-auth.js";
+import { spendListingCredit } from "./_lib/spend-credit.js";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+const LOAD_PENDING_SQL = `
+  SELECT id, seller_id, title, status, kind
+  FROM public.listings
+  WHERE id = $1::uuid
+    AND status = 'pending_review'::public.listing_status
+`;
 
 const APPROVE_SQL = `
   UPDATE public.listings
@@ -12,7 +20,7 @@ const APPROVE_SQL = `
       updated_at = now()
   WHERE id = $1::uuid
     AND status = 'pending_review'::public.listing_status
-  RETURNING id, title, status, published_at, updated_at
+  RETURNING id, title, status, published_at, updated_at, seller_id, kind
 `;
 
 const REJECT_SQL = `
@@ -74,10 +82,44 @@ export function createModerationDecideHandler({ getDatabase = getPool } = {}) {
     }
 
     try {
-      const result = decision === "approve"
-        ? await database.query(APPROVE_SQL, [listingId])
-        : await database.query(REJECT_SQL, [listingId, reason]);
+      if (decision === "reject") {
+        const result = await database.query(REJECT_SQL, [listingId, reason]);
+        if (!result.rows?.length) {
+          return res.status(404).json({ error: "Listing not found or not pending review" });
+        }
+        try {
+          await database.query(AUDIT_SQL, [
+            auth.user.id,
+            "reject_listing",
+            listingId,
+            JSON.stringify({ decision, reason }),
+          ]);
+        } catch { /* audit best-effort */ }
+        return res.status(200).json({
+          item: result.rows[0],
+          message: "Listing rejected",
+        });
+      }
 
+      // Approve path: load seller, spend credit (except giveaways), then publish.
+      const pending = await database.query(LOAD_PENDING_SQL, [listingId]);
+      if (!pending.rows?.length) {
+        return res.status(404).json({ error: "Listing not found or not pending review" });
+      }
+      const listing = pending.rows[0];
+
+      if (listing.kind !== "giveaway") {
+        const spent = await spendListingCredit(database, {
+          sellerId: listing.seller_id,
+          listingId: listing.id,
+          actorId: auth.user.id,
+        });
+        if (!spent.ok) {
+          return res.status(spent.status).json({ error: spent.error });
+        }
+      }
+
+      const result = await database.query(APPROVE_SQL, [listingId]);
       if (!result.rows?.length) {
         return res.status(404).json({ error: "Listing not found or not pending review" });
       }
@@ -85,23 +127,18 @@ export function createModerationDecideHandler({ getDatabase = getPool } = {}) {
       try {
         await database.query(AUDIT_SQL, [
           auth.user.id,
-          decision === "approve" ? "approve_listing" : "reject_listing",
+          "approve_listing",
           listingId,
           JSON.stringify({
-            decision,
-            reason: decision === "reject" ? reason : null,
+            decision: "approve",
+            credit_spent: listing.kind !== "giveaway",
           }),
         ]);
-      } catch {
-        // Audit failure must not undo a successful moderation decision,
-        // but the response still reports success for the listing change.
-      }
+      } catch { /* audit best-effort */ }
 
       return res.status(200).json({
         item: result.rows[0],
-        message: decision === "approve"
-          ? "Listing approved and published"
-          : "Listing rejected",
+        message: "Listing approved and published",
       });
     } catch {
       return res.status(500).json({ error: "Could not apply moderation decision" });
