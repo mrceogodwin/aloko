@@ -56,7 +56,6 @@ CREATE INDEX listings_active_price_idx ON public.listings (price_kobo ASC NULLS 
   WHERE status = 'active';
 CREATE INDEX listings_search_idx ON public.listings USING GIN
   (to_tsvector('simple', coalesce(title, '') || ' ' || coalesce(description, '')));
-CREATE INDEX listing_images_order_idx ON public.listing_images (listing_id, sort_order, created_at);
 
 CREATE TABLE public.listing_images (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -67,6 +66,7 @@ CREATE TABLE public.listing_images (
   created_at timestamptz NOT NULL DEFAULT now(),
   UNIQUE (listing_id, storage_key)
 );
+CREATE INDEX listing_images_order_idx ON public.listing_images (listing_id, sort_order, created_at);
 
 CREATE TABLE public.saved_listings (
   user_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
