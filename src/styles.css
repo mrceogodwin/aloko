@@ -37,3 +37,8 @@
 .resume-draft-button{border:1px solid var(--line,#dce6df);background:#f4f8f5;color:var(--ink,#19352a);border-radius:999px;padding:10px 13px;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer}
 .resume-draft-button:hover{background:#e9f2ec}
 @media(max-width:620px){.resume-draft-button{padding:9px 10px;font-size:11px}}
+
+.field-help{display:block;margin-top:6px;color:#68776d;font-size:12px;line-height:1.5;font-weight:400}
+.draft-photo-preview{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px;border:1px solid #dce6df;border-radius:14px;background:#f8fbf8}
+.draft-photo-preview img{display:block;width:120px;height:100px;object-fit:cover;border-radius:10px}
+.listing-create-form input[type=file]{width:100%;padding:10px;background:#fff;border:1px solid #dce6df;border-radius:10px}
