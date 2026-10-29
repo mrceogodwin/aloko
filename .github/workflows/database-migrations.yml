@@ -1,0 +1,51 @@
+name: Database migration validation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "database/migrations/**"
+      - ".github/workflows/database-migrations.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "database/migrations/**"
+      - ".github/workflows/database-migrations.yml"
+  workflow_dispatch:
+
+jobs:
+  validate-migrations:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: aloko_test
+          POSTGRES_PASSWORD: aloko_test
+          POSTGRES_DB: aloko_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U aloko_test -d aloko_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: aloko_test
+      PGPASSWORD: aloko_test
+      PGDATABASE: aloko_test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-client
+      - name: Apply foundation migration to disposable test database
+        run: psql --set ON_ERROR_STOP=1 --file=database/migrations/001_marketplace_foundation.sql
+      - name: Apply platform operations migration to disposable test database
+        run: psql --set ON_ERROR_STOP=1 --file=database/migrations/002_platform_operations.sql
+      - name: Verify core tables exist
+        run: |
+          psql --set ON_ERROR_STOP=1 --tuples-only --command="SELECT to_regclass('public.profiles'), to_regclass('public.listings'), to_regclass('public.listing_images'), to_regclass('public.staff_memberships'), to_regclass('public.platform_settings')" | grep -q "profiles.*listings.*listing_images.*staff_memberships.*platform_settings"
