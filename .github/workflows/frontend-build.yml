@@ -22,5 +22,7 @@ jobs:
           node-version: 20
       - name: Install dependencies
         run: npm install
+      - name: Run marketplace logic tests
+        run: npm test
       - name: Build production frontend
         run: npm run build
