@@ -30,27 +30,41 @@ function readQueryParams(req) {
 }
 
 function classifyDbError(error) {
-  const code = error?.code;
+  const code = typeof error?.code === "string" ? error.code : undefined;
   const message = String(error?.message || "");
-  // PostgreSQL undefined_table
+
   if (code === "42P01" || /relation .* does not exist/i.test(message)) {
     return {
       status: 503,
       body: {
         error: "Marketplace schema is not ready",
-        detail: "listings table is missing — apply migration 001 on the Neon database linked to this deployment",
+        code,
+        detail: "Apply database/migrations/001_marketplace_foundation.sql on the Neon DB used by DATABASE_URL",
       },
     };
   }
+
   if (code === "28P01" || code === "28000") {
     return {
       status: 503,
-      body: { error: "Database authentication failed" },
+      body: { error: "Database authentication failed", code },
     };
   }
+
+  if (code === "57014" || code === "57P01") {
+    return {
+      status: 503,
+      body: { error: "Database is busy or shutting down", code },
+    };
+  }
+
+  // Safe operational codes only — never return raw SQL or connection strings.
   return {
     status: 500,
-    body: { error: "Could not load marketplace listings" },
+    body: {
+      error: "Could not load marketplace listings",
+      code: code || "unknown",
+    },
   };
 }
 
