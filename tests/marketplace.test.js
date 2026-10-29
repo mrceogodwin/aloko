@@ -53,7 +53,7 @@ test("giveaway draft must be free and use the Free items category", () => {
   assert.ok(validateListingDraft({ ...giveaway, category: "Fashion" }).errors.category);
 });
 test("rejects invalid prices, quantities and short text", () => {
-  const result = validateListingDraft({ ...validDraft, price: "0", quantity: "1.5", title: "Desk", description: "short" });
+  const result = validateListingDraft({ ...validDraft, price: "0", quantity: "1.5", title: "Bed", description: "short" });
   assert.equal(result.valid, false);
   assert.ok(result.errors.price);
   assert.ok(result.errors.quantity);
