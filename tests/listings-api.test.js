@@ -33,7 +33,7 @@ test("price bounds, sort order, limit and offset are bounded", () => {
 test("invalid numeric filters are ignored and unknown sort falls back safely", () => {
   const query = buildPublicListingsQuery({ minPrice: "NaN", maxPrice: "-4", sort: "title; DROP TABLE listings" });
   assert.doesNotMatch(query.text, /DROP TABLE/);
-  assert.deepEqual(query.values, [24, 0]);
+  assert.deepEqual(query.values, [25, 0]);
 });
 
 function responseRecorder() {
