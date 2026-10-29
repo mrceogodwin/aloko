@@ -1,0 +1,75 @@
+/* Homepage polish — imported after base styles */
+.category-arrow{display:none!important}
+
+.preview-banner{
+  margin:0 0 14px;
+  padding:12px 14px;
+  border-radius:12px;
+  background:#fff8e8;
+  border:1px solid #f0e0b8;
+  color:#6a5a28;
+  font-size:12px;
+  line-height:1.5;
+}
+
+@media (max-width:600px){
+  .nav-inner{
+    height:auto;
+    padding:12px 0 14px;
+    display:grid;
+    grid-template-columns:1fr;
+    gap:10px;
+  }
+  .brand{justify-self:start}
+  .nav-actions{
+    width:100%;
+    margin:0;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .nav-account-actions,
+  .nav-primary-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    width:100%;
+  }
+  .nav-account-actions .text-button,
+  .nav-account-actions .account-create-button,
+  .nav-primary-actions .mobile-saved-toggle,
+  .nav-primary-actions .post-button{
+    width:100%;
+    min-height:44px;
+    border-radius:12px;
+    font-size:13px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:10px 12px;
+  }
+  .nav-account-actions .text-button{
+    border:1.5px solid rgba(255,255,255,.75);
+    background:transparent;
+    color:#fff;
+  }
+  .nav-account-actions .account-create-button{
+    background:#f5fbf2;
+    color:#174c3b;
+    border:1.5px solid #f5fbf2;
+    font-weight:700;
+  }
+  .nav-primary-actions .mobile-saved-toggle{
+    display:flex;
+    border:1.5px solid rgba(255,255,255,.7);
+    background:transparent;
+    color:#fff;
+  }
+  .nav-primary-actions .post-button{
+    background:var(--lime);
+    color:#24482e;
+    font-weight:800;
+  }
+  .nav-primary-actions .resume-draft-button{grid-column:1 / -1}
+  .category{font-size:13px}
+}
