@@ -1,0 +1,37 @@
+# Aloko API (current)
+
+These routes are serverless-handler modules intended for a Vercel-compatible runtime. They are not deployed while deployment is restricted.
+
+## `GET /api/health`
+
+Runs `SELECT 1` through the configured PostgreSQL connection. Returns `200` only when the database responds. Missing or unavailable configuration returns `503`. The response is not cached.
+
+## `GET /api/listings`
+
+Reads only listings whose status is `active`. Supported query parameters:
+
+| Parameter | Meaning |
+| --- | --- |
+| `q` | Search title, description, or category (max 120 characters) |
+| `category` | Exact category filter |
+| `city` | Exact city filter |
+| `state` | Exact state filter |
+| `minPrice` | Minimum price in **kobo** |
+| `maxPrice` | Maximum price in **kobo** |
+| `sort` | `price_low`, `price_high`, or default recent-first |
+| `limit` | 1–48; defaults to 24 |
+| `offset` | 0–100000; defaults to 0 |
+
+The response includes `price_kobo` from the database and `price_naira` as a display convenience. No buyer-to-seller checkout is implemented. Listing-credit and promotion fees are separate platform payments.
+
+## Environment
+
+Configure `DATABASE_URL` in the server environment only. Never place it in a `VITE_*` variable, frontend source, browser storage, or public repository. The connection uses TLS certificate verification. Do not commit credentials to GitHub.
+
+## Current security boundary
+
+- The public listing route is read-only.
+- The health route discloses only whether the database is configured/reachable.
+- `api/_lib/authz.js` contains authorization helpers that require a trusted `req.auth.user` populated by authentication middleware. **No authentication provider/middleware is wired yet**, so these helpers do not by themselves create login sessions.
+- Do not add write endpoints until trusted authentication, server-derived role checks, request validation, rate limiting, and database authorization are implemented and tested.
+- Before production launch, implement row-level security or equivalent server authorization, secure image storage, payment-provider webhook verification, and audited server-only writes for credits, moderation, and account suspension.
