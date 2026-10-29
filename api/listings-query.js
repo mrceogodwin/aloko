@@ -31,7 +31,7 @@ export function buildPublicListingsQuery(params = {}) {
     clauses.push(sql.replace("?", `$${values.length}`));
   }
 
-  const search = String(params.q ?? "").trim().slice(0, 120);
+  const search = (typeof params.q === "string" ? params.q : "").trim().slice(0, 120);
   if (search) {
     values.push(search);
     const searchIndex = values.length;
@@ -39,7 +39,7 @@ export function buildPublicListingsQuery(params = {}) {
   }
 
   for (const [key, column] of [["category", "l.category"], ["city", "l.city"], ["state", "l.state"]]) {
-    const value = String(params[key] ?? "").trim().slice(0, 80);
+    const value = (typeof params[key] === "string" ? params[key] : "").trim().slice(0, 80);
     if (value) addClause(column + " = ?", value);
   }
 
