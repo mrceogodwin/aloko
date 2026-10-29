@@ -5,7 +5,7 @@ const categories = [
   ["⌂", "Home & Living"], ["▣", "Phones & Tech"], ["♧", "Fashion"], ["◈", "Appliances"],
   ["♧", "Furniture"], ["▤", "Books & Hobbies"], ["✿", "Free items"], ["↗", "Services"]
 ];
-const products = [
+const demoProducts = [
   { id: 1, title: "Minimal wooden bedside table", price: "₦18,000", condition: "Like new", place: "Benin City", category: "Home & Living", description: "A compact bedside table that suits a bedroom or reading corner. Check dimensions and finish with the seller before arranging collection.", image: "photo-1532372320572-cda25653a26d" },
   { id: 2, title: "Everyday tote bag", price: "₦6,500", condition: "Good", place: "Lagos", category: "Fashion", description: "A reusable everyday tote for errands, books, or daily essentials. Ask the seller to confirm the size and any signs of wear.", image: "photo-1548036328-c9fa89d128fa" },
   { id: 3, title: "Compact desk lamp", price: "₦9,000", condition: "Like new", place: "Abuja", category: "Home & Living", description: "A small desk lamp for a study space or bedside table. Confirm bulb type and power requirements before purchase.", image: "photo-1507473885765-e6ed057f782c" },
@@ -13,7 +13,56 @@ const products = [
   { id: 5, title: "Small stack of reading books", price: "Free", condition: "Good", place: "Benin City", category: "Free items", description: "A sample giveaway listing for readers. Confirm the titles, collection point, and pickup arrangement before travelling.", image: "photo-1512820165-7c5ad4a2f9a4" }
 ];
 
+function formatNaira(value) {
+  if (value === null || value === undefined || value === "") return "Free";
+  const amount = Number(value);
+  if (!Number.isFinite(amount)) return "Price on request";
+  return amount === 0 ? "Free" : new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(amount);
+}
+
+function normalizeLiveListing(item) {
+  const conditionLabels = { new: "New", like_new: "Like new", good: "Good", fair: "Fair", for_parts: "For parts" };
+  const price = item.price_naira ?? (item.price_kobo == null ? null : Number(item.price_kobo) / 100);
+  return {
+    id: String(item.id),
+    title: item.title,
+    price: formatNaira(price),
+    condition: conditionLabels[item.condition] || "Condition not specified",
+    place: [item.city, item.state].filter(Boolean).join(", "),
+    city: item.city || "",
+    category: item.category,
+    description: item.description || "Contact the seller for more details.",
+    image: "",
+    kind: item.kind,
+    quantity: item.quantity,
+    live: true
+  };
+}
+
 function App() {
+  const [liveProducts, setLiveProducts] = useState(null);
+  const [listingLoadState, setListingLoadState] = useState("loading");
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch("/api/listings?limit=48", { headers: { Accept: "application/json" }, signal: controller.signal })
+      .then(response => {
+        if (!response.ok) throw new Error("Listings unavailable");
+        return response.json();
+      })
+      .then(payload => {
+        if (!Array.isArray(payload.items)) throw new Error("Invalid listings response");
+        setLiveProducts(payload.items.map(normalizeLiveListing));
+        setListingLoadState("live");
+      })
+      .catch(error => {
+        if (error.name !== "AbortError") {
+          setLiveProducts(null);
+          setListingLoadState("demo");
+        }
+      });
+    return () => controller.abort();
+  }, []);
+  const products = liveProducts ?? demoProducts;
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [savedOnly, setSavedOnly] = useState(false);
@@ -24,7 +73,7 @@ function App() {
     try {
       const stored = window.localStorage.getItem("aloko:saved-items");
       const parsed = stored ? JSON.parse(stored) : [];
-      return Array.isArray(parsed) ? parsed.filter(id => Number.isInteger(id)) : [];
+      return Array.isArray(parsed) ? parsed.filter(id => (typeof id === "number" && Number.isInteger(id)) || (typeof id === "string" && id.length <= 80)) : [];
     } catch {
       return [];
     }
@@ -104,7 +153,7 @@ function App() {
     matchesListingQuery(p, query)
   ), [query, activeCategory, selectedLocation, selectedCondition, savedOnly, saved]);
 
-  const visibleProducts = useMemo(() => sortListings(filtered, sortOrder, products), [filtered, sortOrder]);
+  const visibleProducts = useMemo(() => sortListings(filtered, sortOrder, products), [filtered, sortOrder, products]);
 
   const showNotice = (message) => {
     setNotice(message);
@@ -140,10 +189,10 @@ function App() {
       <section className="category-section wrap" id="explore"><div className="section-heading"><div><span className="eyebrow">Find your next favourite</span><h2>Explore categories</h2></div><button className="view-all" onClick={() => {setActiveCategory("All");setQuery("");setSavedOnly(false);setSelectedLocation("All locations");setSelectedCondition("Any condition");setSortOrder("recent");}}>View all ↗</button></div>
         <div className="category-grid">{categories.map(([icon,name]) => <button key={name} className={activeCategory === name ? "category active" : "category"} onClick={() => {setSavedOnly(false); if(name === "Services"){setActiveCategory("All");document.getElementById("services")?.scrollIntoView({behavior:"smooth"});}else{setActiveCategory(name);if(name === "Free items") document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}}}><span className="category-icon">{icon}</span><span>{name}</span><span className="category-arrow">↗</span></button>)}</div>
       </section>
-      <section className="listings-section wrap"><div className="section-heading"><div><span className="eyebrow">A second chance at something good</span><h2>{savedOnly ? "Your saved items" : query ? "Search results" : activeCategory === "All" ? "Freshly listed" : activeCategory}</h2></div><div className="listing-tools"><label className="sort-control">Condition <select value={selectedCondition} onChange={e => setSelectedCondition(e.target.value)} aria-label="Filter by item condition"><option>Any condition</option>{[...new Set(products.map(p => p.condition))].sort().map(condition => <option key={condition} value={condition}>{condition}</option>)}</select></label><label className="sort-control">Location <select value={selectedLocation} onChange={e => setSelectedLocation(e.target.value)} aria-label="Filter by location"><option>All locations</option>{[...new Set(products.map(p => p.place))].sort().map(place => <option key={place} value={place}>{place}</option>)}</select></label><label className="sort-control">Sort <select value={sortOrder} onChange={e => setSortOrder(e.target.value)} aria-label="Sort listings"><option value="recent">Recently added</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option></select></label><span className="listing-count">{visibleProducts.length} demo listings</span></div></div>
-        <div className="product-grid">{visibleProducts.map(p => <article className="product-card" key={p.id}><div className="product-image"><img src={`https://images.unsplash.com/${p.image}?auto=format&fit=crop&w=700&q=80`} alt={p.title}/><span className="condition">{p.condition}</span><button className={saved.includes(p.id) ? "save saved" : "save"} aria-label={saved.includes(p.id) ? "Remove from saved" : "Save item"} onClick={() => toggleSaved(p.id)}>{saved.includes(p.id) ? "♥" : "♡"}</button></div><div className="product-info"><span className="product-place">⌖ {p.place}</span><h3>{p.title}</h3><div className="product-bottom"><strong>{p.price}</strong><button onClick={() => setSelectedListing(p)}>View item ↗</button></div></div></article>)}</div>
+      <section className="listings-section wrap"><div className="section-heading"><div><span className="eyebrow">A second chance at something good</span><h2>{savedOnly ? "Your saved items" : query ? "Search results" : activeCategory === "All" ? "Freshly listed" : activeCategory}</h2></div><div className="listing-tools"><label className="sort-control">Condition <select value={selectedCondition} onChange={e => setSelectedCondition(e.target.value)} aria-label="Filter by item condition"><option>Any condition</option>{[...new Set(products.map(p => p.condition).filter(value => value && value !== "Condition not specified"))].sort().map(condition => <option key={condition} value={condition}>{condition}</option>)}</select></label><label className="sort-control">Location <select value={selectedLocation} onChange={e => setSelectedLocation(e.target.value)} aria-label="Filter by location"><option>All locations</option>{[...new Set(products.map(p => p.place).filter(Boolean))].sort().map(place => <option key={place} value={place}>{place}</option>)}</select></label><label className="sort-control">Sort <select value={sortOrder} onChange={e => setSortOrder(e.target.value)} aria-label="Sort listings"><option value="recent">Recently added</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option></select></label><span className="listing-count">{visibleProducts.length} {listingLoadState === "live" ? "live listings" : "example listings"}</span></div></div>
+        <div className="product-grid">{visibleProducts.map(p => <article className="product-card" key={p.id}><div className="product-image">{p.image ? <img src={`https://images.unsplash.com/${p.image}?auto=format&fit=crop&w=700&q=80`} alt={p.title}/> : <div className="product-image-placeholder" role="img" aria-label="No listing photo uploaded"><span>aloko.</span></div>}<span className="condition">{p.condition}</span><button className={saved.includes(p.id) ? "save saved" : "save"} aria-label={saved.includes(p.id) ? "Remove from saved" : "Save item"} onClick={() => toggleSaved(p.id)}>{saved.includes(p.id) ? "♥" : "♡"}</button></div><div className="product-info"><span className="product-place">⌖ {p.place}</span><h3>{p.title}</h3><div className="product-bottom"><strong>{p.price}</strong><button onClick={() => setSelectedListing(p)}>View item ↗</button></div></div></article>)}</div>
         {filtered.length === 0 && <div className="empty-state"><span>{savedOnly && saved.length === 0 ? "♡" : "⌕"}</span><h3>{savedOnly && saved.length === 0 ? "Your saved list is waiting" : savedOnly ? "No saved items match these filters" : "No matches just yet"}</h3><p>{savedOnly && saved.length === 0 ? "Tap the heart on any item to keep it here for later. Saved items stay on this device in this preview." : "Try changing your search or filters, or explore all example listings."}</p><button onClick={() => {setQuery("");setActiveCategory("All");setSavedOnly(false);setSelectedLocation("All locations");setSelectedCondition("Any condition");setSortOrder("recent");document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}}>{savedOnly && saved.length === 0 ? "Explore listings" : "Clear filters"}</button></div>}
-        <p className="demo-note">Preview content only — these listings are examples, not live seller listings.</p>
+        {listingLoadState === "loading" && <p className="demo-note">Loading current listings…</p>}{listingLoadState === "demo" && <p className="demo-note">Live listings could not be loaded. Showing example content only; these are not real seller listings.</p>}{listingLoadState === "live" && visibleProducts.length === 0 && <p className="demo-note">No approved listings yet. Be the first to list something useful.</p>}
       </section>
       <section className="giveaway-section wrap" id="free"><div className="giveaway-card"><div><span className="eyebrow">One person's extra is another's treasure</span><h2>Good things, given freely.</h2><p>Find free items in your community or pass something useful along to someone who needs it.</p><button onClick={() => showNotice("Giveaway requests will be available after account and messaging setup.")}>Explore free finds ↗</button></div><div className="giveaway-symbol" aria-hidden="true">♡</div></div></section>
       <section className="services-section wrap" id="services"><div className="service-copy"><span className="eyebrow">Make room for what matters</span><h2>A little help<br/>clearing the clutter.</h2><p>Discover local decluttering and organising services to make your space feel like you again.</p><button className="outline-button" onClick={() => showNotice("Service provider profiles and booking will be built after the marketplace foundation.")}>Explore services ↗</button></div><div className="service-image"><img src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1000&q=85" alt="Calm, organised home interior"/></div></section>
