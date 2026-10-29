@@ -33,3 +33,7 @@
 .listing-create-actions .outline-button{border:1px solid var(--line,#dce6df);background:#fff;color:inherit}
 .listing-create-actions .modal-contact-button{border:0}
 @media(max-width:560px){.listing-create-content{padding:22px 17px}.listing-form-row{grid-template-columns:1fr}.listing-create-actions{position:sticky;bottom:0;background:#fff;padding-top:10px}}
+
+.resume-draft-button{border:1px solid var(--line,#dce6df);background:#f4f8f5;color:var(--ink,#19352a);border-radius:999px;padding:10px 13px;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer}
+.resume-draft-button:hover{background:#e9f2ec}
+@media(max-width:620px){.resume-draft-button{padding:9px 10px;font-size:11px}}
