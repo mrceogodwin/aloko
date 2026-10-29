@@ -67,24 +67,40 @@
 .inline-link-button{border:0;background:transparent;color:#1d6947;text-decoration:underline;font:inherit;font-weight:700;cursor:pointer}
 @media(max-width:560px){.account-create-button{padding:10px 12px;font-size:.86rem}.account-modal-content{padding:25px 20px}}
 
-.dashboard-preview-trigger{font-weight:650}
-.dashboard-preview-modal{display:block;max-width:760px}
-.dashboard-preview-modal .listing-modal-content{padding:30px}
 .dashboard-role-picker{display:flex;flex-direction:column;gap:8px;font-weight:650;margin:20px 0}
 .dashboard-role-picker select{border:1px solid #dce5dc;border-radius:10px;padding:12px;background:white;color:#1d3325;font:inherit}
-.dashboard-preview-welcome{display:flex;align-items:center;justify-content:space-between;gap:16px;background:#edf4ed;border-radius:16px;padding:20px;margin:18px 0}
-.dashboard-preview-welcome h3{font-size:clamp(1.2rem,3.5vw,1.8rem);margin:8px 0 0;color:#193e2c}
-.dashboard-avatar{display:grid;place-items:center;flex:0 0 46px;height:46px;border-radius:50%;background:#1d4a36;color:#fff;font-size:1.2rem;font-weight:750}
-.dashboard-preview-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.dashboard-preview-stat{display:flex;flex-direction:column;gap:5px;border:1px solid #e2e9e1;border-radius:13px;padding:15px;min-width:0}
-.dashboard-preview-stat strong{font-size:1.65rem;color:#1d4a36}
-.dashboard-preview-stat span{font-weight:700}
-.dashboard-preview-stat small{color:#738075;line-height:1.4}
-.dashboard-preview-section h4{font-size:1rem;margin:24px 0 10px}
-.dashboard-preview-menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.dashboard-preview-menu-item{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid #e3e9e2;border-radius:10px;padding:12px;color:#33483a;font-size:.92rem}
-@media(max-width:560px){.dashboard-preview-trigger{display:inline-flex;align-items:center;justify-content:center;padding:8px 10px;font-size:10px;white-space:nowrap}.dashboard-preview-modal .listing-modal-content{padding:22px 18px}.dashboard-preview-stats{grid-template-columns:1fr}.dashboard-preview-stat{padding:12px}.dashboard-preview-menu{grid-template-columns:1fr}}
 
 /* Live listings may not have photos until secure image uploads are connected. */
 .product-image-placeholder{width:100%;height:100%;min-height:220px;display:grid;place-items:center;background:linear-gradient(135deg,#edf3ec,#dce8dc);color:#6f8a74;font-size:1.6rem;font-weight:800;letter-spacing:-.06em}
 .product-image-placeholder span{border:1px solid #cbd9ca;border-radius:14px;padding:10px 14px;background:#ffffff70}
+
+
+/* Premium, two-tier navigation: account actions above marketplace actions on small screens. */
+.nav-actions{display:flex;align-items:center;gap:18px;margin-left:auto;min-width:0}
+.nav-account-actions,.nav-primary-actions{display:flex;align-items:center;gap:12px;min-width:0}
+.nav-primary-actions{gap:10px}
+@media(max-width:850px){
+  .nav-inner{gap:20px}
+  .nav-actions{gap:12px}
+  .nav-account-actions,.nav-primary-actions{gap:9px}
+  .dashboard-preview-trigger{display:none}
+}
+@media(max-width:600px){
+  .nav-inner{height:auto;min-height:0;padding:12px 0 10px;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:12px 10px}
+  .brand{grid-column:1;grid-row:1;align-self:center}
+  .desktop-nav{display:none}
+  .nav-actions{grid-column:1 / -1;grid-row:2;width:100%;margin:0;display:flex;flex-direction:column;align-items:stretch;gap:9px}
+  .nav-account-actions{display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);gap:8px;width:100%}
+  .nav-primary-actions{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;width:100%}
+  .nav-account-actions .text-button,.nav-account-actions .account-create-button{min-height:42px;padding:10px 12px;border-radius:11px;display:flex;align-items:center;justify-content:center;white-space:nowrap;font-size:12px}
+  .nav-account-actions .text-button{border:1px solid #ffffff75;background:#ffffff0b}
+  .nav-account-actions .account-create-button{background:#f5fbf2;color:#174c3b;border:1px solid #f5fbf2}
+  .nav-primary-actions .mobile-saved-toggle{display:flex;min-height:42px;width:100%;align-items:center;justify-content:center;border:1px solid #ffffff70;border-radius:11px;padding:10px 12px;font-size:12px}
+  .nav-primary-actions .post-button{min-height:42px;padding:10px 16px;border-radius:11px;font-size:12px;white-space:nowrap}
+  .nav-primary-actions .resume-draft-button{grid-column:1 / -1;width:100%;min-height:40px;border-radius:10px}
+}
+@media(max-width:360px){
+  .nav-inner{width:calc(100% - 24px)}
+  .nav-account-actions{grid-template-columns:.65fr 1.35fr}
+  .nav-primary-actions .post-button{padding-inline:12px}
+}
