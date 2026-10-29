@@ -1,6 +1,7 @@
 import pg from "pg";
 import { authorize } from "./_lib/authz.js";
 import { populateAuth } from "./_lib/populate-auth.js";
+import { rateLimit } from "./_lib/rate-limit.js";
 import { validateListingInput } from "./_lib/validate-listing.js";
 
 const { Pool } = pg;
@@ -42,8 +43,6 @@ export function createListingCreateHandler({ getDatabase = getPool } = {}) {
       return res.status(405).json({ error: "Method not allowed" });
     }
 
-    // Prefer an already-trusted req.auth (unit tests / future middleware).
-    // Otherwise attempt Bearer-token population (fails closed until a provider is configured).
     if (!req?.auth?.user) {
       const database = getDatabase();
       const populated = await populateAuth(req, {
@@ -55,10 +54,15 @@ export function createListingCreateHandler({ getDatabase = getPool } = {}) {
       }
     }
 
+    const limited = rateLimit(req, { scope: "listings-create", limit: 10, windowMs: 60_000 });
+    if (!limited.ok) {
+      res.setHeader("Retry-After", String(limited.retryAfterSec));
+      return res.status(limited.status).json({ error: limited.error });
+    }
+
     const auth = authorize(req, ["seller", "business"]);
     if (!auth.ok) return res.status(auth.status).json({ error: auth.error });
 
-    // Auth IDs must be UUIDs because profile IDs and listing ownership are PostgreSQL UUIDs.
     const userId = auth.user.id;
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(userId)) {
       return res.status(401).json({ error: "Authenticated account is not configured for marketplace access" });
