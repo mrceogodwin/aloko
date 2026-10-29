@@ -135,3 +135,20 @@ test("endpoint returns only requested page and flags more results", async () => 
   assert.equal(res.body.items.length, 1);
   assert.equal(res.body.has_more, true);
 });
+
+test("numeric filters reject arrays, booleans, decimals, and exponent notation", () => {
+  const query = buildPublicListingsQuery({
+    minPrice: ["100", "200"],
+    maxPrice: true,
+    limit: ["5"],
+    offset: "1e3",
+  });
+  assert.deepEqual(query.values, [25, 0]);
+  assert.equal(query.limit, 24);
+});
+
+test("numeric listing filters accept digit strings and cap oversized limits", () => {
+  const query = buildPublicListingsQuery({ minPrice: "0", maxPrice: "10000", limit: "999", offset: "100001" });
+  assert.deepEqual(query.values, [0, 10000, 49, 100000]);
+  assert.equal(query.limit, 48);
+});
