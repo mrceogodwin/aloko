@@ -28,20 +28,35 @@ The response includes `price_kobo` from the database and `price_naira` as a disp
 
 Accepts listing details from an authenticated seller or business account. The handler validates the request, derives ownership only from trusted server auth context, and always creates the listing with `pending_review` status. It never accepts caller-supplied seller identity, publication status, or moderation decisions. It returns field-level validation errors for invalid input and does not expose database exceptions.
 
-**Important:** this route requires trusted authentication middleware to set `req.auth.user` with a verified user ID, server-derived role, and suspension state. No provider/middleware is currently wired into the deployed application, so the endpoint is not launch-ready and must fail closed until that adapter exists. Unit tests inject trusted auth context directly; that does not constitute a real login system. The seller profile must already exist in `public.profiles`.
+**Important:** this route requires trusted authentication middleware to set `req.auth.user` with a verified user ID, server-derived role, and suspension state. No provider is currently enabled, so the endpoint is not launch-ready and must fail closed until that adapter exists. Unit tests inject trusted auth context directly; that does not constitute a real login system. The seller profile must already exist in `public.profiles`.
 
 ## `PATCH /api/listings-update?id=<uuid>` (also accepts PUT)
 
 Updates a seller's own listing using the same validated listing fields as submission. Ownership is enforced in the SQL update using the trusted authenticated user ID, and the seller profile must be active and match the seller/business role. Edited listings return to `pending_review`; publication time is cleared and the moderation note is reset. A missing or non-owned listing returns the same 404 response to avoid revealing other users' listing IDs. This route requires the same real authentication middleware described above and is not launch-ready until that middleware is wired and verified.
 
+## Auth helpers (groundwork)
+
+| Module | Purpose |
+| --- | --- |
+| `api/_lib/authz.js` | `authorize` / `authorizeStaff` using trusted `req.auth.user` |
+| `api/_lib/verify-token.js` | Fail-closed Bearer JWT extraction/verification (null until JWKS configured) |
+| `api/_lib/resolve-profile.js` | Load profile by UUID, derive role from `account_type`, optional bootstrap |
+| `api/_lib/populate-auth.js` | Combine token verification + profile resolution and set `req.auth.user` |
+
+See [docs/auth-plan.md](../docs/auth-plan.md) for the full integration plan. Do not treat these helpers as a completed login system.
+
 ## Environment
 
 Configure `DATABASE_URL` in the server environment only. Never place it in a `VITE_*` variable, frontend source, browser storage, or public repository. The connection uses TLS certificate verification. Do not commit credentials to GitHub.
+
+Optional (when a provider is approved):
+
+- `NEON_AUTH_BASE_URL` or `NEON_AUTH_JWKS_URL` — server-only; never expose to the browser.
 
 ## Current security boundary
 
 - The public listing route is read-only.
 - The health route discloses only whether the database is configured/reachable.
-- `api/_lib/authz.js` contains authorization helpers that require a trusted `req.auth.user` populated by authentication middleware. **No authentication provider/middleware is wired yet**, so these helpers do not by themselves create login sessions.
-- Do not add write endpoints until trusted authentication, server-derived role checks, request validation, rate limiting, and database authorization are implemented and tested.
+- Authorization helpers require a trusted `req.auth.user` populated by authentication middleware. **No authentication provider is enabled yet**, so protected write routes remain non-launch-ready.
+- Do not add further privileged endpoints until trusted authentication, server-derived role checks, request validation, rate limiting, and database authorization are implemented and tested.
 - Before production launch, implement row-level security or equivalent server authorization, secure image storage, payment-provider webhook verification, and audited server-only writes for credits, moderation, and account suspension.
