@@ -13,7 +13,7 @@ test("search uses bound parameters and cannot inject SQL", () => {
   const query = buildPublicListingsQuery({ q: "' OR 1=1 --" });
   assert.match(query.text, /ILIKE/);
   assert.equal(query.text.includes("' OR 1=1 --"), false);
-  assert.deepEqual(query.values, ["' OR 1=1 --", "' OR 1=1 --", "' OR 1=1 --", 24, 0]);
+  assert.deepEqual(query.values, ["' OR 1=1 --", 24, 0]);
 });
 
 test("category and location filters are parameterized", () => {
