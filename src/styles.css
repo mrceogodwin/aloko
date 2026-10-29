@@ -42,3 +42,8 @@
 .draft-photo-preview{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px;border:1px solid #dce6df;border-radius:14px;background:#f8fbf8}
 .draft-photo-preview img{display:block;width:120px;height:100px;object-fit:cover;border-radius:10px}
 .listing-create-form input[type=file]{width:100%;padding:10px;background:#fff;border:1px solid #dce6df;border-radius:10px}
+
+.draft-review-modal{max-width:680px}
+.draft-review-modal .listing-modal-content h2{overflow-wrap:anywhere}
+.draft-review-modal .listing-modal-meta{flex-wrap:wrap}
+.draft-review-modal .listing-modal-image{max-height:300px;object-fit:contain;background:#f4f7f4}
