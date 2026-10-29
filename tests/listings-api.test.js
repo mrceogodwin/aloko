@@ -6,14 +6,14 @@ import { createListingsHandler } from "../api/listings.js";
 test("public listing query only includes active listings", () => {
   const query = buildPublicListingsQuery({});
   assert.match(query.text, /l\.status = 'active'/);
-  assert.deepEqual(query.values, [24, 0]);
+  assert.deepEqual(query.values, [25, 0]);
 });
 
 test("search uses bound parameters and cannot inject SQL", () => {
   const query = buildPublicListingsQuery({ q: "' OR 1=1 --" });
   assert.match(query.text, /ILIKE/);
   assert.equal(query.text.includes("' OR 1=1 --"), false);
-  assert.deepEqual(query.values, ["' OR 1=1 --", 24, 0]);
+  assert.deepEqual(query.values, ["' OR 1=1 --", 25, 0]);
 });
 
 test("category and location filters are parameterized", () => {
@@ -21,13 +21,13 @@ test("category and location filters are parameterized", () => {
   assert.match(query.text, /l\.category = \$1/);
   assert.match(query.text, /l\.city = \$2/);
   assert.match(query.text, /l\.state = \$3/);
-  assert.deepEqual(query.values, ["Furniture", "Benin City", "Edo", 24, 0]);
+  assert.deepEqual(query.values, ["Furniture", "Benin City", "Edo", 25, 0]);
 });
 
 test("price bounds, sort order, limit and offset are bounded", () => {
   const query = buildPublicListingsQuery({ minPrice: "20000", maxPrice: "90000", sort: "price_low", limit: "1000", offset: "-2" });
   assert.match(query.text, /l\.price_kobo ASC/);
-  assert.deepEqual(query.values, [20000, 90000, 48, 0]);
+  assert.deepEqual(query.values, [20000, 90000, 49, 0]);
 });
 
 test("invalid numeric filters are ignored and unknown sort falls back safely", () => {
@@ -79,7 +79,7 @@ test("endpoint returns active listing results and converts kobo to naira", async
   assert.equal(res.body.count, 1);
   assert.equal(res.body.items[0].price_naira, 12500);
   assert.match(received.text, /l\.city = \$1/);
-  assert.deepEqual(received.values, ["Benin City", 24, 0]);
+  assert.deepEqual(received.values, ["Benin City", 25, 0]);
   assert.match(res.headers["Cache-Control"], /s-maxage=30/);
 });
 
@@ -110,11 +110,28 @@ test("combined search and filters keep every placeholder aligned", () => {
   assert.match(query.text, /COALESCE\(l\.price_kobo, 0\) >= \$4/);
   assert.match(query.text, /COALESCE\(l\.price_kobo, 0\) <= \$5/);
   assert.match(query.text, /l\.price_kobo DESC/);
-  assert.deepEqual(query.values, ["desk", "Furniture", "Benin City", 0, 200000, 10, 20]);
+  assert.deepEqual(query.values, ["desk", "Furniture", "Benin City", 0, 200000, 11, 20]);
 });
 
 test("repeated search phrase uses one bound parameter and limits its length", () => {
   const query = buildPublicListingsQuery({ q: "x".repeat(500) });
-  assert.deepEqual(query.values, ["x".repeat(120), 24, 0]);
+  assert.deepEqual(query.values, ["x".repeat(120), 25, 0]);
   assert.equal((query.text.match(/\$1/g) ?? []).length, 3);
+});
+
+test("endpoint returns only requested page and flags more results", async () => {
+  const handler = createListingsHandler({ getDatabase: () => ({
+    async query() {
+      return { rowCount: 2, rows: [
+        { id: "item-1", title: "Desk", price_kobo: "500000" },
+        { id: "item-2", title: "Chair", price_kobo: "200000" },
+      ] };
+    },
+  }) });
+  const res = responseRecorder();
+  await handler({ method: "GET", query: { limit: "1" } }, res);
+  assert.equal(res.statusCode, 200);
+  assert.equal(res.body.count, 1);
+  assert.equal(res.body.items.length, 1);
+  assert.equal(res.body.has_more, true);
 });
