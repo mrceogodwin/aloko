@@ -7,7 +7,8 @@ export function matchesListingQuery(listing, query) {
     listing.place,
     listing.category,
     listing.condition,
-    listing.price
+    listing.price,
+    typeof listing.price === "string" ? listing.price.replace(/[^0-9]/g, "") : ""
   ];
   return searchableFields
     .filter(value => value !== null && value !== undefined)
