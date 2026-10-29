@@ -25,7 +25,10 @@ const INSERT_LISTING = `
   SELECT p.id, $2, $3, $4, $5::public.listing_kind, $6::public.item_condition,
          $7, $8, $9, $10, $11, $12, 'pending_review'::public.listing_status
   FROM public.profiles p
-  WHERE p.id = $1::uuid AND p.is_suspended = false
+  WHERE p.id = $1::uuid
+    AND p.is_suspended = false
+    AND (($13 = 'seller' AND p.account_type IN ('individual', 'reseller'))
+      OR ($13 = 'business' AND p.account_type IN ('business', 'bulk_distributor')))
   RETURNING id, title, description, category, kind, condition, price_kobo,
             quantity, city, state, pickup_available, delivery_available, status, created_at
 `;
@@ -62,10 +65,10 @@ export function createListingCreateHandler({ getDatabase = getPool } = {}) {
       const result = await database.query(INSERT_LISTING, [
         userId, value.title, value.description, value.category, value.kind,
         value.condition, value.price_kobo, value.quantity, value.city, value.state,
-        value.pickup_available, value.delivery_available,
+        value.pickup_available, value.delivery_available, auth.user.role,
       ]);
       if (!result.rows?.length) {
-        return res.status(403).json({ error: "Complete your seller profile before creating a listing" });
+        return res.status(403).json({ error: "Your profile type is not eligible to create this listing" });
       }
       return res.status(201).json({ item: result.rows[0], message: "Listing submitted for review" });
     } catch {
