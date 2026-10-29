@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { matchesListingQuery, sortListings, validateListingDraft } from "./marketplace.js";
 import { PREVIEW_LISTINGS } from "./preview-listings.js";
+import { hasAccessToken, openConversation } from "./api-client.js";
 
 const categories = [
   ["⌂", "Home & Living"], ["▣", "Phones & Tech"], ["♧", "Fashion"], ["◈", "Appliances"],
@@ -59,8 +60,7 @@ function App() {
     try { return Boolean(window.localStorage.getItem("aloko:listing-draft")); } catch { return false; }
   });
   const [listingDraft, setListingDraft] = useState({
-    title: "", kind: "sale", price: "", category: "Home & Living", condition: "Good",
-    quantity: "1", fulfillment: "pickup", place: "", description: ""
+    title: "", price: "", place: "", description: "", kind: "sale", category: "Home & Living", condition: "Good", quantity: "1", fulfillment: "pickup"
   });
   const [accountModalOpen, setAccountModalOpen] = useState(false);
   const [accountMode, setAccountMode] = useState("login");
@@ -69,10 +69,10 @@ function App() {
   useEffect(() => {
     const controller = new AbortController();
     setListingLoadState("loading");
-    fetch("/api/listings?limit=48", { headers: { Accept: "application/json" }, signal: controller.signal })
+    fetch("/api/listings?limit=24", { signal: controller.signal })
       .then(r => { if (!r.ok) throw new Error("unavailable"); return r.json(); })
       .then(payload => {
-        if (!Array.isArray(payload.items)) throw new Error("invalid");
+        if (!payload || !Array.isArray(payload.items)) throw new Error("bad payload");
         const live = payload.items.map(normalizeLiveListing);
         if (live.length === 0) {
           setLiveProducts(PREVIEW_LISTINGS);
@@ -92,28 +92,25 @@ function App() {
   }, [listingReloadKey]);
 
   useEffect(() => {
-    try { window.localStorage.setItem("aloko:saved-items", JSON.stringify(saved)); } catch { /* private mode */ }
+    try { window.localStorage.setItem("aloko:saved-items", JSON.stringify(saved)); } catch {}
   }, [saved]);
-
-  useEffect(() => () => {
-    if (noticeTimer.current !== null) window.clearTimeout(noticeTimer.current);
-  }, []);
 
   const products = liveProducts ?? [];
   const filtered = useMemo(() => products.filter(p =>
-    (activeCategory === "All" || (activeCategory === "Free items" ? p.kind === "giveaway" : p.category === activeCategory)) &&
-    (selectedLocation === "All locations" || p.place === selectedLocation) &&
-    (selectedCondition === "Any condition" || p.condition === selectedCondition) &&
+    matchesListingQuery(p, query) &&
+    (activeCategory === "All" || p.category === activeCategory) &&
     (!savedOnly || saved.includes(p.id)) &&
-    matchesListingQuery(p, query)
-  ), [query, activeCategory, selectedLocation, selectedCondition, savedOnly, saved, products]);
+    (selectedLocation === "All locations" || (p.place && p.place.includes(selectedLocation.replace("All locations", "").trim())) || selectedLocation === "All locations") &&
+    (selectedCondition === "Any condition" || p.condition === selectedCondition)
+  ), [products, query, activeCategory, savedOnly, saved, selectedLocation, selectedCondition]);
   const visibleProducts = useMemo(() => sortListings(filtered, sortOrder, products), [filtered, sortOrder, products]);
 
   const showNotice = (message) => {
     setNotice(message);
-    if (noticeTimer.current !== null) window.clearTimeout(noticeTimer.current);
-    noticeTimer.current = window.setTimeout(() => { setNotice(""); noticeTimer.current = null; }, 2800);
+    if (noticeTimer.current) clearTimeout(noticeTimer.current);
+    noticeTimer.current = setTimeout(() => setNotice(""), 3200);
   };
+
   const toggleSaved = (id) => {
     setSaved(old => old.includes(id) ? old.filter(x => x !== id) : [...old, id]);
     showNotice(saved.includes(id) ? "Removed from saved." : "Saved on this device.");
@@ -121,71 +118,72 @@ function App() {
 
   return (
     <div className="app-shell">
-      <header className="topbar"><div className="nav-inner">
-        <a className="brand" href="#" aria-label="Aloko home">aloko<span>.</span></a>
-        <nav className="desktop-nav" aria-label="Main">
-          <a href="#explore">Explore</a><a href="#free">Free finds</a><a href="#services">Services</a>
-        </nav>
-        <div className="nav-actions">
-          <div className="nav-account-actions">
-            <button className="text-button" onClick={() => { setAccountMode("login"); setAccountModalOpen(true); }}>Log in</button>
-            <button className="account-create-button" onClick={() => { setAccountMode("register"); setAccountModalOpen(true); }}>Create account</button>
-          </div>
-          <div className="nav-primary-actions">
+      <header className="topbar">
+        <div className="wrap topbar-inner">
+          <a className="brand" href="#top" aria-label="Aloko home">
+            <span className="brand-mark">a</span>
+            <span className="brand-text">aloko<span className="brand-dot">.</span></span>
+          </a>
+          <nav className="nav-actions" aria-label="Account">
+            <button type="button" className="ghost-button" onClick={() => { setAccountMode("login"); setAccountModalOpen(true); }}>Log in</button>
+            <button type="button" className="ghost-button" onClick={() => { setAccountMode("signup"); setAccountModalOpen(true); }}>Create account</button>
             <button className="mobile-saved-toggle" aria-pressed={savedOnly} onClick={() => { setSavedOnly(v => !v); setActiveCategory("All"); }}>
               {savedOnly ? "Browse all" : `Saved (${saved.length})`}
             </button>
-            {localDraftExists && <button className="resume-draft-button" onClick={() => setListingFormOpen(true)}>Continue draft</button>}
             <button className="post-button" onClick={() => setListingFormOpen(true)}>Sell an item</button>
-          </div>
+          </nav>
         </div>
-      </div></header>
+      </header>
 
       <main>
-        <section className="hero"><div className="hero-copy">
-          <span className="eyebrow">A more thoughtful marketplace</span>
-          <h1>Good things deserve<br/><em>another life.</em></h1>
-          <p>Find pre-loved treasures across Nigeria, pass on what you no longer need, and give good things a second home.</p>
-          <form className="search-bar" onSubmit={e => { e.preventDefault(); document.getElementById("explore")?.scrollIntoView({ behavior: "smooth" }); }}>
-            <span aria-hidden="true">⌕</span>
-            <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search phones, furniture, free finds…" aria-label="Search listings"/>
-            <button type="submit">Search</button>
-          </form>
-        </div></section>
+        <section className="hero wrap" id="top">
+          <div className="hero-copy">
+            <span className="eyebrow">Nigeria · local marketplace</span>
+            <h1>Sell it. Give it. Pass it on.</h1>
+            <p>Find a new home for things you no longer need — buy pre-loved items, give things away, and discover local decluttering help.</p>
+            <div className="hero-search">
+              <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search phones, furniture, free items…" aria-label="Search listings"/>
+              <button type="button" onClick={() => document.getElementById("explore")?.scrollIntoView({ behavior: "smooth" })}>Search</button>
+            </div>
+          </div>
+        </section>
 
-        <section className="category-section wrap" id="explore">
-          <div className="section-heading">
-            <div><span className="eyebrow">Find your next favourite</span><h2>Explore categories</h2></div>
+        <section className="categories wrap" aria-label="Categories">
+          <div className="section-head">
+            <h2>Browse by category</h2>
             <button className="view-all" onClick={() => { setActiveCategory("All"); setQuery(""); setSavedOnly(false); }}>View all</button>
           </div>
-          <div className="category-grid">
-            {categories.map(([icon, name]) => (
-              <button key={name} className={activeCategory === name ? "category active" : "category"} onClick={() => {
+          <div className="category-row">
+            {categories.map(([icon, label]) => (
+              <button
+                key={label}
+                className={activeCategory === label ? "category-chip active" : "category-chip"}
+                onClick={() => {
                 setSavedOnly(false);
-                if (name === "Services") document.getElementById("services")?.scrollIntoView({ behavior: "smooth" });
-                else setActiveCategory(name);
-              }}>
-                <span className="category-icon">{icon}</span><span>{name}</span>
+                setActiveCategory(label);
+                document.getElementById("explore")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              >
+                <span className="category-icon" aria-hidden="true">{icon}</span>
+                <span>{label}</span>
               </button>
             ))}
           </div>
         </section>
 
-        <section className="listings-section wrap">
-          <div className="section-heading">
-            <div><span className="eyebrow">A second chance at something good</span>
-              <h2>{savedOnly ? "Your saved items" : query ? "Search results" : activeCategory === "All" ? "Freshly listed" : activeCategory}</h2>
-            </div>
-            <span className="listing-count">
+        <section className="listings wrap" id="explore">
+          <div className="section-head">
+            <h2>
               {listingLoadState === "live" ? `${visibleProducts.length} live listings`
                 : listingLoadState === "preview" ? `${visibleProducts.length} preview items`
-                : listingLoadState === "loading" ? "Loading…" : "Unavailable"}
-            </span>
+                : "Loading listings…"}
+            </h2>
+            <button className="view-all" type="button" onClick={() => setListingReloadKey(k => k + 1)}>Refresh</button>
           </div>
 
           {listingLoadState === "preview" && (
             <p className="preview-banner" role="status">
-              Preview catalogue — sample Nigerian listings so you can feel the product. These are <strong>not</strong> live inventory.
+              Showing Nigerian preview catalogue while live inventory is unavailable. These are sample items, not real sellers.
             </p>
           )}
 
@@ -236,17 +234,19 @@ function App() {
         <section className="seller-cta wrap">
           <div>
             <span className="eyebrow">Ready to pass it on?</span>
-            <h2>Your unused could be someone's next favourite.</h2>
+            <h2>List something in minutes.</h2>
+            <p>{localDraftExists ? "You have a draft saved on this device." : "Draft on this device first — publishing needs seller sign-in."}</p>
+            <button className="post-button" onClick={() => setListingFormOpen(true)}>Sell an item</button>
           </div>
-          <button onClick={() => setListingFormOpen(true)}>Start selling</button>
         </section>
       </main>
 
-      <footer className="footer"><div className="footer-inner">
-        <a className="brand" href="#">aloko<span>.</span></a>
-        <p>Sell it. Give it. Pass it on.</p>
-        <span>© {new Date().getFullYear()} Aloko</span>
-      </div></footer>
+      <footer className="site-footer">
+        <div className="wrap footer-inner">
+          <span>© {new Date().getFullYear()} Aloko</span>
+          <span>Sell it. Give it. Pass it on.</span>
+        </div>
+      </footer>
 
       {accountModalOpen && (
         <div className="listing-modal-backdrop" onClick={() => setAccountModalOpen(false)}>
@@ -310,7 +310,32 @@ function App() {
               </p>
               <div className="listing-modal-actions">
                 <button className="modal-save-button" onClick={() => toggleSaved(selectedListing.id)}>{saved.includes(selectedListing.id) ? "Saved" : "Save"}</button>
-                <button className="modal-contact-button" onClick={() => showNotice("Messaging is not connected yet.")}>Contact seller</button>
+                <button className="modal-contact-button" onClick={async () => {
+                  if (selectedListing.preview) {
+                    showNotice("Preview items cannot be messaged.");
+                    return;
+                  }
+                  if (!selectedListing.live) {
+                    showNotice("Messaging is only available on live listings.");
+                    return;
+                  }
+                  if (!hasAccessToken()) {
+                    showNotice("Sign in is required to message a seller.");
+                    setAccountMode("login");
+                    setAccountModalOpen(true);
+                    return;
+                  }
+                  showNotice("Opening conversation…");
+                  const result = await openConversation(selectedListing.id);
+                  if (result.ok) {
+                    showNotice("Conversation ready. Inbox UI ships next.");
+                  } else if (result.status === 401) {
+                    showNotice("Sign in is required to message a seller.");
+                    setAccountModalOpen(true);
+                  } else {
+                    showNotice(result.data?.error || "Could not start conversation.");
+                  }
+                }}>Contact seller</button>
               </div>
             </div>
           </section>
