@@ -83,7 +83,9 @@ test("listing creation derives seller identity and queues moderation regardless 
   assert.equal(res.body.item.status, "pending_review");
   assert.match(received.sql, /'pending_review'::public\.listing_status/);
   assert.equal(received.values[0], sellerId);
-  assert.equal(received.values.length, 12);
+  assert.equal(received.values.length, 13);
+  assert.equal(received.values[12], "seller");
+  assert.match(received.sql, /p\.account_type IN/);
   assert.equal(received.values.includes("active"), false);
   assert.equal(received.values.includes("approved"), false);
 });
