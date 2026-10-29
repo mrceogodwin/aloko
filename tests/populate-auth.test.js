@@ -75,12 +75,16 @@ test("populateAuth returns 401 when profile is missing and bootstrap is off", as
 
 test("populateAuth can bootstrap a profile on first login", async () => {
   let inserted = false;
+  let selectCount = 0;
   const db = {
     async query(sql) {
       if (/INSERT/i.test(sql)) {
         inserted = true;
         return { rows: [] };
       }
+      // First SELECT (pre-bootstrap) returns empty; post-insert SELECT returns profile.
+      selectCount += 1;
+      if (selectCount === 1) return { rows: [] };
       return {
         rows: [{
           id: sellerId,
