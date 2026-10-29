@@ -1,16 +1,6 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
-    { "source": "/api/health", "destination": "/api/health.js" },
-    { "source": "/api/listings", "destination": "/api/listings.js" },
-    { "source": "/api/listings-detail", "destination": "/api/listings-detail.js" },
-    { "source": "/api/listings-create", "destination": "/api/listings-create.js" },
-    { "source": "/api/listings-update", "destination": "/api/listings-update.js" },
-    { "source": "/api/listings-status", "destination": "/api/listings-status.js" },
-    { "source": "/api/my-listings", "destination": "/api/my-listings.js" },
-    { "source": "/api/me", "destination": "/api/me.js" },
-    { "source": "/api/saved-listings", "destination": "/api/saved-listings.js" },
-    { "source": "/api/report-listing", "destination": "/api/report-listing.js" },
-    { "source": "/api/moderation-queue", "destination": "/api/moderation-queue.js" },
-    { "source": "/api/moderation-decide", "destination": "/api/moderation-decide.js" }
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
