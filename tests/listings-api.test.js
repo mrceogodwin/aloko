@@ -92,3 +92,29 @@ test("endpoint does not expose database errors", async () => {
   assert.equal(res.statusCode, 500);
   assert.doesNotMatch(JSON.stringify(res.body), /private database detail/);
 });
+
+test("combined search and filters keep every placeholder aligned", () => {
+  const query = buildPublicListingsQuery({
+    q: "desk",
+    category: "Furniture",
+    city: "Benin City",
+    minPrice: "0",
+    maxPrice: "200000",
+    sort: "price_high",
+    limit: "10",
+    offset: "20",
+  });
+  assert.match(query.text, /l\.title ILIKE '%' \|\| \$1/);
+  assert.match(query.text, /l\.category = \$2/);
+  assert.match(query.text, /l\.city = \$3/);
+  assert.match(query.text, /COALESCE\(l\.price_kobo, 0\) >= \$4/);
+  assert.match(query.text, /COALESCE\(l\.price_kobo, 0\) <= \$5/);
+  assert.match(query.text, /l\.price_kobo DESC/);
+  assert.deepEqual(query.values, ["desk", "Furniture", "Benin City", 0, 200000, 10, 20]);
+});
+
+test("repeated search phrase uses one bound parameter and limits its length", () => {
+  const query = buildPublicListingsQuery({ q: "x".repeat(500) });
+  assert.deepEqual(query.values, ["x".repeat(120), 24, 0]);
+  assert.equal((query.text.match(/\$1/g) ?? []).length, 3);
+});
