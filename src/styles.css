@@ -66,3 +66,21 @@
 .account-switch-copy{text-align:center;font-size:.92rem;margin-top:20px}
 .inline-link-button{border:0;background:transparent;color:#1d6947;text-decoration:underline;font:inherit;font-weight:700;cursor:pointer}
 @media(max-width:560px){.account-create-button{padding:10px 12px;font-size:.86rem}.account-modal-content{padding:25px 20px}}
+
+.dashboard-preview-trigger{font-weight:650}
+.dashboard-preview-modal{max-width:760px}
+.dashboard-preview-modal .listing-modal-content{padding:30px}
+.dashboard-role-picker{display:flex;flex-direction:column;gap:8px;font-weight:650;margin:20px 0}
+.dashboard-role-picker select{border:1px solid #dce5dc;border-radius:10px;padding:12px;background:white;color:#1d3325;font:inherit}
+.dashboard-preview-welcome{display:flex;align-items:center;justify-content:space-between;gap:16px;background:#edf4ed;border-radius:16px;padding:20px;margin:18px 0}
+.dashboard-preview-welcome h3{font-size:clamp(1.2rem,3.5vw,1.8rem);margin:8px 0 0;color:#193e2c}
+.dashboard-avatar{display:grid;place-items:center;flex:0 0 46px;height:46px;border-radius:50%;background:#1d4a36;color:#fff;font-size:1.2rem;font-weight:750}
+.dashboard-preview-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.dashboard-preview-stat{display:flex;flex-direction:column;gap:5px;border:1px solid #e2e9e1;border-radius:13px;padding:15px;min-width:0}
+.dashboard-preview-stat strong{font-size:1.65rem;color:#1d4a36}
+.dashboard-preview-stat span{font-weight:700}
+.dashboard-preview-stat small{color:#738075;line-height:1.4}
+.dashboard-preview-section h4{font-size:1rem;margin:24px 0 10px}
+.dashboard-preview-menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.dashboard-preview-menu-item{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid #e3e9e2;border-radius:10px;padding:12px;color:#33483a;font-size:.92rem}
+@media(max-width:560px){.dashboard-preview-trigger{display:none}.dashboard-preview-modal .listing-modal-content{padding:22px 18px}.dashboard-preview-stats{grid-template-columns:1fr}.dashboard-preview-stat{padding:12px}.dashboard-preview-menu{grid-template-columns:1fr}}
