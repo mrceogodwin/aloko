@@ -84,3 +84,7 @@
 .dashboard-preview-menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .dashboard-preview-menu-item{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid #e3e9e2;border-radius:10px;padding:12px;color:#33483a;font-size:.92rem}
 @media(max-width:560px){.dashboard-preview-trigger{display:inline-flex;align-items:center;justify-content:center;padding:8px 10px;font-size:10px;white-space:nowrap}.dashboard-preview-modal .listing-modal-content{padding:22px 18px}.dashboard-preview-stats{grid-template-columns:1fr}.dashboard-preview-stat{padding:12px}.dashboard-preview-menu{grid-template-columns:1fr}}
+
+/* Live listings may not have photos until secure image uploads are connected. */
+.product-image-placeholder{width:100%;height:100%;min-height:220px;display:grid;place-items:center;background:linear-gradient(135deg,#edf3ec,#dce8dc);color:#6f8a74;font-size:1.6rem;font-weight:800;letter-spacing:-.06em}
+.product-image-placeholder span{border:1px solid #cbd9ca;border-radius:14px;padding:10px 14px;background:#ffffff70}
