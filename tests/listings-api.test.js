@@ -182,3 +182,13 @@ test("invalid empty numeric filters fall back to default pagination", () => {
   assert.deepEqual(query.values, [25, 0]);
   assert.equal(query.limit, 24);
 });
+
+test("text filters reject array-shaped query parameters instead of coercing them", () => {
+  const query = buildPublicListingsQuery({
+    q: ["desk", "chair"],
+    category: ["Furniture", "Phones"],
+    city: ["Benin City"],
+  });
+  assert.doesNotMatch(query.text, /ILIKE|l\.category =|l\.city =/);
+  assert.deepEqual(query.values, [25, 0]);
+});
