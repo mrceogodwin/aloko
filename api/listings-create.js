@@ -1,5 +1,6 @@
 import pg from "pg";
 import { authorize } from "./_lib/authz.js";
+import { populateAuth } from "./_lib/populate-auth.js";
 import { validateListingInput } from "./_lib/validate-listing.js";
 
 const { Pool } = pg;
@@ -39,6 +40,19 @@ export function createListingCreateHandler({ getDatabase = getPool } = {}) {
     if (req.method !== "POST") {
       res.setHeader("Allow", "POST");
       return res.status(405).json({ error: "Method not allowed" });
+    }
+
+    // Prefer an already-trusted req.auth (unit tests / future middleware).
+    // Otherwise attempt Bearer-token population (fails closed until a provider is configured).
+    if (!req?.auth?.user) {
+      const database = getDatabase();
+      const populated = await populateAuth(req, {
+        database,
+        bootstrapProfile: true,
+      });
+      if (!populated.ok) {
+        return res.status(populated.status).json({ error: populated.error });
+      }
     }
 
     const auth = authorize(req, ["seller", "business"]);

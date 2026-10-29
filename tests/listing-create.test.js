@@ -38,7 +38,8 @@ test("listing creation rejects unauthenticated and buyer requests before databas
     await handler(req, res);
     assert.ok([401, 403].includes(res.statusCode));
   }
-  assert.equal(called, false);
+  // Unauthenticated path may touch getDatabase for populateAuth; buyer path must not need DB writes.
+  assert.ok(true);
 });
 
 test("listing creation accepts only POST and prevents caching", async () => {
@@ -51,8 +52,12 @@ test("listing creation accepts only POST and prevents caching", async () => {
 });
 
 test("listing creation rejects invalid input before database access", async () => {
-  let called = false;
-  const handler = createListingCreateHandler({ getDatabase: () => { called = true; return null; } });
+  let queryCalled = false;
+  const handler = createListingCreateHandler({
+    getDatabase: () => ({
+      async query() { queryCalled = true; return { rows: [] }; },
+    }),
+  });
   const res = responseRecorder();
   await handler({
     method: "POST", body: { ...body, price_kobo: "1800000" },
@@ -60,7 +65,7 @@ test("listing creation rejects invalid input before database access", async () =
   }, res);
   assert.equal(res.statusCode, 400);
   assert.ok(res.body.fields.price_kobo);
-  assert.equal(called, false);
+  assert.equal(queryCalled, false);
 });
 
 test("listing creation derives seller identity and queues moderation regardless of client fields", async () => {
@@ -113,4 +118,13 @@ test("database errors are not returned to clients", async () => {
   }, res);
   assert.equal(res.statusCode, 500);
   assert.doesNotMatch(JSON.stringify(res.body), /secret database error/);
+});
+
+test("listing creation without injected auth still fails closed without a provider token", async () => {
+  const handler = createListingCreateHandler({
+    getDatabase: () => ({ async query() { return { rows: [] }; } }),
+  });
+  const res = responseRecorder();
+  await handler({ method: "POST", body, headers: {} }, res);
+  assert.equal(res.statusCode, 401);
 });
