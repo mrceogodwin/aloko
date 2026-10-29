@@ -109,7 +109,7 @@ function App() {
       <nav className="desktop-nav" aria-label="Main navigation">
         <a href="#explore">Explore</a><a href="#free">Free finds</a><a href="#services">Services</a><button className="nav-link-button" onClick={() => { setSavedOnly(value => !value); setActiveCategory("All"); document.getElementById("explore")?.scrollIntoView({behavior:"smooth"}); }}>{savedOnly ? "All items" : `Saved (${saved.length})`}</button>
       </nav>
-      <div className="nav-actions"><button className="text-button" onClick={() => showNotice("Account sign-in will be connected when authentication is implemented.")}>Log in</button><button className="mobile-saved-toggle" aria-pressed={savedOnly} onClick={() => { setSavedOnly(value => !value); setActiveCategory("All"); document.getElementById("explore")?.scrollIntoView({behavior:"smooth"}); }}>{savedOnly ? "All" : `Saved ${saved.length}`}</button><button className="post-button" onClick={() => setListingFormOpen(true)}>＋ Sell an item</button></div>
+      <div className="nav-actions"><button className="text-button" onClick={() => showNotice("Account sign-in will be connected when authentication is implemented.")}>Log in</button><button className="mobile-saved-toggle" aria-pressed={savedOnly} onClick={() => { setSavedOnly(value => !value); setActiveCategory("All"); document.getElementById("explore")?.scrollIntoView({behavior:"smooth"}); }}>{savedOnly ? "All" : `Saved ${saved.length}`}</button>{localDraftExists && <button className="resume-draft-button" onClick={() => setListingFormOpen(true)}>Continue draft</button>}<button className="post-button" onClick={() => setListingFormOpen(true)}>＋ Sell an item</button></div>
     </div></header>
     <main>
       <section className="hero"><div className="hero-copy">
