@@ -1,17 +1,25 @@
 const MAX_LIMIT = 48;
 const DEFAULT_LIMIT = 24;
 
+function parseNonNegativeInteger(value) {
+  if (typeof value === "number") {
+    return Number.isSafeInteger(value) && value >= 0 ? value : null;
+  }
+  if (typeof value !== "string" || !/^\\d+$/.test(value.trim())) return null;
+  const parsed = Number(value.trim());
+  return Number.isSafeInteger(parsed) ? parsed : null;
+}
+
 function boundedInteger(value, fallback, min, max) {
   if (value === undefined || value === null || value === "") return fallback;
-  const parsed = Number(value);
-  if (!Number.isSafeInteger(parsed)) return fallback;
+  const parsed = parseNonNegativeInteger(value);
+  if (parsed === null) return fallback;
   return Math.min(max, Math.max(min, parsed));
 }
 
 function validPrice(value) {
   if (value === undefined || value === null || value === "") return null;
-  const parsed = Number(value);
-  return Number.isSafeInteger(parsed) && parsed >= 0 ? parsed : null;
+  return parseNonNegativeInteger(value);
 }
 
 export function buildPublicListingsQuery(params = {}) {
