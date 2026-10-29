@@ -43,7 +43,8 @@ export function buildPublicListingsQuery(params = {}) {
 
   const limit = boundedInteger(params.limit, DEFAULT_LIMIT, 1, MAX_LIMIT);
   const offset = boundedInteger(params.offset, 0, 0, 100000);
-  values.push(limit, offset);
+  // Fetch one extra row so the API can report whether another page exists.
+  values.push(limit + 1, offset);
 
   const sort = params.sort === "price_low"
     ? "l.price_kobo ASC NULLS FIRST, l.published_at DESC NULLS LAST"
@@ -54,5 +55,6 @@ export function buildPublicListingsQuery(params = {}) {
   return {
     text: `SELECT l.id, l.title, l.description, l.category, l.kind, l.condition, l.price_kobo, l.quantity, l.city, l.state, l.pickup_available, l.delivery_available, l.published_at FROM public.listings l WHERE ${clauses.join(" AND ")} ORDER BY ${sort} LIMIT $${values.length - 1} OFFSET $${values.length}`,
     values,
+    limit,
   };
 }
