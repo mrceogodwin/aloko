@@ -49,6 +49,14 @@ CREATE TABLE public.listings (
 CREATE INDEX listings_discovery_idx ON public.listings (status, state, city, created_at DESC);
 CREATE INDEX listings_seller_idx ON public.listings (seller_id, status, created_at DESC);
 CREATE INDEX listings_category_idx ON public.listings (category, status);
+-- Public discovery should prioritize approved, currently visible inventory.
+CREATE INDEX listings_active_recent_idx ON public.listings (published_at DESC, created_at DESC)
+  WHERE status = 'active';
+CREATE INDEX listings_active_price_idx ON public.listings (price_kobo ASC NULLS FIRST, created_at DESC)
+  WHERE status = 'active';
+CREATE INDEX listings_search_idx ON public.listings USING GIN
+  (to_tsvector('simple', coalesce(title, '') || ' ' || coalesce(description, '')));
+CREATE INDEX listing_images_order_idx ON public.listing_images (listing_id, sort_order, created_at);
 
 CREATE TABLE public.listing_images (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
