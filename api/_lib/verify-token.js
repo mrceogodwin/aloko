@@ -67,18 +67,24 @@ export async function verifyAccessToken(token, options = {}) {
     process.env.NEON_AUTH_JWKS_URL ||
     (baseUrl ? `${baseUrl.replace(/\/$/, "")}/.well-known/jwks.json` : "");
 
-  if (!jwksUrl) return null;
+  // A JWKS URL without a trusted issuer is insufficient: signature validity
+  // alone does not prove the token was issued for this application.
+  if (!baseUrl || !jwksUrl) return null;
+
+  let issuer;
+  try {
+    issuer = new URL(baseUrl).origin;
+    // Reject non-HTTPS issuer URLs outside local development.
+    if (new URL(baseUrl).protocol !== "https:" && process.env.NODE_ENV !== "development" && process.env.NODE_ENV !== "test") {
+      return null;
+    }
+  } catch {
+    // Invalid issuer configuration must fail closed; never skip issuer checks.
+    return null;
+  }
 
   try {
-    const verifyOpts = {};
-    if (baseUrl) {
-      try {
-        verifyOpts.issuer = new URL(baseUrl).origin;
-      } catch {
-        // Invalid base URL — still attempt signature verification without issuer check.
-      }
-    }
-    const { payload } = await jwtVerify(token, getJwks(jwksUrl), verifyOpts);
+    const { payload } = await jwtVerify(token, getJwks(jwksUrl), { issuer });
     const sub = typeof payload.sub === "string" ? payload.sub : "";
     if (!UUID_RE.test(sub)) return null;
     return { sub, payload: { ...payload } };
