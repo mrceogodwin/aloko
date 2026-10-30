@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { matchesListingQuery, sortListings, validateListingDraft } from "./marketplace.js";
-import { PREVIEW_LISTINGS } from "./preview-listings.js";
 import { hasAccessToken, openConversation } from "./api-client.js";
 
 const categories = [
@@ -74,18 +73,13 @@ function App() {
       .then(payload => {
         if (!payload || !Array.isArray(payload.items)) throw new Error("bad payload");
         const live = payload.items.map(normalizeLiveListing);
-        if (live.length === 0) {
-          setLiveProducts(PREVIEW_LISTINGS);
-          setListingLoadState("preview");
-        } else {
-          setLiveProducts(live);
-          setListingLoadState("live");
-        }
+        setLiveProducts(live);
+        setListingLoadState("live");
       })
       .catch(err => {
         if (err.name !== "AbortError") {
-          setLiveProducts(PREVIEW_LISTINGS);
-          setListingLoadState("preview");
+          setLiveProducts([]);
+          setListingLoadState("error");
         }
       });
     return () => controller.abort();
@@ -98,7 +92,9 @@ function App() {
   const products = liveProducts ?? [];
   const filtered = useMemo(() => products.filter(p =>
     matchesListingQuery(p, query) &&
-    (activeCategory === "All" || p.category === activeCategory) &&
+    (activeCategory === "All" ||
+      (activeCategory === "Free items" ? p.kind === "giveaway" :
+        activeCategory === "Services" ? false : p.category === activeCategory)) &&
     (!savedOnly || saved.includes(p.id)) &&
     (selectedLocation === "All locations" || (p.place && p.place.includes(selectedLocation.replace("All locations", "").trim())) || selectedLocation === "All locations") &&
     (selectedCondition === "Any condition" || p.condition === selectedCondition)
@@ -175,17 +171,11 @@ function App() {
           <div className="section-head">
             <h2>
               {listingLoadState === "live" ? `${visibleProducts.length} live listings`
-                : listingLoadState === "preview" ? `${visibleProducts.length} preview items`
+                : listingLoadState === "error" ? "Listings temporarily unavailable"
                 : "Loading listings…"}
             </h2>
             <button className="view-all" type="button" onClick={() => setListingReloadKey(k => k + 1)}>Refresh</button>
           </div>
-
-          {listingLoadState === "preview" && (
-            <p className="preview-banner" role="status">
-              Showing Nigerian preview catalogue while live inventory is unavailable. These are sample items, not real sellers.
-            </p>
-          )}
 
           <div className="product-grid">
             {visibleProducts.map(p => (
@@ -210,7 +200,15 @@ function App() {
           </div>
 
           {listingLoadState === "loading" && <p className="demo-note">Loading approved listings…</p>}
-          {listingLoadState === "live" && visibleProducts.length === 0 && <p className="demo-note">No approved listings yet.</p>}
+          {listingLoadState === "live" && visibleProducts.length === 0 && (
+            <p className="demo-note">No approved listings match your search yet. Check back soon or try another category.</p>
+          )}
+          {listingLoadState === "error" && (
+            <div className="demo-note" role="alert">
+              We couldn't load marketplace listings. Please try again.
+              <button type="button" className="view-all" onClick={() => setListingReloadKey(k => k + 1)}>Retry</button>
+            </div>
+          )}
         </section>
 
         <section className="giveaway-section wrap" id="free">
