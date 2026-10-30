@@ -75,3 +75,19 @@ test("verifyRequestToken reads Authorization header and stays fail-closed", asyn
   );
   assert.equal(ok.sub, sub);
 });
+
+test("verifyAccessToken rejects an explicit JWKS URL without a trusted issuer", async () => {
+  const result = await verifyAccessToken("some.jwt.token", {
+    baseUrl: "",
+    jwksUrl: "https://auth.example.com/.well-known/jwks.json",
+  });
+  assert.equal(result, null);
+});
+
+test("verifyAccessToken rejects malformed issuer configuration without attempting verification", async () => {
+  const result = await verifyAccessToken("some.jwt.token", {
+    baseUrl: "not-a-valid-url",
+    jwksUrl: "https://auth.example.com/.well-known/jwks.json",
+  });
+  assert.equal(result, null);
+});
