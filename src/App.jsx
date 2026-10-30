@@ -89,6 +89,14 @@ function App() {
     try { window.localStorage.setItem("aloko:saved-items", JSON.stringify(saved)); } catch {}
   }, [saved]);
 
+  // Prevent delayed toast updates after the application unmounts.
+  useEffect(() => () => {
+    if (noticeTimer.current !== null) {
+      window.clearTimeout(noticeTimer.current);
+      noticeTimer.current = null;
+    }
+  }, []);
+
   const products = liveProducts ?? [];
   const filtered = useMemo(() => products.filter(p =>
     matchesListingQuery(p, query) &&
