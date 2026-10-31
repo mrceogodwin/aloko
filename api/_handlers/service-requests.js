@@ -42,7 +42,7 @@ export function createServiceRequestsHandler({ getDatabase = getPool } = {}) {
         const body = req.body && typeof req.body === "object" ? req.body : {};
         const requestId = typeof body.request_id === "string" ? body.request_id : "";
         const action = body.action;
-        if (!UUID.test(requestId) || !["quote","accept","cancel","propose_schedule","confirm_schedule"].includes(action)) {
+        if (!UUID.test(requestId) || !["quote","accept","cancel","propose_schedule","confirm_schedule","provider_complete","customer_complete"].includes(action)) {
           return res.status(400).json({error:"Choose a valid service request and action"});
         }
         if (action === "quote") {
@@ -131,8 +131,27 @@ export function createServiceRequestsHandler({ getDatabase = getPool } = {}) {
              RETURNING id,status,proposed_start,proposed_end,updated_at`,
             [requestId,auth.user.id],
           );
-          if (!result.rows?.length) return res.status(409).json({error:"There is no appointment proposal to confirm"});
+          if (!result.rows?.length) return res.status(409).json({error:"There is no new appointment proposal to confirm"});
           return res.status(200).json({request:result.rows[0],message:"Appointment confirmed."});
+        }
+        if (action === "provider_complete" || action === "customer_complete") {
+          const actorColumn = action === "provider_complete" ? "provider_id" : "customer_id";
+          const completionColumn = action === "provider_complete" ? "completed_by_provider_at" : "completed_by_customer_at";
+          const result = await database.query(
+            `UPDATE public.service_requests
+             SET ${completionColumn}=COALESCE(${completionColumn},now()),
+                 status=CASE WHEN
+                   (CASE WHEN ${completionColumn}='completed_by_provider_at' THEN true ELSE completed_by_provider_at IS NOT NULL END)
+                   AND (CASE WHEN ${completionColumn}='completed_by_customer_at' THEN true ELSE completed_by_customer_at IS NOT NULL END)
+                   THEN 'completed' ELSE 'scheduled' END,
+                 updated_at=now()
+             WHERE id=$1::uuid AND ${actorColumn}=$2::uuid
+               AND status IN ('scheduled','completed')
+             RETURNING id,status,completed_by_provider_at,completed_by_customer_at,updated_at`,
+            [requestId,auth.user.id],
+          );
+          if (!result.rows?.length) return res.status(409).json({error:"Only the assigned customer or provider can confirm completion of a scheduled service"});
+          return res.status(200).json({request:result.rows[0],message:result.rows[0].status==="completed"?"Service completion confirmed by both parties.":"Your completion confirmation is recorded. Waiting for the other party."});
         }
         if (action === "accept") {
           const result = await database.query(
@@ -144,13 +163,17 @@ export function createServiceRequestsHandler({ getDatabase = getPool } = {}) {
           if (!result.rows?.length) return res.status(404).json({error:"No quoted request was found for your account"});
           return res.status(200).json({request:result.rows[0],message:"Quote accepted. Contact the provider to confirm the schedule."});
         }
+        const reason = typeof body.reason === "string" ? body.reason.trim() : "";
+        if (reason.length < 5 || reason.length > 500) return res.status(400).json({error:"Add a short cancellation reason (5–500 characters)"});
         const result = await database.query(
-          `UPDATE public.service_requests SET status='cancelled',updated_at=now()
-           WHERE id=$1::uuid AND customer_id=$2::uuid AND status IN ('requested','quoted')
-           RETURNING id,status,updated_at`,
-          [requestId,auth.user.id],
+          `UPDATE public.service_requests SET status='cancelled',cancelled_by=$2::uuid,
+             cancellation_reason=$3,updated_at=now()
+           WHERE id=$1::uuid AND status IN ('requested','quoted','accepted','scheduled')
+             AND (customer_id=$2::uuid OR provider_id=$2::uuid)
+           RETURNING id,status,cancelled_by,cancellation_reason,updated_at`,
+          [requestId,auth.user.id,reason],
         );
-        if (!result.rows?.length) return res.status(404).json({error:"This request cannot be cancelled"});
+        if (!result.rows?.length) return res.status(409).json({error:"This request cannot be cancelled by your account"});
         return res.status(200).json({request:result.rows[0],message:"Service request cancelled."});
       }
       if (req.method !== "POST") { res.setHeader("Allow","GET, POST, PATCH"); return res.status(405).json({error:"Method not allowed"}); }
