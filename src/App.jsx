@@ -125,7 +125,7 @@ function App() {
       <header className="topbar flagship-topbar">
         <div className="wrap topbar-inner">
           <a className="brand flagship-brand" href="#top" aria-label="Aloko home">
-            <span className="brand-mark" aria-hidden="true">A</span><span className="brand-text">Aloko</span>
+            <img className="brand-mark-image" src="/aloko-mark.svg" alt="" /><span className="brand-text">Aloko</span>
           </a>
           <nav className="main-nav" aria-label="Main navigation">
             <a className="nav-current" href="#top">Home</a><a href="#explore">Browse</a><a href="#categories">Categories</a><a href="#free">Free Items</a><a href="#explore">Bulk Deals</a><a href="#services">Services</a>
@@ -156,7 +156,7 @@ function App() {
             <div className="hero-art" aria-label="Aloko marketplace app preview">
               <div className="hero-orb orb-left">♧<b>Good Things<br/>Live Longer</b></div>
               <div className="hero-ribbon ribbon-one"></div><div className="hero-ribbon ribbon-two"></div>
-              <div className="hero-phone"><div className="phone-notch"></div><div className="phone-brand"><span>A</span> Aloko</div><div className="phone-search">⌕ &nbsp; Search for anything…</div><div className="phone-cats"><span>▣<small>Electronics</small></span><span>♧<small>Fashion</small></span><span>⌂<small>Home &amp; Living</small></span><span>♡<small>Free Items</small></span><span>♧<small>Bulk Deals</small></span><span>✧<small>Services</small></span></div><div className="phone-feature"><b>Give Things<br/>A New Home</b><span>↗</span></div></div>
+              <div className="hero-phone"><div className="phone-notch"></div><div className="phone-brand"><img src="/aloko-mark.svg" alt="" /> Aloko</div><div className="phone-search">⌕ &nbsp; Search for anything…</div><div className="phone-cats"><span>▣<small>Electronics</small></span><span>♧<small>Fashion</small></span><span>⌂<small>Home &amp; Living</small></span><span>♡<small>Free Items</small></span><span>♧<small>Bulk Deals</small></span><span>✧<small>Services</small></span></div><div className="phone-feature"><b>Give Things<br/>A New Home</b><span>↗</span></div></div>
               <div className="hero-orb orb-right">Same items,<br/> brighter futures!</div>
             </div>
           </div>
