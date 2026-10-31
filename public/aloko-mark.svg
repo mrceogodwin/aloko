@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-labelledby="title">
+<title id="title">Aloko ribbon A leaf mark</title>
+<defs>
+ <linearGradient id="ribbon" x1="18" y1="12" x2="98" y2="110" gradientUnits="userSpaceOnUse"><stop stop-color="#F0B9FF"/><stop offset=".42" stop-color="#B34BFF"/><stop offset="1" stop-color="#6500D8"/></linearGradient>
+ <linearGradient id="leaf" x1="62" y1="26" x2="94" y2="62" gradientUnits="userSpaceOnUse"><stop stop-color="#FFF"/><stop offset="1" stop-color="#D9B4FF"/></linearGradient>
+</defs>
+<path d="M18 91 47 20c4-10 18-11 24-1l32 70c4 9-3 19-13 19H79L58 60 44 95c-3 8-9 13-18 13h-1c-8 0-12-9-7-17Z" fill="url(#ribbon)"/>
+<path d="m35 88 25-59 25 58-13 8-12-27-11 27-14-7Z" fill="#25064F" opacity=".88"/>
+<path d="M62 55c9-22 27-30 47-28-3 21-16 39-40 40-5 0-9-4-7-12Z" fill="url(#leaf)"/>
+<path d="M64 65c11-13 23-23 39-32" fill="none" stroke="#8A32D9" stroke-width="2.6" stroke-linecap="round"/>
+<path d="M14 92c19 4 34-2 45-17 8 17 22 25 42 21" fill="none" stroke="#D79AFF" stroke-width="5" stroke-linecap="round"/>
+</svg>
