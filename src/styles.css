@@ -349,3 +349,25 @@
 .workspace-open-link{border:1px solid #eadff1;border-radius:999px;background:#fff;color:#7424ad;padding:8px 12px;font-size:10px;font-weight:900;white-space:nowrap;cursor:pointer}
 .workspace-open-link:hover{background:#f6effb}
 @media(max-width:600px){.workspace-open-link{margin-left:54px}}
+
+
+/* Seller onboarding — premium, responsive workspace form */
+.seller-onboarding-entry{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:22px 24px;margin-bottom:22px;border:1px solid var(--line,#e7e5e0);border-radius:18px;background:linear-gradient(135deg,#faf9f6,#f3f1eb)}
+.seller-onboarding-entry strong{display:block;margin-top:7px;font-size:17px;color:var(--ink,#20211f)}
+.seller-onboarding-entry p{margin:5px 0 0;color:var(--muted,#777)}
+.seller-onboarding-panel{max-width:920px;margin-inline:auto}
+.seller-verification-note{display:grid;gap:6px;padding:16px 18px;margin:20px 0;border:1px solid #e8dfc9;border-radius:14px;background:#fbf8ef;color:#5c523d;font-size:13px;line-height:1.55}
+.seller-verification-note strong{font-size:14px;color:#373226}
+.seller-onboarding-form{display:grid;gap:18px}
+.seller-onboarding-form label{display:grid;gap:8px;font-size:13px;font-weight:650;color:var(--ink,#242522)}
+.seller-onboarding-form label span{display:inline;color:var(--muted,#85837d);font-weight:400}
+.seller-onboarding-form input,.seller-onboarding-form select,.seller-onboarding-form textarea{width:100%;min-height:48px;padding:12px 14px;border:1px solid var(--line,#deddd7);border-radius:11px;background:#fff;color:var(--ink,#20211f);font:inherit;font-size:14px;outline:none}
+.seller-onboarding-form input:focus,.seller-onboarding-form select:focus,.seller-onboarding-form textarea:focus{border-color:#9a8658;box-shadow:0 0 0 3px #9a86581c}
+.seller-onboarding-form textarea{resize:vertical;min-height:110px}
+.seller-onboarding-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.seller-onboarding-form fieldset{display:flex;flex-wrap:wrap;gap:20px;padding:16px;border:1px solid var(--line,#deddd7);border-radius:12px}
+.seller-onboarding-form legend{padding:0 6px;font-size:13px;font-weight:650}
+.seller-onboarding-form .seller-onboarding-check{display:flex;align-items:center;gap:9px;font-weight:500}
+.seller-onboarding-form .seller-onboarding-check input{width:17px;min-height:17px;accent-color:#292a25}
+.seller-onboarding-footnote{margin:0;color:var(--muted,#777);font-size:12px;line-height:1.5}
+@media(max-width:640px){.seller-onboarding-entry{align-items:flex-start;flex-direction:column;padding:18px}.seller-onboarding-grid{grid-template-columns:1fr}.seller-onboarding-form fieldset{display:grid;gap:12px}}
