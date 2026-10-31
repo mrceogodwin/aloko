@@ -92,3 +92,11 @@ export function claimIntroductoryCredits() {
     body: { action: "claim_introductory" },
   });
 }
+
+
+export function createListing(listing) {
+  return request("/api/listings-create", {
+    method: "POST",
+    body: listing,
+  });
+}
