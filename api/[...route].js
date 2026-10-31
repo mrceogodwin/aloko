@@ -21,6 +21,7 @@ import sellerVerificationQueue from "./_handlers/seller-verification-queue.js";
 import sellerVerificationDecide from "./_handlers/seller-verification-decide.js";
 import sellerStore from "./_handlers/seller-store.js";
 import serviceRequests from "./_handlers/service-requests.js";
+import serviceProviders from "./_handlers/service-providers.js";
 
 const handlers = {
   "buyer-preferences": buyerPreferences,
@@ -43,6 +44,7 @@ const handlers = {
   "saved-sellers": savedSellers,
   "seller-store": sellerStore,
   "service-requests": serviceRequests,
+  "service-providers": serviceProviders,
   "seller-onboarding": sellerOnboarding,
   "seller-verification-queue": sellerVerificationQueue,
   "seller-verification-decide": sellerVerificationDecide,
