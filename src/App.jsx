@@ -7,6 +7,7 @@ import AdminSellerVerification from "./AdminSellerVerification.jsx";
 import BuyerPreferences from "./BuyerPreferences.jsx";
 import ServiceRequests from "./ServiceRequests.jsx";
 import ServiceProviders from "./ServiceProviders.jsx";
+import AdminServiceProviderReview from "./AdminServiceProviderReview.jsx";
 
 const nigeriaStates = ["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","FCT","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"];
 
@@ -132,7 +133,7 @@ function WorkspaceScreen({ screen, authUser, onLogin, onSell, onSellerOnboarding
   }, [authUser, screen, localSaved.length]);
 
   useEffect(() => {
-    if (!authUser || !["account", "admin-verification"].includes(screen)) return;
+    if (!authUser || !["account", "admin-verification", "admin-service-providers"].includes(screen)) return;
     let cancelled = false;
     getMarketplaceProfile().then(result => { if (!cancelled && result.ok) setProfile(result.data?.user || null); });
     return () => { cancelled = true; };
@@ -175,7 +176,7 @@ function WorkspaceScreen({ screen, authUser, onLogin, onSell, onSellerOnboarding
   };
 
   const localSavedListings = localListings.filter(item => localSaved.includes(item.id));
-  const titleMap = { seller: "Seller workspace", "seller-onboarding": "Become an Aloko seller", "admin-verification": "Seller verification", "buyer-preferences": "Your shopping preferences", services: "Services & professionals", providers: "Service provider network", inbox: "Messages", saved: "Saved items", account: "My account", store: storeData?.store?.display_name ? `${storeData.store.display_name}’s store` : "Seller storefront" };
+  const titleMap = { seller: "Seller workspace", "seller-onboarding": "Become an Aloko seller", "admin-verification": "Seller verification", "buyer-preferences": "Your shopping preferences", services: "Services & professionals", "admin-service-providers": "Provider applications", providers: "Service provider network", inbox: "Messages", saved: "Saved items", account: "My account", store: storeData?.store?.display_name ? `${storeData.store.display_name}’s store` : "Seller storefront" };
   if (!authUser && ["seller", "seller-onboarding", "inbox", "account", "buyer-preferences", "services"].includes(screen)) {
     return <section className="workspace-page"><div className="workspace-gate"><span className="workspace-icon">✦</span><span className="eyebrow">YOUR ALOKO ACCOUNT</span><h1>Everything in its right place.</h1><p>Sign in to manage your listings, talk to buyers and keep your Aloko activity together.</p><button className="workspace-primary" onClick={onLogin}>Sign in to continue <span>→</span></button><button className="workspace-link" onClick={onLogin}>New to Aloko? Create an account</button></div></section>;
   }
@@ -187,6 +188,7 @@ function WorkspaceScreen({ screen, authUser, onLogin, onSell, onSellerOnboarding
     {screen === "buyer-preferences" && <BuyerPreferences onNotice={onNotice} />}
     {screen === "services" && <ServiceRequests authUser={authUser} onLogin={onLogin} onNotice={onNotice} onProviders={onProviders} />}
     {screen === "providers" && <ServiceProviders authUser={authUser} onLogin={onLogin} onNotice={onNotice} />}
+    {screen === "admin-service-providers" && (profile?.role === "admin" ? <AdminServiceProviderReview onNotice={onNotice} /> : <div className="workspace-panel"><div className="workspace-empty"><h3>Administrator access required</h3></div></div>)}
     {screen === "admin-verification" && (["admin","moderator"].includes(profile?.role || authUser?.role) ? <AdminSellerVerification canDecide={(profile?.role || authUser?.role) === "admin"} onNotice={onNotice} /> : <div className="workspace-panel"><div className="workspace-empty"><h3>Staff access required</h3><p>This area is available to authorised Aloko moderators and administrators.</p></div></div>)}
     {screen === "seller" && <div className="workspace-panel">
       <div className="seller-onboarding-entry"><div><span className="eyebrow">GROW WITH ALOKO</span><strong>Start selling with a verified store</strong><p>Complete your seller details to unlock listing access after review.</p></div><button className="workspace-secondary" onClick={onSellerOnboarding}>Set up seller account →</button></div>
@@ -215,7 +217,7 @@ function WorkspaceScreen({ screen, authUser, onLogin, onSell, onSellerOnboarding
       </> : <div className="workspace-empty"><span>⌂</span><h3>{loading ? "Loading storefront…" : "Storefront unavailable"}</h3><p>{workspaceError || "This seller profile could not be found."}</p></div>}
     </div>}
     {screen === "saved" && <div className="workspace-panel"><div className="workspace-panel-head"><div><h2>Your saved collection</h2><p>Saved on this device and synced to your account when available.</p></div><span>{authUser ? savedListings.length : localSavedListings.length} saved</span></div>{authUser ? savedListings.length ? <div className="workspace-listings">{savedListings.map(item=><article className="workspace-listing" key={item.id}><div className="workspace-listing-art">♡</div><div className="workspace-listing-copy"><strong>{item.title}</strong><span>{item.category} · {[item.city,item.state].filter(Boolean).join(", ")}</span><small>{formatNaira(item.price_naira)}</small></div><button className="workspace-open-link" onClick={()=>onOpenListing(item)}>View item →</button></article>)}</div> : <div className="workspace-empty"><span>♡</span><h3>Your collection is waiting.</h3><p>Save listings you love and they will be collected here.</p></div> : localSavedListings.length ? <div className="workspace-listings">{localSavedListings.map(item=><article className="workspace-listing" key={item.id}><div className="workspace-listing-art">♡</div><div className="workspace-listing-copy"><strong>{item.title}</strong><span>{item.category} · {item.place}</span><small>{item.price}</small></div><button className="workspace-open-link" onClick={()=>onOpenListing(item)}>View item →</button></article>)}</div> : <div className="workspace-empty"><span>♡</span><h3>Your saved finds</h3><p>Save an item from the marketplace to collect it here. Sign in to sync your collection across devices.</p><button className="workspace-primary" onClick={onLogin}>Sign in to sync</button></div>}</div>}
-    {screen === "account" && <div className="workspace-panel workspace-profile-panel"><div className="workspace-profile-avatar">{(profile?.display_name||authUser?.name||authUser?.email||"A").slice(0,1).toUpperCase()}</div><div><span className="eyebrow">ALOKO MEMBER</span><h2>{profile?.display_name||authUser?.name||"Welcome to Aloko"}</h2><p>{authUser?.email}</p><div className="workspace-profile-meta"><span>{profile?.account_type||"Individual account"}</span><span>{profile?.role||"Marketplace member"}</span></div></div>{["admin","moderator"].includes(profile?.role || authUser?.role) && <button className="workspace-secondary" onClick={onAdminVerification}>Review seller applications →</button>}<button className="workspace-secondary" onClick={onBuyerPreferences}>Shopping preferences →</button><button className="workspace-secondary" onClick={onServices}>Decluttering services →</button><button className="workspace-secondary" onClick={onSignOut}>Sign out</button></div>}
+    {screen === "account" && <div className="workspace-panel workspace-profile-panel"><div className="workspace-profile-avatar">{(profile?.display_name||authUser?.name||authUser?.email||"A").slice(0,1).toUpperCase()}</div><div><span className="eyebrow">ALOKO MEMBER</span><h2>{profile?.display_name||authUser?.name||"Welcome to Aloko"}</h2><p>{authUser?.email}</p><div className="workspace-profile-meta"><span>{profile?.account_type||"Individual account"}</span><span>{profile?.role||"Marketplace member"}</span></div></div>{["admin","moderator"].includes(profile?.role || authUser?.role) && <button className="workspace-secondary" onClick={onAdminVerification}>Review seller applications →</button>}<button className="workspace-secondary" onClick={onAdminServiceProviders}>Review service providers →</button><button className="workspace-secondary" onClick={onBuyerPreferences}>Shopping preferences →</button><button className="workspace-secondary" onClick={onServices}>Decluttering services →</button><button className="workspace-secondary" onClick={onSignOut}>Sign out</button></div>}
   </section>;
 }
 
