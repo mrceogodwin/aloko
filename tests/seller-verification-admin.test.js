@@ -61,8 +61,10 @@ test("admin approval checks typed legal and CAC details without requiring docume
     method: "POST", auth: admin,
     body: { application_id: applicationId, decision: "approve" },
   }, res);
-  assert.match(sqlSeen, /identity_document_key IS NOT NULL/);
-  assert.match(sqlSeen, /cardinality\(business_document_keys\) > 0/);
+  assert.match(sqlSeen, /length\(trim\(legal_name\)\) >= 2/);
+  assert.match(sqlSeen, /length\(trim\(business_name\)\) >= 2/);
+  assert.match(sqlSeen, /length\(trim\(cac_registration_number\)\) >= 4/);
+  assert.doesNotMatch(sqlSeen, /identity_document_key|business_document_keys/);
   assert.equal(res.statusCode, 404);
 });
 
