@@ -158,3 +158,10 @@
 @media(prefers-reduced-motion:reduce){
   .hero-copy h1.hero-typing-headline>i{animation:none}
 }
+
+/* Homepage category expansion and highlighted rotating headline */
+.hero-copy h1 .hero-highlight{font-style:normal;background:linear-gradient(100deg,#e7a0ff 0%,#c86bff 55%,#d98bff 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-typing-headline{min-height:2em;display:block}
+.category-more .category-icon{border:1px dashed #a56be0;background:#f7efff;color:#7716e1}
+.category-row{align-items:start}
+@media(max-width:700px){.category-row{grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.category-chip .category-icon{width:100%;max-width:72px;height:54px}.hero-typing-headline{min-height:2em}}
