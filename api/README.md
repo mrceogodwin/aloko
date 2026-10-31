@@ -29,7 +29,7 @@ Serverless handlers for a Vercel-compatible runtime. Deployment remains restrict
 | `POST /api/service-providers` | buyer, seller, business, decluttering_provider | Submit or update a provider application; edits return the profile to pending review |
 | `GET/POST /api/service-provider-review` | moderator/admin (approval admin only) | Review provider applications and approve/reject profiles |
 
-## Service provider review
+## Provider availability\n\n- `GET /api/provider-availability` returns the signed-in approved provider weekly schedule.\n- `PUT /api/provider-availability` replaces the schedule atomically; weekday values use Sunday=0 through Saturday=6.\n- Times are local to the submitted IANA timezone; the default is `Africa/Lagos`.\n- Availability is a provider-entered preference, not a live booking lock. Appointment proposals still require customer confirmation.\n\n## Service provider review
 
 - Provider profiles are private until their status is `approved` and they are accepting requests.
 - Public directory responses omit phone and email contact fields.
