@@ -3,6 +3,8 @@ import { matchesListingQuery, sortListings, validateListingDraft } from "./marke
 import { hasAccessToken, openConversation, createListing } from "./api-client.js";
 import { getAuthSession, signUpWithEmail, signInWithEmail, signOutFromAloko } from "./auth.js";
 
+const nigeriaStates = ["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","FCT","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"];
+
 const heroTypingPhrases = ["Declutter Service Marketplace","Sell It. Give It. Pass It On.","Home Decluttering","Office Clear-outs","Moving & Relocation","Estate Clearances","Wardrobe Decluttering","Furniture Removal","Appliance Reuse","Donation Collection","Charity Redistribution","Storage Organisation","Garage Clear-outs","Kitchen Decluttering","Paperwork Sorting","E-waste Collection","Bulk Item Resale","Property Staging","Student Move-outs","Professional Organisers","Business Clear-outs","Responsible Reuse & Disposal"];
 
 const categories = [
@@ -10,7 +12,8 @@ const categories = [
   ["✿", "Health & Beauty"], ["◉", "Sports & Hobbies"], ["♙", "Baby & Kids"], ["✚", "Free items"],
   ["▦", "Bulk Deals"], ["↗", "Services"], ["🪑", "Furniture"], ["🍳", "Kitchenware"],
   ["📚", "Books"], ["🏡", "Property & Garden"], ["🧸", "Toys & Games"], ["🧰", "Tools"],
-  ["🎨", "Art & Collectibles"], ["🧳", "Travel & Luggage"], ["🍼", "Baby Essentials"], ["🌿", "Garden & Outdoor"]
+  ["🎨", "Art & Collectibles"], ["🧳", "Travel & Luggage"], ["🍼", "Baby Essentials"], ["🌿", "Garden & Outdoor"],
+  ["⌂", "Property"], ["🚙", "Cars & Motorcycles"], ["🛵", "Bicycles & Mobility"], ["📱", "Phones & Accessories"], ["💻", "Computers & Office Tech"], ["🔌", "Home Appliances"], ["🛏", "Bedroom & Bedding"], ["🛋", "Home Decor"], ["👟", "Shoes & Bags"], ["💍", "Jewellery & Watches"], ["🧴", "Personal Care"], ["🧑‍🍳", "Kitchen & Dining"], ["🧹", "Cleaning Equipment"], ["🏋", "Fitness Equipment"], ["🎮", "Gaming"], ["🎵", "Musical Instruments"], ["🧱", "Building Materials"], ["🌱", "Plants & Garden"], ["♻", "Recycling & Scrap"], ["📦", "Office Clear-outs"], ["🏠", "Estate Clearances"], ["🧺", "Wardrobe Clear-outs"], ["🪑", "Furniture Clear-outs"], ["🚚", "Moving & Relocation"], ["🤝", "Donation & Charity"], ["🧑‍🔧", "Professional Services"],
 ];
 
 const demoPhotoByCategory = {
@@ -44,7 +47,13 @@ function normalizeLiveListing(item) {
     category: item.category,
     description: item.description || "Contact the seller for more details.",
     sellerName: item.seller_display_name || "Aloko seller",
-    image: /chair|table|shelf|cabinet|wardrobe|sofa|furniture|study desk/i.test(item.title) ? demoPhotoByCategory.Furniture : /kitchen|cook|plate|blender|stove/i.test(item.title) ? demoPhotoByCategory.Kitchenware : /box|moving|carton/i.test(item.title) ? "photo-1494438639946-1ebd1d20bf85" : /laptop|phone|tv|samsung|computer|hp elitebook/i.test(item.title) ? demoPhotoByCategory.Electronics : demoPhotoByCategory[item.category] || (item.kind === "giveaway" ? demoPhotoByCategory["Free items"] : demoPhotoByCategory["Home & Living"]),
+    sellerAvatar: item.seller_avatar_url || item.avatar_url || "",
+    sellerType: item.seller_account_type || "individual",
+    state: item.state || "",
+    pickupAvailable: item.pickup_available !== false,
+    deliveryAvailable: item.delivery_available === true,
+    publishedAt: item.published_at || item.created_at || null,
+    image: item.image_url || item.image_urls?.[0] || (/chair|table|shelf|cabinet|wardrobe|sofa|furniture|study desk/i.test(item.title) ? demoPhotoByCategory.Furniture : /kitchen|cook|plate|blender|stove/i.test(item.title) ? demoPhotoByCategory.Kitchenware : /box|moving|carton/i.test(item.title) ? "photo-1494438639946-1ebd1d20bf85" : /laptop|phone|tv|samsung|computer|hp elitebook/i.test(item.title) ? demoPhotoByCategory.Electronics : demoPhotoByCategory[item.category] || (item.kind === "giveaway" ? demoPhotoByCategory["Free items"] : demoPhotoByCategory["Home & Living"])),
     kind: item.kind,
     quantity: item.quantity,
     live: true
@@ -170,7 +179,7 @@ function App() {
         activeCategory === "Baby & Kids" ? /baby|kids|children/i.test(p.category) :
         p.category === activeCategory)) &&
     (!savedOnly || saved.includes(p.id)) &&
-    (selectedLocation === "All locations" || (p.place && p.place.includes(selectedLocation.replace("All locations", "").trim())) || selectedLocation === "All locations") &&
+    (selectedLocation === "All locations" || p.state === selectedLocation || p.place?.split(", ").includes(selectedLocation)) &&
     (selectedCondition === "Any condition" || p.condition === selectedCondition)
   ), [products, query, activeCategory, savedOnly, saved, selectedLocation, selectedCondition]);
   const visibleProducts = useMemo(() => sortListings(filtered, sortOrder, products), [filtered, sortOrder, products]);
@@ -197,6 +206,7 @@ function App() {
             <a className="nav-current" href="#top">Home</a><a href="#explore">Browse</a><a href="#categories">Categories</a><a href="#free">Free Items</a><a href="#explore">Bulk Deals</a><a href="#services">Services</a>
           </nav>
           <nav className="nav-actions" aria-label="Account">
+            <label className="header-state-picker" aria-label="Choose your state"><span>⌖</span><select value={selectedLocation} onChange={e => setSelectedLocation(e.target.value)}><option value="All locations">Nigeria</option>{nigeriaStates.map(state => <option key={state} value={state}>{state}</option>)}</select></label>
             <button type="button" className="nav-search-icon" aria-label="Focus search" onClick={() => document.querySelector(".hero-search input")?.focus()}>⌕</button>
             <button type="button" className="ghost-button" onClick={() => { setAccountMode("login"); setAccountModalOpen(true); }}>Login</button>
             <button type="button" className="account-create-button" onClick={() => { setAccountMode("signup"); setAccountModalOpen(true); }}>Create Account</button>
@@ -228,10 +238,28 @@ function App() {
             </div>
           </div>
         </section>
+        <section className="featured-placements wrap" aria-label="Featured Aloko promotions">
+          <div className="featured-placements-head"><div><span className="eyebrow">Handpicked by Aloko</span><h2>Discover what’s worth passing on.</h2></div><span className="featured-note">FEATURED SPACES</span></div>
+          <div className="featured-portrait-grid">
+            <button className="featured-portrait-card featured-portrait-home" type="button" onClick={() => { setActiveCategory("Home & Living"); document.getElementById("explore")?.scrollIntoView({behavior:"smooth"}); }}>
+              <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=900&q=85" alt="Beautifully organised contemporary living room" loading="lazy"/>
+              <span className="featured-stamp">FEATURED</span><span className="featured-portrait-copy"><small>THE HOME EDIT</small><strong>Make room for better living.</strong><em>Explore home finds ↗</em></span>
+            </button>
+            <button className="featured-portrait-card featured-portrait-seller" type="button" onClick={() => setListingFormOpen(true)}>
+              <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=900&q=85" alt="Small business owner preparing products for customers" loading="lazy"/>
+              <span className="featured-stamp">FEATURED</span><span className="featured-portrait-copy"><small>SELLER SPOTLIGHT</small><strong>Give useful things a second story.</strong><em>Open your Aloko store ↗</em></span>
+            </button>
+            <button className="featured-portrait-card featured-portrait-services" type="button" onClick={() => document.getElementById("services")?.scrollIntoView({behavior:"smooth"})}>
+              <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=85" alt="Professional home organisation and cleaning service" loading="lazy"/>
+              <span className="featured-stamp">FEATURED</span><span className="featured-portrait-copy"><small>DECLUTTER SERVICES</small><strong>From full clear-outs to fresh starts.</strong><em>Explore services ↗</em></span>
+            </button>
+          </div>
+        </section>
+
         <section className="declutter-network wrap" id="declutter"><div className="network-heading"><span className="eyebrow">One platform. Every stage of decluttering.</span><h2>Built for the people who help spaces, things and communities start fresh.</h2><p>Aloko brings decluttering businesses, professional organisers, reuse sellers, charities and people looking for a fresh start into one discoverable marketplace.</p></div><div className="service-ticker" aria-label="20 decluttering business services">{["Home decluttering","Office clear-outs","Moving & relocation","Estate clearances","Wardrobe edits","Furniture removal","Appliance reuse","Donation collection","Charity redistribution","Storage organisation","Garage clear-outs","Kitchen resets","Paperwork sorting","E-waste collection","Bulk item resale","Property staging","Student move-outs","Deep organisation","Business clear-outs","Responsible disposal"].map((item,i)=><span key={item}><i>{String(i+1).padStart(2,"0")}</i>{item}</span>)}</div></section>
 
         <section className="search-dock wrap" aria-label="Search marketplace">
-          <div className="hero-search"><span>⌕</span><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search for items, categories or locations…" aria-label="Search listings"/><label>⌖ <select value={selectedLocation} onChange={e => setSelectedLocation(e.target.value)}><option>All locations</option><option>Lagos</option><option>Abuja</option><option>Port Harcourt</option><option>Benin City</option></select></label><button type="button" onClick={() => document.getElementById("explore")?.scrollIntoView({behavior:"smooth"})}>⌕ &nbsp; Search</button></div>
+          <div className="hero-search"><span>⌕</span><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search for items, categories or locations…" aria-label="Search listings"/><label>⌖ <select value={selectedLocation} onChange={e => setSelectedLocation(e.target.value)}><option value="All locations">All Nigeria</option>{nigeriaStates.map(state => <option key={state} value={state}>{state}</option>)}</select></label><button type="button" onClick={() => document.getElementById("explore")?.scrollIntoView({behavior:"smooth"})}>⌕ &nbsp; Search</button></div>
         </section>
 
         <section className="categories wrap flagship-categories" id="categories" aria-label="Categories">
@@ -332,6 +360,14 @@ function App() {
             <span className="eyebrow">Make room for what matters</span>
             <h2>A little help clearing the clutter.</h2>
             <p>Local decluttering and organising services — coming after marketplace foundation.</p>
+          </div>
+        </section>
+
+        <section className="community-showcase wrap" aria-label="Aloko people and community">
+          <div className="community-copy"><span className="eyebrow">People make reuse powerful</span><h2>Good finds. Real people. Better spaces.</h2><p>Aloko brings buyers, decluttering professionals, small businesses and community givers together — helping useful things find their next home.</p><div className="community-actions"><button type="button" onClick={() => { setAccountMode("signup"); setAccountModalOpen(true); }}>Join the community <span>↗</span></button><button type="button" onClick={() => setListingFormOpen(true)}>Become a seller</button></div></div>
+          <div className="community-people">
+            <article className="community-person community-seller"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=700&q=85" alt="Portrait of a woman representing an Aloko seller" loading="lazy"/><div><span>SELLER STORIES</span><strong>Turn extra into opportunity.</strong></div></article>
+            <article className="community-person community-buyer"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=700&q=85" alt="Portrait of a man representing an Aloko buyer" loading="lazy"/><div><span>BUYER COMMUNITY</span><strong>Find value in every new-to-you item.</strong></div></article>
           </div>
         </section>
 
@@ -484,50 +520,51 @@ function App() {
       )}
 
       {selectedListing && (
-        <div className="listing-modal-backdrop" onClick={() => setSelectedListing(null)}>
-          <section className="listing-modal" role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
-            <button className="listing-modal-close" onClick={() => setSelectedListing(null)}>×</button>
-            <div className="listing-modal-content">
-              <span className="eyebrow">{selectedListing.preview ? "PREVIEW" : selectedListing.live ? "LIVE" : "LISTING"} · {selectedListing.category}</span>
-              <h2>{selectedListing.title}</h2>
-              <strong className="listing-modal-price">{selectedListing.price}</strong>
-              <p>{selectedListing.description}</p>
-              <p className="listing-demo-note">
-                {selectedListing.preview
-                  ? `Preview sample by ${selectedListing.sellerName}. Not a real listing.`
-                  : `Listed by ${selectedListing.sellerName}.`}
-              </p>
-              <div className="listing-modal-actions">
-                <button className="modal-save-button" onClick={() => toggleSaved(selectedListing.id)}>{saved.includes(selectedListing.id) ? "Saved" : "Save"}</button>
-                <button className="modal-contact-button" onClick={async () => {
-                  if (selectedListing.preview) {
-                    showNotice("Preview items cannot be messaged.");
-                    return;
-                  }
-                  if (!selectedListing.live) {
-                    showNotice("Messaging is only available on live listings.");
-                    return;
-                  }
-                  if (!hasAccessToken()) {
-                    showNotice("Sign in is required to message a seller.");
-                    setAccountMode("login");
-                    setAccountModalOpen(true);
-                    return;
-                  }
-                  showNotice("Opening conversation…");
-                  const result = await openConversation(selectedListing.id);
-                  if (result.ok) {
-                    showNotice("Conversation ready. Inbox UI ships next.");
-                  } else if (result.status === 401) {
-                    showNotice("Sign in is required to message a seller.");
-                    setAccountModalOpen(true);
-                  } else {
-                    showNotice(result.data?.error || "Could not start conversation.");
-                  }
-                }}>Contact seller</button>
-              </div>
+        <div className="item-detail-screen">
+          <div className="item-detail-topbar"><button type="button" onClick={() => setSelectedListing(null)}>← <span>Back to Aloko</span></button><span>ALOKO / ITEM DETAILS</span><button type="button" onClick={() => toggleSaved(selectedListing.id)}>{saved.includes(selectedListing.id) ? "♥ Saved" : "♡ Save item"}</button></div>
+          <main className="item-detail-wrap">
+            <div className="item-detail-breadcrumb">Marketplace <span>/</span> {selectedListing.category} <span>/</span> {selectedListing.title}</div>
+            <div className="item-detail-layout">
+              <section className="item-detail-gallery">
+                <div className="item-detail-main-image">{selectedListing.image ? <img src={selectedListing.image.startsWith("http") ? selectedListing.image : `https://images.unsplash.com/${selectedListing.image}?auto=format&fit=crop&w=1400&q=90`} alt={selectedListing.title}/> : <div className="product-image-placeholder"><span>aloko.</span></div>}<span className="item-detail-kind">{selectedListing.kind === "giveaway" ? "FREE GIVEAWAY" : selectedListing.kind === "bulk" ? "BULK DECLUTTER" : "PRE-LOVED FIND"}</span></div>
+                <div className="item-detail-image-note"><span>✦</span> Ask the seller for additional photos or a viewing before payment.</div>
+              </section>
+              <section className="item-detail-summary">
+                <div className="item-detail-labels"><span>{selectedListing.category}</span><span>{selectedListing.preview ? "SAMPLE PREVIEW" : "ALOKO LISTING"}</span></div>
+                <h1>{selectedListing.title}</h1>
+                <div className="item-detail-price">{selectedListing.price}</div>
+                <p className="item-detail-description">{selectedListing.description}</p>
+                <div className="item-detail-specs">
+                  <div><span>Item condition</span><strong>{selectedListing.condition || "Not specified"}</strong></div>
+                  <div><span>Quantity available</span><strong>{selectedListing.quantity || 1}</strong></div>
+                  <div><span>Category</span><strong>{selectedListing.category}</strong></div>
+                  <div><span>Location</span><strong>{selectedListing.place || "Nigeria"}</strong></div>
+                  <div><span>Collection</span><strong>{selectedListing.pickupAvailable ? "Pickup available" : "Confirm with seller"}</strong></div>
+                  <div><span>Delivery</span><strong>{selectedListing.deliveryAvailable ? "Seller offers delivery" : "Arrange with seller"}</strong></div>
+                </div>
+                <div className="item-detail-seller">
+                  <img src={selectedListing.sellerAvatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=180&q=80"} alt="Seller profile portrait"/>
+                  <div><span>LISTED BY</span><strong>{selectedListing.sellerName}</strong><small>{String(selectedListing.sellerType || "individual").replaceAll("_"," ")} · {selectedListing.place || "Nigeria"}</small></div>
+                  <span className="seller-trust-mark">✓</span>
+                </div>
+                <div className="item-detail-actions">
+                  <button className="item-contact-primary" onClick={async () => {
+                    if (selectedListing.preview) { showNotice("This is a sample preview, not a live seller listing."); return; }
+                    if (!selectedListing.live) { showNotice("Messaging is only available on live listings."); return; }
+                    if (!hasAccessToken()) { showNotice("Sign in is required to contact this seller."); setAccountMode("login"); setAccountModalOpen(true); return; }
+                    showNotice("Opening your conversation…");
+                    const result = await openConversation(selectedListing.id);
+                    if (result.ok) showNotice("Conversation opened. Your inbox experience is being completed.");
+                    else if (result.status === 401) { setAccountMode("login"); setAccountModalOpen(true); showNotice("Please sign in to contact this seller."); }
+                    else showNotice(result.data?.error || "Could not start a conversation.");
+                  }}>Contact seller <span>→</span></button>
+                  <button className="item-contact-secondary" onClick={() => toggleSaved(selectedListing.id)}>{saved.includes(selectedListing.id) ? "Saved to your list" : "Save for later"}</button>
+                </div>
+                <p className="item-detail-safety">Stay safe: inspect the item, confirm its condition and agree on a secure collection or delivery arrangement with the seller.</p>
+              </section>
             </div>
-          </section>
+            <section className="item-detail-more"><div><span className="eyebrow">A better way to pass it on</span><h2>Every item deserves a thoughtful next chapter.</h2><p>Aloko helps people and decluttering businesses connect useful items with the people who can use them next.</p></div><button type="button" onClick={() => { setSelectedListing(null); document.getElementById("explore")?.scrollIntoView({behavior:"smooth"}); }}>Explore more listings ↗</button></section>
+          </main>
         </div>
       )}
 
