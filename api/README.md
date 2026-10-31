@@ -23,6 +23,7 @@ Serverless handlers for a Vercel-compatible runtime. Deployment remains restrict
 | `POST /api/report-listing` | any | Abuse report |
 | `GET/POST /api/conversations` | any | List threads / open thread on a listing |
 | `GET/POST /api/messages` | any | Read or send messages in a thread |
+| `GET/POST /api/service-requests` | any | Create a local decluttering enquiry or view the authenticated account's requests |
 
 ## Staff
 
