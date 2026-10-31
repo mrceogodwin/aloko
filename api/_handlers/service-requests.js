@@ -30,7 +30,7 @@ export function createServiceRequestsHandler({ getDatabase = getPool } = {}) {
         const isApprovedProvider = providerCheck.rows?.[0]?.status === "approved";
         const column = isApprovedProvider ? "provider_id" : "customer_id";
         const result = await database.query(
-          `SELECT id, customer_id, provider_id, service_type, description, city, state,
+          `SELECT id, service_type, description, city, state,
                   preferred_date, status, quoted_amount_kobo, created_at, updated_at
            FROM public.service_requests WHERE ${column} = $1::uuid
            ORDER BY created_at DESC LIMIT 50`,
