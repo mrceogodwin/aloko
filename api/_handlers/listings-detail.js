@@ -9,6 +9,7 @@ const DETAIL_SQL = `
     l.pickup_available, l.delivery_available, l.status,
     l.published_at, l.created_at,
     p.display_name AS seller_display_name,
+    p.avatar_url AS seller_avatar_url,
     p.account_type AS seller_account_type
   FROM public.listings l
   JOIN public.profiles p ON p.id = l.seller_id
