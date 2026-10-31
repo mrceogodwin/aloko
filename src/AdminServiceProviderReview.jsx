@@ -1,0 +1,13 @@
+import { useEffect,useState } from "react";
+import { listServiceProviderApplications,reviewServiceProvider } from "./api-client.js";
+
+const labels={decluttering:"Decluttering & clear-outs",organising:"Professional organising",bulk_removal:"Bulk item removal"};
+export default function AdminServiceProviderReview({onNotice}) {
+ const [items,setItems]=useState([]),[loading,setLoading]=useState(true),[busy,setBusy]=useState("");
+ const load=async()=>{setLoading(true);try{const r=await listServiceProviderApplications();if(r.ok)setItems(r.data?.items||[]);else onNotice(r.data?.error||"Could not load provider applications.");}catch{onNotice("Network error loading provider applications.");}finally{setLoading(false);}};
+ useEffect(()=>{load();},[]);
+ const decide=async(id,decision)=>{if(busy)return;setBusy(id);try{const r=await reviewServiceProvider(id,decision);if(!r.ok){onNotice(r.data?.error||"Could not update application.");return;}setItems(v=>v.filter(x=>x.provider_id!==id));onNotice(r.data.message||"Provider application updated.");}catch{onNotice("Network error updating provider application.");}finally{setBusy("");}};
+ return <section className="workspace-panel"><div className="workspace-panel-head"><div><span className="eyebrow">ALOKO ADMINISTRATION</span><h2>Service provider applications</h2><p>Review professional profiles before they appear in the public directory.</p></div><button className="workspace-secondary" onClick={load}>Refresh</button></div>
+ {loading?<p className="service-history-empty">Loading applications…</p>:items.length?items.map(p=><article className="provider-review-card" key={p.provider_id}><div className="provider-review-top"><div><span className="eyebrow">{p.provider_kind==="business"?"SERVICE BUSINESS":"INDEPENDENT PROFESSIONAL"}</span><h3>{p.display_name}{p.business_name?" · "+p.business_name:""}</h3><small>{p.city}, {p.state} · {p.years_experience??"Experience not specified"} years’ experience</small></div><span className={"workspace-status status-"+p.status}>{p.status}</span></div><p>{p.description}</p><div className="provider-service-tags">{(p.service_types||[]).map(t=><span key={t}>{labels[t]||t}</span>)}</div><small>Service areas: {(p.service_areas||[]).join(", ")||"Not specified"}</small><div className="admin-verification-actions"><button disabled={busy===p.provider_id} onClick={()=>decide(p.provider_id,"reject")}>Reject</button><button disabled={busy===p.provider_id} onClick={()=>decide(p.provider_id,"approve")}>{busy===p.provider_id?"Saving…":"Approve profile"}</button></div></article>):<div className="workspace-empty"><h3>No applications waiting</h3><p>New service provider applications will appear here.</p></div>}
+ </section>;
+}
