@@ -318,17 +318,39 @@ function App() {
   };
 
   const toggleSaved = (id) => {
-    setSaved(old => old.includes(id) ? old.filter(x => x !== id) : [...old, id]);
-    showNotice(saved.includes(id) ? "Removed from saved." : "Saved on this device.");
+    const wasSaved = saved.includes(id);
+    setSaved(old => wasSaved ? old.filter(x => x !== id) : [...old, id]);
+    if (authUser && hasAccessToken()) {
+      (wasSaved ? unsaveListing(id) : saveListing(id)).then(result => {
+        if (!result.ok) showNotice(result.data?.error || "Could not sync saved item.");
+      }).catch(() => showNotice("Saved locally. Account sync is temporarily unavailable."));
+    }
+    showNotice(wasSaved ? "Removed from saved." : "Saved to your collection.");
+  };
+
+  const navigate = (screen) => {
+    setActiveScreen(screen);
+    setSelectedListing(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const startConversation = async (listingId) => {
+    const result = await openConversation(listingId);
+    if (result.ok) {
+      setActiveConversationId(result.data?.conversation?.id || "");
+      navigate("inbox");
+      showNotice("Conversation ready. Send the seller a message.");
+    }
+    return result;
   };
 
   return (
     <div className="app-shell">
       <header className="topbar flagship-topbar">
         <div className="wrap topbar-inner">
-          <a className="brand flagship-brand" href="#top" aria-label="Aloko home">
+          <button type="button" className="brand flagship-brand" onClick={()=>navigate("home")} aria-label="Aloko home">
             <img className="brand-mark-image" src="/aloko-mark.svg" alt="" /><span className="brand-text">Aloko</span>
-          </a>
+          </button>
           <nav className="main-nav app-main-nav" aria-label="Main navigation">
             <button className={activeScreen==="home"?"nav-current":""} onClick={()=>navigate("home")}>Home</button>
             <button className={activeScreen==="home"?"":" "} onClick={()=>{navigate("home");setTimeout(()=>document.getElementById("explore")?.scrollIntoView({behavior:"smooth"}),80);}}>Discover</button>
@@ -339,8 +361,8 @@ function App() {
           <nav className="nav-actions" aria-label="Account">
             <label className="header-state-picker" aria-label="Choose your state"><span>⌖</span><select value={selectedLocation} onChange={e => setSelectedLocation(e.target.value)}><option value="All locations">Nigeria</option>{nigeriaStates.map(state => <option key={state} value={state}>{state}</option>)}</select></label>
             <button type="button" className="nav-search-icon" aria-label="Focus search" onClick={() => document.querySelector(".hero-search input")?.focus()}>⌕</button>
-            <button type="button" className="ghost-button" onClick={() => { setAccountMode("login"); setAccountModalOpen(true); }}>Login</button>
-            <button type="button" className="account-create-button" onClick={() => { setAccountMode("signup"); setAccountModalOpen(true); }}>Create Account</button>
+            <button type="button" className="ghost-button" onClick={() => authUser ? navigate("account") : (setAccountMode("login"), setAccountModalOpen(true))}>{authUser ? "My account" : "Login"}</button>
+            {!authUser && <button type="button" className="account-create-button" onClick={() => { setAccountMode("signup"); setAccountModalOpen(true); }}>Create Account</button>
             <button className="mobile-saved-toggle" aria-pressed={savedOnly} onClick={() => { setSavedOnly(v => !v); setActiveCategory("All"); }}>{savedOnly ? "Browse all" : `Saved (${saved.length})`}</button>
             <button className="post-button" onClick={() => setListingFormOpen(true)}>Start Selling</button>
           </nav>
@@ -349,6 +371,7 @@ function App() {
       <div className="announcement-ticker" aria-label="Aloko marketplace updates"><div className="ticker-track"><span>PLATFORM FOR ALL DECLUTTER BUSINESSES</span><b>✦</b><span>Sell pre-loved items</span><b>✦</b><span>Give usable things away</span><b>✦</b><span>Book home clear-outs</span><b>✦</b><span>Discover bulk reuse deals</span><b>✦</b><span>Find trusted local organisers</span><b>✦</b><span>Make room. Create value.</span><b>✦</b><span>PLATFORM FOR ALL DECLUTTER BUSINESSES</span><b>✦</b><span>Sell pre-loved items</span><b>✦</b><span>Give usable things away</span><b>✦</b><span>Book home clear-outs</span><b>✦</b><span>Discover bulk reuse deals</span><b>✦</b></div></div>
 
       <main>
+        {activeScreen === "home" ? <>
         <section className="hero flagship-hero" id="top">
           <div className="hero-inner wrap">
             <div className="hero-copy">
@@ -513,7 +536,9 @@ function App() {
             <button className="post-button" onClick={() => setListingFormOpen(true)}>Sell an item</button>
           </div>
         </section>
+        </> : <WorkspaceScreen screen={activeScreen} authUser={authUser} onLogin={() => { setAccountMode("login"); setAccountModalOpen(true); }} onSell={() => setListingFormOpen(true)} onNotice={showNotice} localSaved={saved} initialConversationId={activeConversationId} onConversationOpened={setActiveConversationId} onSignOut={async () => { await signOutFromAloko(); setAuthUser(null); try { window.localStorage.removeItem("aloko:access-token"); } catch {} navigate("home"); showNotice("You have signed out."); }} />}
       </main>
+      <nav className="mobile-app-nav" aria-label="App navigation">{[["home","⌂","Home"],["seller","＋","Sell"],["inbox","✉","Inbox"],["saved","♡","Saved"],["account","◉","Account"]].map(([id,icon,label])=><button key={id} className={activeScreen===id?"active":""} onClick={()=>navigate(id)}><span>{icon}</span><small>{label}</small></button>)}</nav>
 
       <footer className="site-footer">
         <div className="wrap footer-inner">
@@ -684,7 +709,7 @@ function App() {
                     if (!selectedListing.live) { showNotice("Messaging is only available on live listings."); return; }
                     if (!hasAccessToken()) { showNotice("Sign in is required to contact this seller."); setAccountMode("login"); setAccountModalOpen(true); return; }
                     showNotice("Opening your conversation…");
-                    const result = await openConversation(selectedListing.id);
+                    const result = await startConversation(selectedListing.id);
                     if (result.ok) { setActiveConversationId(result.data?.conversation?.id || ""); navigate("inbox"); showNotice("Conversation ready. Send the seller a message."); }
                     else if (result.status === 401) { setAccountMode("login"); setAccountModalOpen(true); showNotice("Please sign in to contact this seller."); }
                     else showNotice(result.data?.error || "Could not start a conversation.");
