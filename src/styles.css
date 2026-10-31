@@ -459,3 +459,13 @@
 .seller-onboarding-form input:focus,.seller-onboarding-form select:focus,.seller-onboarding-form textarea:focus{border-color:#247b68;box-shadow:0 0 0 3px #247b681c}
 .seller-onboarding-form .seller-onboarding-check input{accent-color:#247b68}
 @media(prefers-reduced-motion:reduce){.ticker-track{animation:none}.product-card,.category-icon{transition:none}}
+
+
+/* Buyer preference workspace */
+.buyer-preferences-panel{background:#fff;border:1px solid #eee5f7;border-radius:22px;padding:clamp(20px,4vw,38px);box-shadow:0 12px 34px #26094b08}
+.buyer-preferences-intro{max-width:680px;margin-bottom:30px}.buyer-preferences-intro h2{font:800 clamp(26px,4vw,36px) Manrope,sans-serif;letter-spacing:-1.2px;color:#241044;margin:9px 0}.buyer-preferences-intro p{color:#796d8d;line-height:1.65;margin:0}
+.buyer-preferences-form{display:grid;gap:25px}.buyer-preferences-form fieldset{border:0;border-top:1px solid #eee7f5;padding:20px 0 0;margin:0;min-width:0}.buyer-preferences-form legend{font:800 16px Manrope,sans-serif;color:#2b1948;padding:0 10px 0 0}.buyer-preferences-form fieldset>p{font-size:12px;color:#887b99;margin:5px 0 13px}
+.preference-chip-grid{display:flex;flex-wrap:wrap;gap:9px}.preference-chip{border:1px solid #e7dcef;background:#fff;border-radius:999px;padding:10px 14px;color:#5c4a73;font-size:12px;font-weight:700;transition:.18s}.preference-chip.selected{background:#f2e6ff;border-color:#9b43e8;color:#6813c2;box-shadow:inset 0 0 0 1px #b879ed}
+.preference-field{display:grid;gap:8px;color:#35234d;font-size:13px;font-weight:700}.preference-field>span{font-size:11px;color:#887b99;font-weight:500}.preference-field input:not([type=range]),.preference-field select{width:100%;border:1px solid #e5dced;border-radius:11px;padding:12px 13px;color:#2c1946;background:white;outline-color:#a84be8}.preference-field input[type=range]{width:100%;accent-color:#8117df}.preference-field strong{color:#7916dc}.preference-budget{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.preference-save-row{border-top:1px solid #eee7f5;padding-top:20px;display:flex;align-items:center;justify-content:space-between;gap:16px}.preference-save-row>span{font-size:11px;color:#887b99}
+@media(max-width:600px){.buyer-preferences-panel{padding:20px 15px}.preference-budget{grid-template-columns:1fr}.preference-save-row{align-items:stretch;flex-direction:column}.preference-save-row .workspace-primary{width:100%}.preference-chip{padding:9px 11px;font-size:11px}}
