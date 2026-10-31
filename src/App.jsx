@@ -362,7 +362,7 @@ function App() {
             <label className="header-state-picker" aria-label="Choose your state"><span>⌖</span><select value={selectedLocation} onChange={e => setSelectedLocation(e.target.value)}><option value="All locations">Nigeria</option>{nigeriaStates.map(state => <option key={state} value={state}>{state}</option>)}</select></label>
             <button type="button" className="nav-search-icon" aria-label="Focus search" onClick={() => document.querySelector(".hero-search input")?.focus()}>⌕</button>
             <button type="button" className="ghost-button" onClick={() => authUser ? navigate("account") : (setAccountMode("login"), setAccountModalOpen(true))}>{authUser ? "My account" : "Login"}</button>
-            {!authUser && <button type="button" className="account-create-button" onClick={() => { setAccountMode("signup"); setAccountModalOpen(true); }}>Create Account</button>
+            {!authUser && <button type="button" className="account-create-button" onClick={() => { setAccountMode("signup"); setAccountModalOpen(true); }}>Create Account</button>}
             <button className="mobile-saved-toggle" aria-pressed={savedOnly} onClick={() => { setSavedOnly(v => !v); setActiveCategory("All"); }}>{savedOnly ? "Browse all" : `Saved (${saved.length})`}</button>
             <button className="post-button" onClick={() => setListingFormOpen(true)}>Start Selling</button>
           </nav>
