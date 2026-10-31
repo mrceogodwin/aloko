@@ -142,3 +142,11 @@ export function followSeller(sellerId) {
 export function unfollowSeller(sellerId) {
   return request("/api/saved-sellers", { method: "DELETE", body: { seller_id: sellerId } });
 }
+
+export function getSellerOnboarding() {
+  return request("/api/seller-onboarding");
+}
+
+export function submitSellerOnboarding(details) {
+  return request("/api/seller-onboarding", { method: "POST", body: details });
+}
