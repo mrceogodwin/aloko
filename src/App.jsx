@@ -146,12 +146,13 @@ function App() {
           </nav>
         </div>
       </header>
+      <div className="announcement-ticker" aria-label="Aloko marketplace updates"><div className="ticker-track"><span>PLATFORM FOR ALL DECLUTTER BUSINESSES</span><b>✦</b><span>Sell pre-loved items</span><b>✦</b><span>Give usable things away</span><b>✦</b><span>Book home clear-outs</span><b>✦</b><span>Discover bulk reuse deals</span><b>✦</b><span>Find trusted local organisers</span><b>✦</b><span>Make room. Create value.</span><b>✦</b><span>PLATFORM FOR ALL DECLUTTER BUSINESSES</span><b>✦</b><span>Sell pre-loved items</span><b>✦</b><span>Give usable things away</span><b>✦</b><span>Book home clear-outs</span><b>✦</b><span>Discover bulk reuse deals</span><b>✦</b></div></div>
 
       <main>
         <section className="hero flagship-hero" id="top">
           <div className="hero-inner wrap">
             <div className="hero-copy">
-              <span className="eyebrow hero-eyebrow">Nigeria’s reuse marketplace</span>
+              <span className="eyebrow hero-eyebrow">Platform for all Declutter Businesses</span>
               <h1>Sell It. <em>Give It.</em><br/><span>Pass It On.</span></h1>
               <p>Buy and sell pre-owned items, give usable things away for free, discover bulk deals, or book decluttering services — all in one place.</p>
               <div className="hero-actions">
@@ -168,6 +169,8 @@ function App() {
             </div>
           </div>
         </section>
+        <section className="declutter-network wrap" id="declutter"><div className="network-heading"><span className="eyebrow">One platform. Every stage of decluttering.</span><h2>Built for the people who help spaces, things and communities start fresh.</h2><p>Aloko brings decluttering businesses, professional organisers, reuse sellers, charities and people looking for a fresh start into one discoverable marketplace.</p></div><div className="service-ticker" aria-label="20 decluttering business services">{["Home decluttering","Office clear-outs","Moving & relocation","Estate clearances","Wardrobe edits","Furniture removal","Appliance reuse","Donation collection","Charity redistribution","Storage organisation","Garage clear-outs","Kitchen resets","Paperwork sorting","E-waste collection","Bulk item resale","Property staging","Student move-outs","Deep organisation","Business clear-outs","Responsible disposal"].map((item,i)=><span key={item}><i>{String(i+1).padStart(2,"0")}</i>{item}</span>)}</div></section>
+
         <section className="search-dock wrap" aria-label="Search marketplace">
           <div className="hero-search"><span>⌕</span><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search for items, categories or locations…" aria-label="Search listings"/><label>⌖ <select value={selectedLocation} onChange={e => setSelectedLocation(e.target.value)}><option>All locations</option><option>Lagos</option><option>Abuja</option><option>Port Harcourt</option><option>Benin City</option></select></label><button type="button" onClick={() => document.getElementById("explore")?.scrollIntoView({behavior:"smooth"})}>⌕ &nbsp; Search</button></div>
         </section>
@@ -243,6 +246,8 @@ function App() {
           )}
         </section>
 
+        <section className="showcase-section wrap" aria-label="Homepage listing preview"><div className="section-head"><div><span className="eyebrow">See how a post appears</span><h2>Featured from the Aloko community</h2></div><span className="preview-pill">HOMEPAGE PREVIEW</span></div><div className="showcase-carousel"><article className="showcase-card showcase-feature"><div className="showcase-art art-room"><span>FRESH START</span><strong>Room to breathe.<br/>Things to reuse.</strong><small>DECLUTTER SERVICE SPOTLIGHT</small></div><div className="showcase-copy"><span className="showcase-tag">DECLUTTER BUSINESS</span><h3>Whole-home decluttering &amp; organisation</h3><p>Clear the clutter, sort what can be reused, and give useful items a second life.</p><div className="showcase-meta"><span>⌖ Lagos, Nigeria</span><b>View service →</b></div></div></article><article className="showcase-card"><div className="showcase-art art-furniture"><span>GIVE IT A NEW HOME</span><strong>Good furniture.<br/>More good years.</strong></div><div className="showcase-copy"><span className="showcase-tag">FURNITURE &amp; HOME</span><h3>Pre-loved furniture collection</h3><p>A sample post showing how a seller’s listing can appear in the homepage carousel.</p><div className="showcase-meta"><span>⌖ Abuja, Nigeria</span><b>Explore →</b></div></div></article><article className="showcase-card"><div className="showcase-art art-boxes"><span>LESS WASTE. MORE VALUE.</span><strong>Clear out.<br/>Pass it on.</strong></div><div className="showcase-copy"><span className="showcase-tag">BULK REUSE</span><h3>Bulk household items &amp; office clear-out</h3><p>Make useful items available to resellers, community groups and new owners.</p><div className="showcase-meta"><span>⌖ Port Harcourt</span><b>Explore →</b></div></div></article></div><p className="preview-disclaimer">These are illustrative homepage previews, not live seller posts. Real posts will appear here after they are published and approved.</p></section>
+
         <section className="giveaway-section wrap" id="free">
           <div className="giveaway-card flagship-giveaway">
             <div>
@@ -261,6 +266,9 @@ function App() {
           </div>
         </section>
 
+        <section className="benefits-section wrap"><div className="section-head"><div><span className="eyebrow">More than a marketplace</span><h2>Everything you need to pass it on.</h2></div></div><div className="benefit-slider">{[["01","Business storefronts","Give your decluttering business a home people can discover."],["02","Service enquiries","Let customers find and contact local professionals."],["03","Item listings","Sell useful pre-owned items instead of letting them go to waste."],["04","Free giveaways","Make good things accessible to someone who needs them."],["05","Bulk deals","Connect bulk clear-outs with resellers and organisations."],["06","Saved finds","Keep interesting items and services close at hand."],["07","Local discovery","Find reuse opportunities in your city and community."],["08","Moderated posts","Build trust with reviewed listings and community reporting."]].map(([n,t,d])=><article className="benefit-slide" key={n}><span>{n}</span><h3>{t}</h3><p>{d}</p></article>)}</div></section>
+        <section className="subscribe-section wrap"><div><span className="eyebrow">Stay in the loop</span><h2>Good finds. Fresh starts. Straight to your inbox.</h2><p>Get updates on new listings, decluttering services and reuse stories around Nigeria.</p></div><form className="subscribe-form" onSubmit={e=>{e.preventDefault();showNotice("Thanks for your interest. Newsletter sign-up will activate when email services are connected.");e.currentTarget.reset();}}><label className="sr-only" htmlFor="subscribe-email">Email address</label><input id="subscribe-email" type="email" required placeholder="Enter your email address"/><button type="submit">Subscribe <span>→</span></button><small>Newsletter delivery will activate when email services are connected.</small></form></section>
+
         <section className="seller-cta wrap flagship-seller-cta">
           <div>
             <span className="eyebrow">Ready to pass it on?</span>
@@ -275,6 +283,7 @@ function App() {
         <div className="wrap footer-inner">
           <span>© {new Date().getFullYear()} Aloko</span>
           <span>Sell it. Give it. Pass it on.</span>
+          <span className="powered-by">Powered by <strong>Squadglobal</strong></span>
         </div>
       </footer>
 
