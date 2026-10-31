@@ -161,3 +161,11 @@ export function decideSellerVerification(applicationId, decision, note = "") {
     body: { application_id: applicationId, decision, note },
   });
 }
+
+export function createServiceRequest(details) {
+  return request("/api/service-requests", { method: "POST", body: details });
+}
+
+export function listMyServiceRequests() {
+  return request("/api/service-requests");
+}
