@@ -1,0 +1,1 @@
+export { createListingsDetailHandler } from "./_handlers/listings-detail.js";
