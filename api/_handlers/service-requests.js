@@ -31,7 +31,7 @@ export function createServiceRequestsHandler({ getDatabase = getPool } = {}) {
         const column = isApprovedProvider ? "provider_id" : "customer_id";
         const result = await database.query(
           `SELECT id, service_type, description, city, state,
-                  preferred_date, status, quoted_amount_kobo, created_at, updated_at
+                  preferred_date, status, quoted_amount_kobo, proposed_start, proposed_end, created_at, updated_at
            FROM public.service_requests WHERE ${column} = $1::uuid
            ORDER BY created_at DESC LIMIT 50`,
           [auth.user.id],
@@ -42,7 +42,7 @@ export function createServiceRequestsHandler({ getDatabase = getPool } = {}) {
         const body = req.body && typeof req.body === "object" ? req.body : {};
         const requestId = typeof body.request_id === "string" ? body.request_id : "";
         const action = body.action;
-        if (!UUID.test(requestId) || !["quote","accept","cancel"].includes(action)) {
+        if (!UUID.test(requestId) || !["quote","accept","cancel","propose_schedule","confirm_schedule"].includes(action)) {
           return res.status(400).json({error:"Choose a valid service request and action"});
         }
         if (action === "quote") {
@@ -64,6 +64,40 @@ export function createServiceRequestsHandler({ getDatabase = getPool } = {}) {
           );
           if (!result.rows?.length) return res.status(404).json({error:"This request is not assigned to your provider account"});
           return res.status(200).json({request:result.rows[0],message:"Your quote has been sent to the customer."});
+        }
+        if (action === "propose_schedule") {
+          const provider = await database.query(
+            "SELECT provider_id FROM public.service_provider_profiles WHERE provider_id=$1::uuid AND status='approved' AND is_accepting_requests=true",
+            [auth.user.id],
+          );
+          if (!provider.rows?.length) return res.status(403).json({error:"Only approved providers accepting requests can propose a schedule"});
+          const start = typeof body.scheduled_start === "string" ? new Date(body.scheduled_start) : null;
+          const end = typeof body.scheduled_end === "string" ? new Date(body.scheduled_end) : null;
+          if (!start || !end || Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) ||
+              start.getTime() <= Date.now() || end.getTime() <= start.getTime() ||
+              end.getTime() - start.getTime() > 24 * 60 * 60 * 1000) {
+            return res.status(400).json({error:"Choose a future appointment window no longer than 24 hours"});
+          }
+          const result = await database.query(
+            `UPDATE public.service_requests SET proposed_start=$3::timestamptz,proposed_end=$4::timestamptz,
+                    status='accepted',updated_at=now()
+             WHERE id=$1::uuid AND provider_id=$2::uuid AND status='accepted'
+             RETURNING id,status,proposed_start,proposed_end,updated_at`,
+            [requestId,auth.user.id,start.toISOString(),end.toISOString()],
+          );
+          if (!result.rows?.length) return res.status(409).json({error:"A schedule can be proposed after the customer accepts your quote"});
+          return res.status(200).json({request:result.rows[0],message:"Appointment time proposed. The customer must confirm it."});
+        }
+        if (action === "confirm_schedule") {
+          const result = await database.query(
+            `UPDATE public.service_requests SET status='scheduled',updated_at=now()
+             WHERE id=$1::uuid AND customer_id=$2::uuid AND status='accepted'
+               AND proposed_start IS NOT NULL AND proposed_end IS NOT NULL
+             RETURNING id,status,proposed_start,proposed_end,updated_at`,
+            [requestId,auth.user.id],
+          );
+          if (!result.rows?.length) return res.status(409).json({error:"There is no appointment proposal to confirm"});
+          return res.status(200).json({request:result.rows[0],message:"Appointment confirmed."});
         }
         if (action === "accept") {
           const result = await database.query(
