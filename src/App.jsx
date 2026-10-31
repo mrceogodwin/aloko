@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { matchesListingQuery, sortListings, validateListingDraft } from "./marketplace.js";
 import { hasAccessToken, openConversation, createListing, listConversations, listMessages, sendMessage, fetchMyListings, setListingStatus, listSavedListings, saveListing, unsaveListing, getMarketplaceProfile, getSellerStore } from "./api-client.js";
-import { getAuthSession, signUpWithEmail, signInWithEmail, signOutFromAloko } from "./auth.js";
+import { getAuthSession, getAuthJWTToken, signUpWithEmail, signInWithEmail, signOutFromAloko } from "./auth.js";
 import SellerOnboarding from "./SellerOnboarding.jsx";
 import AdminSellerVerification from "./AdminSellerVerification.jsx";
 import BuyerPreferences from "./BuyerPreferences.jsx";
@@ -291,9 +291,10 @@ function App() {
     getAuthSession().then(data => {
       if (!mounted) return;
       const user = data?.user || null;
-      const token = data?.session?.token;
+      const token = user ? await getAuthJWTToken() : null;
       setAuthUser(user);
       if (token) { try { window.localStorage.setItem("aloko:access-token", token); } catch {} }
+      else { try { window.localStorage.removeItem("aloko:access-token"); } catch {} }
     }).catch(() => { if (mounted) setAuthUser(null); });
     return () => { mounted = false; };
   }, []);
@@ -622,10 +623,17 @@ function App() {
                       else await signInWithEmail({ email: authEmail.trim(), password: authPassword });
                       const data = await getAuthSession();
                       const user = data?.user || null;
-                      const token = data?.session?.token;
+                      if (!user && accountMode === "signup") {
+                        setAccountMode("login");
+                        showNotice("Account created. Check your email for a verification link, then sign in.");
+                        return;
+                      }
+                      const token = user ? await getAuthJWTToken() : null;
                       if (token) { try { window.localStorage.setItem("aloko:access-token", token); } catch {} }
+                      else { try { window.localStorage.removeItem("aloko:access-token"); } catch {} }
                       setAuthUser(user);
-                      if (!user) throw new Error("Account request completed, but no active session was returned. Please sign in.");
+                      if (!user) throw new Error("Sign-in did not return an active session. Check your email verification and try again.");
+                      if (!token) throw new Error("You are signed in, but Aloko could not obtain a secure API token. Please refresh and try again.");
                       showNotice(accountMode === "signup" ? "Welcome to Aloko. Your account is ready." : "You are signed in.");
                       setAccountModalOpen(false);
                     } catch (error) { showNotice(error.message || "Could not complete account access."); }
