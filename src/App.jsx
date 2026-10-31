@@ -8,8 +8,17 @@ const heroTypingPhrases = ["Declutter Service Marketplace","Sell It. Give It. Pa
 const categories = [
   ["▣", "Electronics"], ["♧", "Fashion"], ["⌂", "Home & Living"], ["🚗", "Vehicles"],
   ["✿", "Health & Beauty"], ["◉", "Sports & Hobbies"], ["♙", "Baby & Kids"], ["✚", "Free items"],
-  ["▦", "Bulk Deals"], ["↗", "Services"]
+  ["▦", "Bulk Deals"], ["↗", "Services"], ["🪑", "Furniture"], ["🍳", "Kitchenware"],
+  ["📚", "Books"], ["🏡", "Property & Garden"], ["🧸", "Toys & Games"], ["🧰", "Tools"],
+  ["🎨", "Art & Collectibles"], ["🧳", "Travel & Luggage"], ["🍼", "Baby Essentials"], ["🌿", "Garden & Outdoor"]
 ];
+
+const demoPhotoByCategory = {
+  "Home & Living": "photo-1586023492125-27b2c045efd7", Furniture: "photo-1555041469-a586c61ea9bc",
+  Kitchenware: "photo-1556911220-bff31c812dba", "Property & Garden": "photo-1600210492486-724fe5c67fb0",
+  Electronics: "photo-1496181133206-80ce9b88a853", Fashion: "photo-衣服",
+  "Books & Hobbies": "photo-1494438639946-1ebd1d20bf85", "Free items": "photo-1494438639946-1ebd1d20bf85"
+};
 
 function formatNaira(value) {
   if (value === null || value === undefined || value === "") return "Free";
@@ -31,7 +40,7 @@ function normalizeLiveListing(item) {
     category: item.category,
     description: item.description || "Contact the seller for more details.",
     sellerName: item.seller_display_name || "Aloko seller",
-    image: "",
+    image: demoPhotoByCategory[item.category] || (item.kind === "giveaway" ? demoPhotoByCategory["Free items"] : ""),
     kind: item.kind,
     quantity: item.quantity,
     live: true
@@ -40,6 +49,7 @@ function normalizeLiveListing(item) {
 
 function App() {
   const [typedHeadline, setTypedHeadline] = useState("");
+  const [showAllCategories, setShowAllCategories] = useState(false);
   useEffect(() => {
     let phraseIndex = 0;
     let characterIndex = 0;
@@ -198,7 +208,7 @@ function App() {
           <div className="hero-inner wrap">
             <div className="hero-copy">
               <span className="eyebrow hero-eyebrow">Nigeria’s Reuse &amp; Decluttering Marketplace</span>
-              <h1 className="hero-typing-headline"><span>{typedHeadline}</span><i aria-hidden="true" /></h1>
+              <h1 className="hero-typing-headline"><span>{typedHeadline.includes("Give It.") ? <>{typedHeadline.split("Give It.")[0]}<em className="hero-highlight">Give It.</em>{typedHeadline.split("Give It.").slice(1).join("Give It.")}</> : typedHeadline}</span><i aria-hidden="true" /></h1>
               <p>Buy and sell pre-owned items, give usable things away for free, discover bulk deals, or book decluttering services — all in one place.</p>
               <div className="hero-actions">
                 <button className="hero-primary" onClick={() => setListingFormOpen(true)}>♢ &nbsp; Start Selling <span>→</span></button>
@@ -226,7 +236,7 @@ function App() {
             <button className="view-all" onClick={() => { setActiveCategory("All"); setQuery(""); setSavedOnly(false); }}>View all</button>
           </div>
           <div className="category-row">
-            {categories.map(([icon, label]) => (
+            {(showAllCategories ? categories : categories.slice(0, 8)).map(([icon, label]) => (
               <button
                 key={label}
                 className={activeCategory === label ? "category-chip active" : "category-chip"}
@@ -244,6 +254,7 @@ function App() {
                 <span>{label}</span>
               </button>
             ))}
+            <button className="category-chip category-more" type="button" aria-expanded={showAllCategories} onClick={() => setShowAllCategories(v => !v)}><span className="category-icon">＋</span><span>{showAllCategories ? "Less" : "More"}</span></button>
           </div>
         </section>
 
@@ -262,7 +273,7 @@ function App() {
               <article className="product-card" key={p.id}>
                 <div className="product-image">
                   {p.image
-                    ? <img src={`https://images.unsplash.com/${p.image}?auto=format&fit=crop&w=700&q=80`} alt={p.title} loading="lazy"/>
+                    ? <img src={p.image.startsWith("http") ? p.image : `https://images.unsplash.com/${p.image}?auto=format&fit=crop&w=700&q=80`} alt={p.title} loading="lazy"/>
                     : <div className="product-image-placeholder" role="img" aria-label="No photo"><span>aloko.</span></div>}
                   <span className="condition">{p.kind === "giveaway" ? "Free giveaway" : p.condition}</span>
                   <button className={saved.includes(p.id) ? "save saved" : "save"} aria-label="Save" onClick={() => toggleSaved(p.id)}>{saved.includes(p.id) ? "♥" : "♡"}</button>
