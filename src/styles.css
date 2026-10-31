@@ -390,3 +390,72 @@
 .admin-verification-actions button:first-child{background:#252720;color:#fff;border-color:#252720}
 .admin-verification-actions button:disabled{opacity:.5;cursor:wait}
 @media(max-width:640px){.admin-verification-card{padding:16px}.admin-verification-card dl{grid-template-columns:1fr}.admin-verification-card-head{flex-direction:column}}
+
+
+/* Aloko colour system refresh — forest, teal, citrus and warm coral */
+:root{
+  color-scheme:light;
+  --purple:#247b68;--violet:#36a58b;--deep:#102f2b;--ink:#1c302d;
+  --muted:#71817b;--line:#e6ece7;--paper:#fbfcf8;--lav:#e8f3ed;
+}
+.flagship-topbar{background:linear-gradient(105deg,#102f2b 0%,#17483f 58%,#236b58 100%)}
+.main-nav a:hover,.main-nav .nav-current{background:#287b67;color:#fff}
+.account-create-button,.post-button,.hero-primary{background:linear-gradient(105deg,#f18b55,#e76b43);box-shadow:0 8px 22px #d96d4540}
+.flagship-hero{background:radial-gradient(ellipse at 78% 20%,#287d69 0%,transparent 38%),radial-gradient(ellipse at 96% 90%,#d58a43 0%,transparent 30%),linear-gradient(112deg,#102f2b 0%,#17483f 53%,#205d4d 100%)}
+.hero-eyebrow{border-color:#b7d6c5;background:#ffffff12;color:#d9f1e2}
+.hero-copy h1 em{color:#f3b36b}
+.hero-primary{background:linear-gradient(105deg,#f2a35e,#e8754d);color:#fff}
+.hero-secondary{border-color:#8fc7ad;background:#153c35;color:#fff}
+.hero-orb{background:linear-gradient(145deg,#f4b86d,#df704e 78%);border-color:#ffdfad;color:#fff}
+.ribbon-one{border-top-color:#eaa45c;border-right-color:#3a9c80}
+.ribbon-two{border-bottom-color:#73c5a2;border-left-color:#e78c5b}
+.hero-search button{background:#247b68}
+.hero-search>span{color:#287d68}
+.eyebrow{color:#267b68}
+.hero-trust{color:#d9e9df}
+.category-chip:nth-child(5n+1) .category-icon{background:linear-gradient(145deg,#e0f2e9,#c6e6d5);color:#247b58}
+.category-chip:nth-child(5n+2) .category-icon{background:linear-gradient(145deg,#fff0d8,#ffdfaa);color:#b36a20}
+.category-chip:nth-child(5n+3) .category-icon{background:linear-gradient(145deg,#e2efff,#cbdfff);color:#3475c5}
+.category-chip:nth-child(5n+4) .category-icon{background:linear-gradient(145deg,#ffe7df,#ffd0c0);color:#d45e45}
+.category-chip:nth-child(5n) .category-icon{background:linear-gradient(145deg,#eee8ff,#dcd0ff);color:#7254bb}
+.view-all,.product-bottom button,.workspace-open-link{color:#247b68}
+.product-image{background:linear-gradient(145deg,#e8f2ec,#d9e9df)}
+.product-image-placeholder{background:radial-gradient(circle at 50% 35%,#c6e8d3,#e8f1e8 68%);color:#267b68}
+.condition{background:#247b68}
+.save.saved{color:#df704e}
+.giveaway-card{background:radial-gradient(circle at 80% 15%,#287b68,transparent 34%),linear-gradient(110deg,#102f2b,#245d4d)}
+.giveaway-card .eyebrow{color:#f5c58b}
+.giveaway-card button{color:#1b6654}
+.service-copy{border-left-color:#e78b55}
+.seller-cta{background:linear-gradient(105deg,#e8f3eb,#fff 70%);border-color:#d9e8dd}
+.seller-cta .eyebrow{color:#267b68}
+.site-footer{background:#102f2b}
+.listing-modal-close{background:#e8f3ed;color:#236c59}
+.modal-contact-button{background:#247b68}
+.modal-save-button{background:#fff0e5;color:#bd613b}
+.listing-modal-price{color:#247b68}
+.announcement-ticker{background:#e7f2e9;color:#245b4b;border-color:#d5e7d9}
+.ticker-track b{color:#df784d}
+.service-ticker span{border-color:#dce9df;color:#315b4b}
+.service-ticker i{color:#e27c50}
+.preview-pill{border-color:#c7e0d0;color:#287b67;background:#eaf4ec}
+.art-room{background:radial-gradient(circle at 80% 20%,#e4b078,transparent 35%),linear-gradient(125deg,#153e36,#287b68)}
+.art-furniture{background:radial-gradient(circle at 80% 20%,#f5c0a5,transparent 36%),linear-gradient(125deg,#774b38,#c87958)}
+.art-boxes{background:radial-gradient(circle at 80% 20%,#a4d7c0,transparent 36%),linear-gradient(125deg,#123f42,#268b75)}
+.showcase-tag,.showcase-meta b{color:#247b68}
+.benefit-slide{border-color:#dce9df;background:linear-gradient(145deg,#fff,#f0f6ef)}
+.benefit-slide>span{color:#d7794d}
+.subscribe-section{background:radial-gradient(circle at 90% 10%,#2b806b,transparent 32%),linear-gradient(110deg,#102f2b,#245d4d)}
+.subscribe-form button{background:linear-gradient(100deg,#f1a35f,#e8754d)}
+.workspace-primary,.workspace-compose button{background:#247b68}
+.workspace-icon,.workspace-empty>span{color:#d98251}
+.workspace-secondary,.workspace-row-actions button,.seller-store-link,.workspace-open-link{color:#247b68}
+.workspace-listing-art,.public-store-avatar,.public-store-item-art{background:#e8f3ed;color:#247b68}
+.workspace-conversation-list .workspace-panel-head button,.conversation-avatar{background:#e8f3ed;color:#247b68}
+.workspace-message.mine{background:#247b68;border-color:#247b68}
+.workspace-profile-avatar{background:#e8f3ed;color:#247b68}
+.workspace-profile-meta span{color:#247b68;background:#e8f3ed}
+.workspace-conversation:hover,.workspace-conversation.selected{background:#f0f7f1}
+.seller-onboarding-form input:focus,.seller-onboarding-form select:focus,.seller-onboarding-form textarea:focus{border-color:#247b68;box-shadow:0 0 0 3px #247b681c}
+.seller-onboarding-form .seller-onboarding-check input{accent-color:#247b68}
+@media(prefers-reduced-motion:reduce){.ticker-track{animation:none}.product-card,.category-icon{transition:none}}
