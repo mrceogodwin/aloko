@@ -51,6 +51,34 @@ export function createSellerVerificationDecideHandler({ getDatabase = getPool } 
            FROM reviewed r
            WHERE s.user_id = r.applicant_id
            RETURNING s.user_id
+         ),
+         intro_account AS (
+           INSERT INTO public.listing_credit_accounts (seller_id, balance, updated_at)
+           SELECT r.applicant_id, 3, now()
+           FROM reviewed r
+           JOIN store_update s ON s.user_id = r.applicant_id
+           WHERE r.status = 'approved'
+             AND NOT EXISTS (
+               SELECT 1 FROM public.credit_ledger l
+               WHERE l.seller_id = r.applicant_id
+                 AND l.reason = 'introductory_grant'
+             )
+           ON CONFLICT (seller_id) DO UPDATE
+             SET balance = public.listing_credit_accounts.balance + EXCLUDED.balance,
+                 updated_at = now()
+             WHERE NOT EXISTS (
+               SELECT 1 FROM public.credit_ledger l
+               WHERE l.seller_id = EXCLUDED.seller_id
+                 AND l.reason = 'introductory_grant'
+             )
+           RETURNING seller_id
+         ),
+         intro_ledger AS (
+           INSERT INTO public.credit_ledger (seller_id, delta, reason, note)
+           SELECT seller_id, 3, 'introductory_grant',
+                  'Three introductory listing credits after seller approval'
+           FROM intro_account
+           RETURNING seller_id
          )
          SELECT r.id, r.applicant_id, r.subject_type, r.status,
                 r.reviewer_note, r.reviewed_at
