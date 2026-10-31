@@ -20,6 +20,7 @@ import sellerOnboarding from "./_handlers/seller-onboarding.js";
 import sellerVerificationQueue from "./_handlers/seller-verification-queue.js";
 import sellerVerificationDecide from "./_handlers/seller-verification-decide.js";
 import sellerStore from "./_handlers/seller-store.js";
+import serviceRequests from "./_handlers/service-requests.js";
 
 const handlers = {
   "buyer-preferences": buyerPreferences,
@@ -41,6 +42,7 @@ const handlers = {
   "saved-listings": savedListings,
   "saved-sellers": savedSellers,
   "seller-store": sellerStore,
+  "service-requests": serviceRequests,
   "seller-onboarding": sellerOnboarding,
   "seller-verification-queue": sellerVerificationQueue,
   "seller-verification-decide": sellerVerificationDecide,
