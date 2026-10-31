@@ -4,7 +4,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-
 
 const DETAIL_SQL = `
   SELECT
-    l.id, l.title, l.description, l.category, l.kind, l.condition,
+    l.id, l.seller_id, l.title, l.description, l.category, l.kind, l.condition,
     l.price_kobo, l.quantity, l.city, l.state,
     l.pickup_available, l.delivery_available, l.status,
     l.published_at, l.created_at,
