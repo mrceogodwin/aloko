@@ -56,8 +56,8 @@ export function createSavedSellersHandler({ getDatabase = getPool } = {}) {
         );
         if (!result.rows?.length) {
           const exists = await database.query(
-            "SELECT id FROM public.profiles WHERE id = $1::uuid AND is_suspended = false
-              AND account_type IN ('individual', 'reseller', 'business', 'bulk_distributor')",
+            `SELECT id FROM public.profiles WHERE id = $1::uuid AND is_suspended = false
+              AND account_type IN ('individual', 'reseller', 'business', 'bulk_distributor')`,
             [sellerId],
           );
           if (!exists.rows?.length) return res.status(404).json({ error: "Seller not found" });
