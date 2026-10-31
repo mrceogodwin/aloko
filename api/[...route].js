@@ -15,6 +15,7 @@ import moderationQueue from "./_handlers/moderation-queue.js";
 import myListings from "./_handlers/my-listings.js";
 import reportListing from "./_handlers/report-listing.js";
 import savedListings from "./_handlers/saved-listings.js";
+import savedSellers from "./_handlers/saved-sellers.js";
 import sellerStore from "./_handlers/seller-store.js";
 
 const handlers = {
@@ -35,6 +36,7 @@ const handlers = {
   "my-listings": myListings,
   "report-listing": reportListing,
   "saved-listings": savedListings,
+  "saved-sellers": savedSellers,
   "seller-store": sellerStore,
 };
 
