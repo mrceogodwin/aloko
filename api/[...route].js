@@ -23,6 +23,7 @@ import sellerStore from "./_handlers/seller-store.js";
 import serviceRequests from "./_handlers/service-requests.js";
 import serviceProviders from "./_handlers/service-providers.js";
 import serviceProviderReview from "./_handlers/service-provider-review.js";
+import providerAvailability from "./_handlers/provider-availability.js";
 
 const handlers = {
   "buyer-preferences": buyerPreferences,
@@ -47,6 +48,7 @@ const handlers = {
   "service-requests": serviceRequests,
   "service-providers": serviceProviders,
   "service-provider-review": serviceProviderReview,
+  "provider-availability": providerAvailability,
   "seller-onboarding": sellerOnboarding,
   "seller-verification-queue": sellerVerificationQueue,
   "seller-verification-decide": sellerVerificationDecide,
