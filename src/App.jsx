@@ -128,7 +128,7 @@ function App() {
             <span className="brand-mark" aria-hidden="true">A</span><span className="brand-text">Aloko</span>
           </a>
           <nav className="main-nav" aria-label="Main navigation">
-            <a className="nav-current" href="#top">Home</a><a href="#explore">Browse</a><a href="#categories">Categories</a><a href="#free">Free Items</a><a href="#bulk">Bulk Deals</a><a href="#services">Services</a>
+            <a className="nav-current" href="#top">Home</a><a href="#explore">Browse</a><a href="#categories">Categories</a><a href="#free">Free Items</a><a href="#explore">Bulk Deals</a><a href="#services">Services</a>
           </nav>
           <nav className="nav-actions" aria-label="Account">
             <button type="button" className="nav-search-icon" aria-label="Focus search" onClick={() => document.querySelector(".hero-search input")?.focus()}>⌕</button>
