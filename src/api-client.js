@@ -150,3 +150,14 @@ export function getSellerOnboarding() {
 export function submitSellerOnboarding(details) {
   return request("/api/seller-onboarding", { method: "POST", body: details });
 }
+
+export function listSellerVerificationApplications() {
+  return request("/api/seller-verification-queue");
+}
+
+export function decideSellerVerification(applicationId, decision, note = "") {
+  return request("/api/seller-verification-decide", {
+    method: "POST",
+    body: { application_id: applicationId, decision, note },
+  });
+}
