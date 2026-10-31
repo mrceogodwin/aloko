@@ -40,7 +40,7 @@ function normalizeLiveListing(item) {
     category: item.category,
     description: item.description || "Contact the seller for more details.",
     sellerName: item.seller_display_name || "Aloko seller",
-    image: demoPhotoByCategory[item.category] || (item.kind === "giveaway" ? demoPhotoByCategory["Free items"] : ""),
+    image: demoPhotoByCategory[item.category] || (item.kind === "giveaway" ? demoPhotoByCategory["Free items"] : /chair|table|shelf|cabinet|wardrobe|sofa|furniture/i.test(item.title) ? demoPhotoByCategory.Furniture : /kitchen|cook|plate|blender|stove/i.test(item.title) ? demoPhotoByCategory.Kitchenware : /box|moving|carton/i.test(item.title) ? "photo-1494438639946-1ebd1d20bf85" : /laptop|phone|tv|samsung|computer/i.test(item.title) ? demoPhotoByCategory.Electronics : ""),
     kind: item.kind,
     quantity: item.quantity,
     live: true
