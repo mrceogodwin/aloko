@@ -77,28 +77,15 @@ export function createServiceProvidersHandler({ getDatabase = getPool } = {}) {
         return res.status(400).json({error:"Complete the provider name, profile URL, service types, description and service location. Check optional contact and experience details."});
       }
       const result=await database.query(
-        `WITH eligible AS (
-           UPDATE public.profiles SET account_type='decluttering_provider',updated_at=now()
-           WHERE id=$1::uuid AND is_suspended=false
-             AND account_type IN ('individual','reseller','business','bulk_distributor','decluttering_provider')
-           RETURNING id
-         )
-         INSERT INTO public.service_provider_profiles
+        `INSERT INTO public.service_provider_profiles
            (provider_id,display_name,slug,provider_kind,business_name,description,service_types,
             city,state,service_areas,years_experience,contact_phone,contact_email,status,
             is_accepting_requests,reviewer_id,reviewer_note,reviewed_at,updated_at)
-         SELECT id,$2,$3,$4,$5,$6,$7::text[],$8,$9,$10::text[],$11,$12,$13,
-                'pending',true,NULL,NULL,NULL,now()
-         FROM eligible
-         ON CONFLICT (provider_id) DO UPDATE SET
-           display_name=EXCLUDED.display_name,slug=EXCLUDED.slug,provider_kind=EXCLUDED.provider_kind,
-           business_name=EXCLUDED.business_name,description=EXCLUDED.description,
-           service_types=EXCLUDED.service_types,city=EXCLUDED.city,state=EXCLUDED.state,
-           service_areas=EXCLUDED.service_areas,years_experience=EXCLUDED.years_experience,
-           contact_phone=EXCLUDED.contact_phone,contact_email=EXCLUDED.contact_email,
-           status='pending',is_accepting_requests=false,reviewer_id=NULL,reviewer_note=NULL,
-           reviewed_at=NULL,updated_at=now()
-         RETURNING provider_id,display_name,slug,status,updated_at`,
+         SELECT p.id,$2,$3,$4,$5,$6,$7::text[],$8,$9,$10::text[],$11,$12,$13,
+                'pending',false,NULL,NULL,NULL,now()
+         FROM public.profiles p
+         WHERE p.id=$1::uuid AND p.is_suspended=false
+           AND p.account_type IN ('individual','reseller','business','bulk_distributor','decluttering_provider')`,
         [auth.user.id,display,slug,kind,business,description,services,city,state,areas.map(v=>v.trim()),years,phone,email],
       );
       if(!result.rows?.length)return res.status(409).json({error:"Provider profile could not be created for this account"});
