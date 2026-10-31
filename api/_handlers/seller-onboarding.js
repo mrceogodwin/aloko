@@ -29,7 +29,7 @@ export function createSellerOnboardingHandler({ getDatabase = getPool } = {}) {
       if (req.method === "GET") {
         const result = await database.query(
           `SELECT s.store_slug, s.account_kind, s.store_name, s.description,
-                  s.logo_url, s.business_name, s.category, s.city, s.state,
+                  s.logo_url, s.business_name, s.cac_registration_number, s.category, s.city, s.state,
                   s.service_areas, s.pickup_available, s.delivery_available,
                   s.verification_status, s.updated_at,
                   a.id AS application_id, a.legal_name, a.contact_email,
