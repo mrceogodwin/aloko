@@ -40,6 +40,8 @@ export function createSellerVerificationDecideHandler({ getDatabase = getPool } 
                reviewer_id = $3::uuid, reviewer_note = $4,
                reviewed_at = now(), updated_at = now()
            WHERE id = $1::uuid AND status IN ('pending', 'needs_information')
+             AND identity_document_key IS NOT NULL
+             AND (subject_type = 'individual_seller' OR cardinality(business_document_keys) > 0)
            RETURNING id, applicant_id, subject_type, status, reviewer_note, reviewed_at
          ),
          store_update AS (
