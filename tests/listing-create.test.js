@@ -94,8 +94,8 @@ test("listing creation derives seller identity and queues moderation regardless 
   assert.match(received.sql, /p\.account_type IN/);
   assert.match(received.sql, /seller_stores/);
   assert.match(received.sql, /verification_status = 'approved'/);
-  assert.match(received.sql, /UPDATE public\\.listing_credit_accounts/);
-  assert.match(received.sql, /INSERT INTO public\\.credit_ledger/);
+  assert.match(received.sql, /UPDATE public\.listing_credit_accounts/);
+  assert.match(received.sql, /INSERT INTO public\.credit_ledger/);
   assert.equal(received.values.includes("active"), false);
   assert.equal(received.values.includes("approved"), false);
 });
