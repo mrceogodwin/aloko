@@ -66,3 +66,16 @@
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 @media(max-width:760px){.declutter-network{padding:40px 0 22px}.network-heading h2{font-size:27px}.showcase-carousel{grid-auto-columns:86%}.showcase-art{height:170px}.benefit-slider{grid-auto-columns:78%}.subscribe-section{grid-template-columns:1fr;padding:26px 22px;gap:20px}.subscribe-form{grid-template-columns:1fr auto}.powered-by{margin-left:0;width:100%}}
 @media(max-width:420px){.ticker-track{font-size:10px;gap:15px}.showcase-carousel{grid-auto-columns:92%}.subscribe-form{grid-template-columns:1fr}.subscribe-form button{padding:13px}.subscribe-form small{grid-column:1}}
+
+
+.live-showcase-card{display:block;text-align:left;padding:0;cursor:pointer}
+.showcase-live-image{height:175px;position:relative;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 45% 35%,#dfc0ff,#eee5f8 72%);color:#8531c6;font:800 27px Manrope,sans-serif}
+.showcase-live-image img{width:100%;height:100%;object-fit:cover}
+.showcase-live-kind{position:absolute;left:12px;top:12px;padding:6px 9px;border-radius:999px;background:#7918d9;color:#fff;font:800 9px "DM Sans",sans-serif;letter-spacing:.7px}
+.live-showcase-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px #26094b18}
+.showcase-empty{display:flex;align-items:center;gap:18px;padding:24px;border:1px dashed #cba8eb;border-radius:18px;background:linear-gradient(110deg,#f8f0ff,#fff)}
+.showcase-empty-mark{width:48px;height:48px;flex:0 0 48px;border-radius:15px;display:grid;place-items:center;background:#ead8ff;color:#851de0;font-size:23px}
+.showcase-empty h3{margin:0 0 5px;color:#281443;font:800 17px Manrope,sans-serif}
+.showcase-empty p{margin:0;color:#786b8d;font-size:12px;line-height:1.5}
+.showcase-empty button{margin-left:auto;flex:0 0 auto;border:0;border-radius:999px;padding:12px 16px;background:#7918d9;color:white;font-weight:800}
+@media(max-width:600px){.showcase-empty{align-items:flex-start;flex-wrap:wrap}.showcase-empty button{margin-left:66px}.showcase-live-image{height:155px}}
