@@ -33,6 +33,8 @@ export default function SellerOnboarding({ onNotice }) {
           contact_phone: item.contact_phone || "",
           contact_email: item.contact_email || "",
           business_name: item.business_name || "",
+          cac_registration_number: item.cac_registration_number || "",
+          service_areas: Array.isArray(item.service_areas) ? item.service_areas.join(", ") : "",
           category: item.category || "General",
           city: item.city || "",
           state: item.state || "",
