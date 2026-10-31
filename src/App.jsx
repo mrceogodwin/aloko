@@ -3,7 +3,7 @@ import { matchesListingQuery, sortListings, validateListingDraft } from "./marke
 import { hasAccessToken, openConversation, createListing } from "./api-client.js";
 import { getAuthSession, signUpWithEmail, signInWithEmail, signOutFromAloko } from "./auth.js";
 
-const heroTypingPhrases = ["Platform for all Declutter Businesses","Home Decluttering","Office Clear-outs","Moving & Relocation","Estate Clearances","Wardrobe Decluttering","Furniture Removal","Appliance Reuse","Donation Collection","Charity Redistribution","Storage Organisation","Garage Clear-outs","Kitchen Decluttering","Paperwork Sorting","E-waste Collection","Bulk Item Resale","Property Staging","Student Move-outs","Professional Organisers","Business Clear-outs","Responsible Reuse & Disposal"];
+const heroTypingPhrases = ["Declutter Service Marketplace","Sell It. Give It. Pass It On.","Home Decluttering","Office Clear-outs","Moving & Relocation","Estate Clearances","Wardrobe Decluttering","Furniture Removal","Appliance Reuse","Donation Collection","Charity Redistribution","Storage Organisation","Garage Clear-outs","Kitchen Decluttering","Paperwork Sorting","E-waste Collection","Bulk Item Resale","Property Staging","Student Move-outs","Professional Organisers","Business Clear-outs","Responsible Reuse & Disposal"];
 
 const categories = [
   ["▣", "Electronics"], ["♧", "Fashion"], ["⌂", "Home & Living"], ["🚗", "Vehicles"],
@@ -43,28 +43,23 @@ function App() {
   useEffect(() => {
     let phraseIndex = 0;
     let characterIndex = 0;
-    let deleting = false;
     let timeout;
-    const tick = () => {
+    const typeCurrentPhrase = () => {
       const phrase = heroTypingPhrases[phraseIndex];
-      if (!deleting && characterIndex < phrase.length) {
+      if (characterIndex < phrase.length) {
         characterIndex += 1;
         setTypedHeadline(phrase.slice(0, characterIndex));
-        timeout = window.setTimeout(tick, 72);
-      } else if (!deleting) {
-        deleting = true;
-        timeout = window.setTimeout(tick, 1450);
-      } else if (characterIndex > 0) {
-        characterIndex -= 1;
-        setTypedHeadline(phrase.slice(0, characterIndex));
-        timeout = window.setTimeout(tick, 30);
-      } else {
-        deleting = false;
-        phraseIndex = (phraseIndex + 1) % heroTypingPhrases.length;
-        timeout = window.setTimeout(tick, 360);
+        timeout = window.setTimeout(typeCurrentPhrase, 62);
+        return;
       }
+      timeout = window.setTimeout(() => {
+        phraseIndex = (phraseIndex + 1) % heroTypingPhrases.length;
+        characterIndex = 0;
+        setTypedHeadline("");
+        timeout = window.setTimeout(typeCurrentPhrase, 220);
+      }, 1750);
     };
-    timeout = window.setTimeout(tick, 420);
+    timeout = window.setTimeout(typeCurrentPhrase, 350);
     return () => window.clearTimeout(timeout);
   }, []);
 
