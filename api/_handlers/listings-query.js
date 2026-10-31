@@ -61,7 +61,7 @@ export function buildPublicListingsQuery(params = {}) {
       : "l.published_at DESC NULLS LAST, l.created_at DESC";
 
   return {
-    text: `SELECT l.id, l.title, l.description, l.category, l.kind, l.condition, l.price_kobo, l.quantity, l.city, l.state, l.pickup_available, l.delivery_available, l.published_at, p.display_name AS seller_display_name, p.avatar_url AS seller_avatar_url, p.account_type AS seller_account_type FROM public.listings l JOIN public.profiles p ON p.id = l.seller_id WHERE ${clauses.join(" AND ")} ORDER BY ${sort} LIMIT $${values.length - 1} OFFSET $${values.length}`,
+    text: `SELECT l.id, l.seller_id, l.title, l.description, l.category, l.kind, l.condition, l.price_kobo, l.quantity, l.city, l.state, l.pickup_available, l.delivery_available, l.published_at, p.display_name AS seller_display_name, p.avatar_url AS seller_avatar_url, p.account_type AS seller_account_type FROM public.listings l JOIN public.profiles p ON p.id = l.seller_id WHERE ${clauses.join(" AND ")} ORDER BY ${sort} LIMIT $${values.length - 1} OFFSET $${values.length}`,
     values,
     limit,
   };
