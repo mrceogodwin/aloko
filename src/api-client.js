@@ -121,3 +121,12 @@ export function getMarketplaceProfile() {
 export function getSellerStore(sellerId) {
   return request(`/api/seller-store?seller_id=${encodeURIComponent(sellerId)}`);
 }
+
+ 
+export function getBuyerPreferences() {
+  return request("/api/buyer-preferences");
+}
+
+export function saveBuyerPreferences(preferences) {
+  return request("/api/buyer-preferences", { method: "PUT", body: preferences });
+}
