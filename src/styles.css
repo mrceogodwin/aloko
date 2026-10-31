@@ -345,3 +345,7 @@
 .public-store-item-copy b{font-size:12px;color:#7426b2}
 @media(max-width:850px){.public-store-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.public-store-panel{padding:15px}.public-store-profile{gap:13px}.public-store-avatar{width:64px;height:64px;flex-basis:64px;border-radius:19px}.public-store-profile h2{font-size:20px}.public-store-grid{grid-template-columns:1fr;gap:9px}.public-store-item{grid-template-columns:66px minmax(0,1fr);padding:9px}.public-store-item-art{height:66px}.seller-store-link{font-size:9px;padding:7px 9px}}
+
+.workspace-open-link{border:1px solid #eadff1;border-radius:999px;background:#fff;color:#7424ad;padding:8px 12px;font-size:10px;font-weight:900;white-space:nowrap;cursor:pointer}
+.workspace-open-link:hover{background:#f6effb}
+@media(max-width:600px){.workspace-open-link{margin-left:54px}}
