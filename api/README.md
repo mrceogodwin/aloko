@@ -24,6 +24,17 @@ Serverless handlers for a Vercel-compatible runtime. Deployment remains restrict
 | `GET/POST /api/conversations` | any | List threads / open thread on a listing |
 | `GET/POST /api/messages` | any | Read or send messages in a thread |
 | `GET/POST /api/service-requests` | any | Create a local decluttering enquiry or view the authenticated account's requests |
+| `GET /api/service-providers` | public | Browse approved providers; supports `service_type`, `state`, and `city` filters |
+| `GET /api/service-providers?mode=mine` | authenticated | Read the signed-in provider's private application/profile |
+| `POST /api/service-providers` | buyer, seller, business, decluttering_provider | Submit or update a provider application; edits return the profile to pending review |
+
+## Service provider review
+
+- Provider profiles are private until their status is `approved` and they are accepting requests.
+- Public directory responses omit phone and email contact fields.
+- Provider applications use the authenticated profile ID; clients cannot choose an applicant ID.
+- Updating an approved profile resets it to `pending` and disables new requests until staff review.
+- `database/migrations/005_service_provider_marketplace.sql` is a draft migration and has not been applied to the production database.
 
 ## Staff
 
