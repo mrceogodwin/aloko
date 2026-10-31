@@ -539,3 +539,20 @@
 .provider-review-top small{color:#887b96;font-size:10px}
 .provider-review-card .admin-verification-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:15px}
 @media(max-width:760px){.provider-directory-tools{display:block}.provider-filters{margin-top:12px}.provider-directory-grid{grid-template-columns:1fr}.provider-join-panel{align-items:flex-start;flex-direction:column}.provider-form-grid{grid-template-columns:1fr}}
+
+/* Provider inbox and quote workflow */
+.provider-inbox-panel{display:grid;gap:14px;padding-top:24px;border-top:1px solid #eee7f5}
+.provider-inbox-panel .workspace-panel-head h3{margin:4px 0;color:#281344;font:800 20px Manrope,sans-serif}
+.provider-request-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,240px);gap:18px;align-items:center;padding:18px;border:1px solid #eee6f3;border-radius:15px;background:#fff}
+.provider-request-copy{display:grid;gap:6px;min-width:0}
+.provider-request-copy strong{color:#2b1948;font-size:14px}
+.provider-request-copy span,.provider-request-copy small{color:#8a7b94;font-size:11px}
+.provider-request-copy p{margin:3px 0;color:#665a70;font-size:12px;line-height:1.6;overflow-wrap:anywhere}
+.provider-quote-actions{display:grid;gap:9px}
+.provider-quote-actions label{display:grid;gap:6px;color:#51415f;font-size:11px;font-weight:800}
+.provider-quote-actions input{min-width:0;width:100%;border:1px solid #e7dced;border-radius:10px;padding:11px;background:#fff;color:#2c1946}
+.provider-quote-actions .workspace-primary{white-space:nowrap}
+.service-history-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.service-quoted-price{color:#247b68;font-size:13px}
+.service-history-actions .workspace-primary{padding:9px 13px;font-size:11px}
+@media(max-width:650px){.provider-request-card{grid-template-columns:1fr}.service-history-actions{align-items:flex-start;flex-direction:column}}
