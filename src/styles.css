@@ -109,10 +109,9 @@
 @media(max-width:700px){.hero-copy h1.hero-typing-headline{min-height:2.5em;letter-spacing:-2.3px;line-height:1.04}}
 @media(prefers-reduced-motion:reduce){.hero-typing-headline i{animation:none}}
 
-/* Keep the hero geometry locked while the typewriter changes copy. */
+/* Keep the hero geometry stable while keeping the typewriter caret inline with the text. */
 .hero-copy h1.hero-typing-headline{
-  display:flex;
-  align-items:center;
+  display:block;
   width:100%;
   max-width:690px;
   height:2.12em;
@@ -127,21 +126,21 @@
   letter-spacing:-4px;
 }
 .hero-copy h1.hero-typing-headline>span{
-  display:block;
-  width:100%;
+  display:inline;
+  width:auto;
   max-width:100%;
   color:#fff;
   overflow-wrap:normal;
   word-break:normal;
   white-space:normal;
-  text-wrap:balance;
+  text-wrap:normal;
 }
 .hero-copy h1.hero-typing-headline>i{
-  flex:0 0 3px;
+  display:inline-block;
   width:3px;
   height:.78em;
   margin-left:6px;
-  align-self:center;
+  vertical-align:-.04em;
   border-radius:3px;
   background:#d37aff;
   animation:aloko-type-caret .82s steps(2,start) infinite;
