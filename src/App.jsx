@@ -6,6 +6,7 @@ import SellerOnboarding from "./SellerOnboarding.jsx";
 import AdminSellerVerification from "./AdminSellerVerification.jsx";
 import BuyerPreferences from "./BuyerPreferences.jsx";
 import ServiceRequests from "./ServiceRequests.jsx";
+import ServiceProviders from "./ServiceProviders.jsx";
 
 const nigeriaStates = ["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","FCT","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"];
 
@@ -174,7 +175,7 @@ function WorkspaceScreen({ screen, authUser, onLogin, onSell, onSellerOnboarding
   };
 
   const localSavedListings = localListings.filter(item => localSaved.includes(item.id));
-  const titleMap = { seller: "Seller workspace", "seller-onboarding": "Become an Aloko seller", "admin-verification": "Seller verification", "buyer-preferences": "Your shopping preferences", services: "Decluttering services", inbox: "Messages", saved: "Saved items", account: "My account", store: storeData?.store?.display_name ? `${storeData.store.display_name}’s store` : "Seller storefront" };
+  const titleMap = { seller: "Seller workspace", "seller-onboarding": "Become an Aloko seller", "admin-verification": "Seller verification", "buyer-preferences": "Your shopping preferences", services: "Decluttering services", providers: "Service provider network", inbox: "Messages", saved: "Saved items", account: "My account", store: storeData?.store?.display_name ? `${storeData.store.display_name}’s store` : "Seller storefront" };
   if (!authUser && ["seller", "seller-onboarding", "inbox", "account", "buyer-preferences", "services"].includes(screen)) {
     return <section className="workspace-page"><div className="workspace-gate"><span className="workspace-icon">✦</span><span className="eyebrow">YOUR ALOKO ACCOUNT</span><h1>Everything in its right place.</h1><p>Sign in to manage your listings, talk to buyers and keep your Aloko activity together.</p><button className="workspace-primary" onClick={onLogin}>Sign in to continue <span>→</span></button><button className="workspace-link" onClick={onLogin}>New to Aloko? Create an account</button></div></section>;
   }
@@ -184,7 +185,8 @@ function WorkspaceScreen({ screen, authUser, onLogin, onSell, onSellerOnboarding
     {workspaceError && <div className="workspace-alert" role="alert">{workspaceError} <button onClick={() => window.location.reload()}>Refresh</button></div>}
     {screen === "seller-onboarding" && <SellerOnboarding onNotice={onNotice} />}
     {screen === "buyer-preferences" && <BuyerPreferences onNotice={onNotice} />}
-    {screen === "services" && <ServiceRequests authUser={authUser} onLogin={onLogin} onNotice={onNotice} />}
+    {screen === "services" && <ServiceRequests authUser={authUser} onLogin={onLogin} onNotice={onNotice} onProviders={() => { window.history.pushState({}, "", "?screen=providers"); window.dispatchEvent(new PopStateEvent("popstate")); }} />}
+    {screen === "providers" && <ServiceProviders authUser={authUser} onLogin={onLogin} onNotice={onNotice} />}
     {screen === "admin-verification" && (["admin","moderator"].includes(profile?.role || authUser?.role) ? <AdminSellerVerification canDecide={(profile?.role || authUser?.role) === "admin"} onNotice={onNotice} /> : <div className="workspace-panel"><div className="workspace-empty"><h3>Staff access required</h3><p>This area is available to authorised Aloko moderators and administrators.</p></div></div>)}
     {screen === "seller" && <div className="workspace-panel">
       <div className="seller-onboarding-entry"><div><span className="eyebrow">GROW WITH ALOKO</span><strong>Start selling with a verified store</strong><p>Complete your seller details to unlock listing access after review.</p></div><button className="workspace-secondary" onClick={onSellerOnboarding}>Set up seller account →</button></div>
