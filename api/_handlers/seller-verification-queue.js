@@ -22,9 +22,6 @@ export function createSellerVerificationQueueHandler({ getDatabase = getPool } =
         `SELECT a.id, a.applicant_id, a.subject_type, a.legal_name,
                 a.business_name, a.cac_registration_number, a.contact_email,
                 a.contact_phone, a.status, a.submitted_at, a.updated_at,
-                (a.identity_document_key IS NOT NULL) AS has_identity_document,
-                (a.selfie_document_key IS NOT NULL) AS has_selfie_document,
-                (cardinality(a.business_document_keys) > 0) AS has_business_documents,
                 p.display_name, p.account_type, s.store_name, s.store_slug,
                 s.category, s.city, s.state
          FROM public.verification_applications a
