@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildPublicListingsQuery } from "../api/listings-query.js";
+import { buildPublicListingsQuery } from "../api/_handlers/listings-query.js";
 import { createListingsHandler } from "../api/_handlers/listings.js";
 
 test("public listing query only includes active listings", () => {
