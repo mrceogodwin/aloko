@@ -49,13 +49,15 @@ export function createSavedSellersHandler({ getDatabase = getPool } = {}) {
           `INSERT INTO public.saved_sellers (buyer_id, seller_id)
            SELECT $1::uuid, p.id FROM public.profiles p
            WHERE p.id = $2::uuid AND p.is_suspended = false
+             AND p.account_type IN ('individual', 'reseller', 'business', 'bulk_distributor')
            ON CONFLICT (buyer_id, seller_id) DO NOTHING
            RETURNING seller_id`,
           [auth.user.id, sellerId],
         );
         if (!result.rows?.length) {
           const exists = await database.query(
-            "SELECT id FROM public.profiles WHERE id = $1::uuid AND is_suspended = false",
+            "SELECT id FROM public.profiles WHERE id = $1::uuid AND is_suspended = false
+              AND account_type IN ('individual', 'reseller', 'business', 'bulk_distributor')",
             [sellerId],
           );
           if (!exists.rows?.length) return res.status(404).json({ error: "Seller not found" });
