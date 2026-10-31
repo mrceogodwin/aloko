@@ -1,4 +1,5 @@
 import conversations from "./_handlers/conversations.js";
+import buyerPreferences from "./_handlers/buyer-preferences.js";
 import health from "./_handlers/health.js";
 import listingCredits from "./_handlers/listing-credits.js";
 import listingImages from "./_handlers/listing-images.js";
@@ -14,8 +15,14 @@ import moderationQueue from "./_handlers/moderation-queue.js";
 import myListings from "./_handlers/my-listings.js";
 import reportListing from "./_handlers/report-listing.js";
 import savedListings from "./_handlers/saved-listings.js";
+import savedSellers from "./_handlers/saved-sellers.js";
+import sellerOnboarding from "./_handlers/seller-onboarding.js";
+import sellerVerificationQueue from "./_handlers/seller-verification-queue.js";
+import sellerVerificationDecide from "./_handlers/seller-verification-decide.js";
+import sellerStore from "./_handlers/seller-store.js";
 
 const handlers = {
+  "buyer-preferences": buyerPreferences,
   "conversations": conversations,
   "health": health,
   "listing-credits": listingCredits,
@@ -32,6 +39,11 @@ const handlers = {
   "my-listings": myListings,
   "report-listing": reportListing,
   "saved-listings": savedListings,
+  "saved-sellers": savedSellers,
+  "seller-store": sellerStore,
+  "seller-onboarding": sellerOnboarding,
+  "seller-verification-queue": sellerVerificationQueue,
+  "seller-verification-decide": sellerVerificationDecide,
 };
 
 function getRoute(req) {

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createModerationQueueHandler } from "../api/moderation-queue.js";
-import { createModerationDecideHandler } from "../api/moderation-decide.js";
+import { createModerationQueueHandler } from "../api/_handlers/moderation-queue.js";
+import { createModerationDecideHandler } from "../api/_handlers/moderation-decide.js";
 
 function responseRecorder() {
   return {

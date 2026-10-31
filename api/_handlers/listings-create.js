@@ -31,6 +31,13 @@ const INSERT_LISTING = `
     AND p.is_suspended = false
     AND (($13 = 'seller' AND p.account_type IN ('individual', 'reseller'))
       OR ($13 = 'business' AND p.account_type IN ('business', 'bulk_distributor')))
+    AND EXISTS (
+      SELECT 1 FROM public.seller_stores s
+      WHERE s.user_id = p.id
+        AND s.verification_status = 'approved'::public.verification_status
+        AND (($13 = 'seller' AND s.account_kind = 'individual_seller'::public.verification_subject)
+          OR ($13 = 'business' AND s.account_kind = 'business_seller'::public.verification_subject))
+    )
   RETURNING id, title, description, category, kind, condition, price_kobo,
             quantity, city, state, pickup_available, delivery_available, status, created_at
 `;

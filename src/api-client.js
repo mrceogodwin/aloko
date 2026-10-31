@@ -100,3 +100,64 @@ export function createListing(listing) {
     body: listing,
   });
 }
+
+
+export function listSavedListings() {
+  return request("/api/saved-listings");
+}
+
+export function saveListing(listingId) {
+  return request("/api/saved-listings", { method: "POST", body: { listing_id: listingId } });
+}
+
+export function unsaveListing(listingId) {
+  return request("/api/saved-listings", { method: "DELETE", body: { listing_id: listingId } });
+}
+
+export function getMarketplaceProfile() {
+  return request("/api/me");
+}
+
+export function getSellerStore(sellerId) {
+  return request(`/api/seller-store?seller_id=${encodeURIComponent(sellerId)}`);
+}
+
+ 
+export function getBuyerPreferences() {
+  return request("/api/buyer-preferences");
+}
+
+export function saveBuyerPreferences(preferences) {
+  return request("/api/buyer-preferences", { method: "PUT", body: preferences });
+}
+
+export function listFollowedSellers() {
+  return request("/api/saved-sellers");
+}
+
+export function followSeller(sellerId) {
+  return request("/api/saved-sellers", { method: "POST", body: { seller_id: sellerId } });
+}
+
+export function unfollowSeller(sellerId) {
+  return request("/api/saved-sellers", { method: "DELETE", body: { seller_id: sellerId } });
+}
+
+export function getSellerOnboarding() {
+  return request("/api/seller-onboarding");
+}
+
+export function submitSellerOnboarding(details) {
+  return request("/api/seller-onboarding", { method: "POST", body: details });
+}
+
+export function listSellerVerificationApplications() {
+  return request("/api/seller-verification-queue");
+}
+
+export function decideSellerVerification(applicationId, decision, note = "") {
+  return request("/api/seller-verification-decide", {
+    method: "POST",
+    body: { application_id: applicationId, decision, note },
+  });
+}

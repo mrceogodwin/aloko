@@ -20,6 +20,7 @@ const BUSINESS_TYPES = new Set(["business", "bulk_distributor"]);
  * @returns {string}
  */
 export function roleFromAccountType(accountType) {
+  if (accountType === "buyer") return "buyer";
   if (SELLER_TYPES.has(accountType)) return "seller";
   if (BUSINESS_TYPES.has(accountType)) return "business";
   if (accountType === "decluttering_provider") return "service_provider";
@@ -80,7 +81,7 @@ export async function ensureProfile(userId, database, options = {}) {
   try {
     await database.query(
       `INSERT INTO public.profiles (id, display_name, account_type, is_suspended)
-       VALUES ($1::uuid, $2, 'individual', false)
+       VALUES ($1::uuid, $2, 'buyer', false)
        ON CONFLICT (id) DO NOTHING`,
       [userId, displayName],
     );
