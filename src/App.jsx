@@ -209,7 +209,8 @@ function WorkspaceScreen({ screen, authUser, onLogin, onSell, onNotice, onOpenLi
 function App() {
   const [typedHeadline, setTypedHeadline] = useState("");
   const [activeScreen, setActiveScreen] = useState("home");
-  const [activeConversationId, setActiveConversationId] = useState("");\n  const [sellerStoreId, setSellerStoreId] = useState("");
+  const [activeConversationId, setActiveConversationId] = useState("");
+  const [sellerStoreId, setSellerStoreId] = useState("");
   const [showAllCategories, setShowAllCategories] = useState(false);
   useEffect(() => {
     let phraseIndex = 0;
@@ -358,7 +359,13 @@ function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const openSellerStore = (sellerId) => {\n    if (!sellerId) { showNotice("Seller storefront is unavailable for this listing."); return; }\n    setSellerStoreId(sellerId);\n    navigate("store");\n  };\n\n  const startConversation = async (listingId) => {
+  const openSellerStore = (sellerId) => {
+    if (!sellerId) { showNotice("Seller storefront is unavailable for this listing."); return; }
+    setSellerStoreId(sellerId);
+    navigate("store");
+  };
+
+  const startConversation = async (listingId) => {
     const result = await openConversation(listingId);
     if (result.ok) {
       setActiveConversationId(result.data?.conversation?.id || "");
