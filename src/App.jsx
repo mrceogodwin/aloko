@@ -72,6 +72,7 @@ function WorkspaceScreen({ screen, authUser, onLogin, onSell, onNotice, onOpenLi
   const [myListings, setMyListings] = useState([]);
   const [savedListings, setSavedListings] = useState([]);
   const [profile, setProfile] = useState(null);
+  const [storeData, setStoreData] = useState(null);
   const [workspaceError, setWorkspaceError] = useState("");
 
   useEffect(() => {
