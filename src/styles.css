@@ -108,3 +108,53 @@
 @keyframes aloko-type-caret{to{visibility:hidden}}
 @media(max-width:700px){.hero-copy h1.hero-typing-headline{min-height:2.5em;letter-spacing:-2.3px;line-height:1.04}}
 @media(prefers-reduced-motion:reduce){.hero-typing-headline i{animation:none}}
+
+/* Keep the hero geometry locked while the typewriter changes copy. */
+.hero-copy h1.hero-typing-headline{
+  display:flex;
+  align-items:center;
+  width:100%;
+  max-width:690px;
+  height:2.12em;
+  min-height:2.12em;
+  max-height:2.12em;
+  overflow:hidden;
+  margin:19px 0 12px;
+  font-family:Manrope,sans-serif;
+  font-weight:800;
+  font-size:clamp(48px,5.4vw,76px);
+  line-height:.99;
+  letter-spacing:-4px;
+}
+.hero-copy h1.hero-typing-headline>span{
+  display:block;
+  width:100%;
+  max-width:100%;
+  color:#fff;
+  overflow-wrap:normal;
+  word-break:normal;
+  white-space:normal;
+  text-wrap:balance;
+}
+.hero-copy h1.hero-typing-headline>i{
+  flex:0 0 3px;
+  width:3px;
+  height:.78em;
+  margin-left:6px;
+  align-self:center;
+  border-radius:3px;
+  background:#d37aff;
+  animation:aloko-type-caret .82s steps(2,start) infinite;
+}
+@media(max-width:700px){
+  .hero-copy h1.hero-typing-headline{
+    height:2.12em;
+    min-height:2.12em;
+    max-height:2.12em;
+    font-size:clamp(39px,10.3vw,58px);
+    letter-spacing:-2.5px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-copy h1.hero-typing-headline>i{animation:none}
+}
