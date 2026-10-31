@@ -207,3 +207,10 @@ export function getProviderAvailability() {
 export function saveProviderAvailability(availability, timezone = "Africa/Lagos") {
   return request("/api/provider-availability", { method: "PUT", body: { availability, timezone } });
 }
+
+export function saveProviderAvailabilityException(exception) {
+  return request("/api/provider-availability", { method: "POST", body: exception });
+}
+export function deleteProviderAvailabilityException(id) {
+  return request("/api/provider-availability", { method: "DELETE", body: { id } });
+}
