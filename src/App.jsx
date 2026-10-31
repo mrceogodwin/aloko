@@ -14,10 +14,14 @@ const categories = [
 ];
 
 const demoPhotoByCategory = {
-  "Home & Living": "photo-1586023492125-27b2c045efd7", Furniture: "photo-1555041469-a586c61ea9bc",
-  Kitchenware: "photo-1556911220-bff31c812dba", "Property & Garden": "photo-1600210492486-724fe5c67fb0",
-  Electronics: "photo-1496181133206-80ce9b88a853", Fashion: "photo-衣服",
-  "Books & Hobbies": "photo-1494438639946-1ebd1d20bf85", "Free items": "photo-1494438639946-1ebd1d20bf85"
+  "Home & Living": "photo-1600210492486-724fe5c67fb0",
+  Furniture: "photo-1555041469-a586c61ea9bc",
+  Kitchenware: "photo-1556911220-bff31c812dba",
+  "Property & Garden": "photo-1600210492486-724fe5c67fb0",
+  Electronics: "photo-1496181133206-80ce9b88a853",
+  Fashion: "photo-1483985988355-763728e1935b",
+  Books: "photo-1494438639946-1ebd1d20bf85",
+  "Free items": "photo-1494438639946-1ebd1d20bf85"
 };
 
 function formatNaira(value) {
@@ -40,7 +44,7 @@ function normalizeLiveListing(item) {
     category: item.category,
     description: item.description || "Contact the seller for more details.",
     sellerName: item.seller_display_name || "Aloko seller",
-    image: demoPhotoByCategory[item.category] || (item.kind === "giveaway" ? demoPhotoByCategory["Free items"] : /chair|table|shelf|cabinet|wardrobe|sofa|furniture/i.test(item.title) ? demoPhotoByCategory.Furniture : /kitchen|cook|plate|blender|stove/i.test(item.title) ? demoPhotoByCategory.Kitchenware : /box|moving|carton/i.test(item.title) ? "photo-1494438639946-1ebd1d20bf85" : /laptop|phone|tv|samsung|computer/i.test(item.title) ? demoPhotoByCategory.Electronics : ""),
+    image: /chair|table|shelf|cabinet|wardrobe|sofa|furniture|study desk/i.test(item.title) ? demoPhotoByCategory.Furniture : /kitchen|cook|plate|blender|stove/i.test(item.title) ? demoPhotoByCategory.Kitchenware : /box|moving|carton/i.test(item.title) ? "photo-1494438639946-1ebd1d20bf85" : /laptop|phone|tv|samsung|computer|hp elitebook/i.test(item.title) ? demoPhotoByCategory.Electronics : demoPhotoByCategory[item.category] || (item.kind === "giveaway" ? demoPhotoByCategory["Free items"] : demoPhotoByCategory["Home & Living"]),
     kind: item.kind,
     quantity: item.quantity,
     live: true
