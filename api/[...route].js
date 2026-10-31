@@ -1,4 +1,5 @@
 import conversations from "./_handlers/conversations.js";
+import buyerPreferences from "./_handlers/buyer-preferences.js";
 import health from "./_handlers/health.js";
 import listingCredits from "./_handlers/listing-credits.js";
 import listingImages from "./_handlers/listing-images.js";
@@ -17,6 +18,7 @@ import savedListings from "./_handlers/saved-listings.js";
 import sellerStore from "./_handlers/seller-store.js";
 
 const handlers = {
+  "buyer-preferences": buyerPreferences,
   "conversations": conversations,
   "health": health,
   "listing-credits": listingCredits,
