@@ -78,14 +78,49 @@ export function createServiceRequestsHandler({ getDatabase = getPool } = {}) {
               end.getTime() - start.getTime() > 24 * 60 * 60 * 1000) {
             return res.status(400).json({error:"Choose a future appointment window no longer than 24 hours"});
           }
+          if ((start.toISOString().slice(0,10)!==end.toISOString().slice(0,10)) ||
+              start.getTime()<=Date.now()) return res.status(400).json({error:"Appointment must start in the future and finish on the same calendar day"});
           const result = await database.query(
-            `UPDATE public.service_requests SET proposed_start=$3::timestamptz,proposed_end=$4::timestamptz,
+            `UPDATE public.service_requests sr SET proposed_start=$3::timestamptz,proposed_end=$4::timestamptz,
                     status='accepted',updated_at=now()
-             WHERE id=$1::uuid AND provider_id=$2::uuid AND status='accepted'
-             RETURNING id,status,proposed_start,proposed_end,updated_at`,
+             WHERE sr.id=$1::uuid AND sr.provider_id=$2::uuid AND sr.status='accepted'
+               AND EXISTS (
+                 SELECT 1 FROM public.service_provider_profiles p
+                 WHERE p.provider_id=sr.provider_id AND p.status='approved' AND p.is_accepting_requests=true
+                   AND (
+                     EXISTS (
+                       SELECT 1 FROM public.service_provider_availability_exceptions e
+                       WHERE e.provider_id=p.provider_id
+                         AND e.exception_date=($3::timestamptz AT TIME ZONE COALESCE(
+                           (SELECT a.timezone FROM public.service_provider_availability a WHERE a.provider_id=p.provider_id LIMIT 1),
+                           'Africa/Lagos'))::date
+                         AND e.is_available=true
+                         AND ($3::timestamptz AT TIME ZONE COALESCE((SELECT a.timezone FROM public.service_provider_availability a WHERE a.provider_id=p.provider_id LIMIT 1),'Africa/Lagos'))::time >= e.starts_at
+                         AND ($4::timestamptz AT TIME ZONE COALESCE((SELECT a.timezone FROM public.service_provider_availability a WHERE a.provider_id=p.provider_id LIMIT 1),'Africa/Lagos'))::time <= e.ends_at
+                     )
+                     OR (
+                       NOT EXISTS (
+                         SELECT 1 FROM public.service_provider_availability_exceptions e
+                         WHERE e.provider_id=p.provider_id
+                           AND e.exception_date=($3::timestamptz AT TIME ZONE COALESCE(
+                             (SELECT a.timezone FROM public.service_provider_availability a WHERE a.provider_id=p.provider_id LIMIT 1),
+                             'Africa/Lagos'))::date
+                       )
+                       AND EXISTS (
+                         SELECT 1 FROM public.service_provider_availability a
+                         WHERE a.provider_id=p.provider_id AND a.is_active=true
+                           AND a.weekday=EXTRACT(DOW FROM ($3::timestamptz AT TIME ZONE a.timezone))::int
+                           AND ($3::timestamptz AT TIME ZONE a.timezone)::date=($4::timestamptz AT TIME ZONE a.timezone)::date
+                           AND ($3::timestamptz AT TIME ZONE a.timezone)::time >= a.starts_at
+                           AND ($4::timestamptz AT TIME ZONE a.timezone)::time <= a.ends_at
+                       )
+                     )
+                   )
+               )
+             RETURNING sr.id,sr.status,sr.proposed_start,sr.proposed_end,sr.updated_at`,
             [requestId,auth.user.id,start.toISOString(),end.toISOString()],
           );
-          if (!result.rows?.length) return res.status(409).json({error:"A schedule can be proposed after the customer accepts your quote"});
+          if (!result.rows?.length) return res.status(409).json({error:"That appointment falls outside your saved availability or on a day off. Update availability or choose another time."});
           return res.status(200).json({request:result.rows[0],message:"Appointment time proposed. The customer must confirm it."});
         }
         if (action === "confirm_schedule") {
