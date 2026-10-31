@@ -3,8 +3,9 @@ import { matchesListingQuery, sortListings, validateListingDraft } from "./marke
 import { hasAccessToken, openConversation } from "./api-client.js";
 
 const categories = [
-  ["⌂", "Home & Living"], ["▣", "Phones & Tech"], ["♧", "Fashion"], ["◈", "Appliances"],
-  ["♧", "Furniture"], ["▤", "Books & Hobbies"], ["✿", "Free items"], ["↗", "Services"]
+  ["▣", "Electronics"], ["♧", "Fashion"], ["⌂", "Home & Living"], ["🚗", "Vehicles"],
+  ["✿", "Health & Beauty"], ["◉", "Sports & Hobbies"], ["♙", "Baby & Kids"], ["✚", "Free items"],
+  ["▦", "Bulk Deals"], ["↗", "Services"]
 ];
 
 function formatNaira(value) {
@@ -102,7 +103,13 @@ function App() {
     matchesListingQuery(p, query) &&
     (activeCategory === "All" ||
       (activeCategory === "Free items" ? p.kind === "giveaway" :
-        activeCategory === "Services" ? false : p.category === activeCategory)) &&
+        activeCategory === "Bulk Deals" ? p.kind === "bulk" :
+        activeCategory === "Services" ? false :
+        activeCategory === "Electronics" ? /electronics|phones|tech/i.test(p.category) :
+        activeCategory === "Health & Beauty" ? /health|beauty/i.test(p.category) :
+        activeCategory === "Sports & Hobbies" ? /sports|hobbies/i.test(p.category) :
+        activeCategory === "Baby & Kids" ? /baby|kids|children/i.test(p.category) :
+        p.category === activeCategory)) &&
     (!savedOnly || saved.includes(p.id)) &&
     (selectedLocation === "All locations" || (p.place && p.place.includes(selectedLocation.replace("All locations", "").trim())) || selectedLocation === "All locations") &&
     (selectedCondition === "Any condition" || p.condition === selectedCondition)
@@ -177,6 +184,10 @@ function App() {
                 className={activeCategory === label ? "category-chip active" : "category-chip"}
                 onClick={() => {
                 setSavedOnly(false);
+                if (label === "Services") {
+                  document.getElementById("services")?.scrollIntoView({ behavior: "smooth" });
+                  return;
+                }
                 setActiveCategory(label);
                 document.getElementById("explore")?.scrollIntoView({ behavior: "smooth" });
               }}
