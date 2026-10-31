@@ -17,6 +17,8 @@ import reportListing from "./_handlers/report-listing.js";
 import savedListings from "./_handlers/saved-listings.js";
 import savedSellers from "./_handlers/saved-sellers.js";
 import sellerOnboarding from "./_handlers/seller-onboarding.js";
+import sellerVerificationQueue from "./_handlers/seller-verification-queue.js";
+import sellerVerificationDecide from "./_handlers/seller-verification-decide.js";
 import sellerStore from "./_handlers/seller-store.js";
 
 const handlers = {
@@ -40,6 +42,8 @@ const handlers = {
   "saved-sellers": savedSellers,
   "seller-store": sellerStore,
   "seller-onboarding": sellerOnboarding,
+  "seller-verification-queue": sellerVerificationQueue,
+  "seller-verification-decide": sellerVerificationDecide,
 };
 
 function getRoute(req) {
