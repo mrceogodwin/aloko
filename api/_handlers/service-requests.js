@@ -18,7 +18,7 @@ export function createServiceRequestsHandler({ getDatabase = getPool } = {}) {
     if (!auth.ok) return res.status(auth.status).json({error:auth.error});
     if (!UUID.test(auth.user.id)) return res.status(401).json({error:"Marketplace account is not configured"});
     if (!database) return res.status(503).json({error:"Service requests are temporarily unavailable"});
-    const limited = rateLimit(req,{scope:"service-requests",limit:req.method==="POST"?5:30,windowMs:60000});
+    const limited = rateLimit(req,{scope:"service-requests",limit:req.method==="POST"||req.method==="PATCH"?5:30,windowMs:60000});
     if (!limited.ok) { res.setHeader("Retry-After",String(limited.retryAfterSec)); return res.status(limited.status).json({error:limited.error}); }
 
     try {
@@ -38,7 +38,53 @@ export function createServiceRequestsHandler({ getDatabase = getPool } = {}) {
         );
         return res.status(200).json({items:result.rows||[]});
       }
-      if (req.method !== "POST") { res.setHeader("Allow","GET, POST"); return res.status(405).json({error:"Method not allowed"}); }
+      if (req.method === "PATCH") {
+        const body = req.body && typeof req.body === "object" ? req.body : {};
+        const requestId = typeof body.request_id === "string" ? body.request_id : "";
+        const action = body.action;
+        if (!UUID.test(requestId) || !["quote","accept","cancel"].includes(action)) {
+          return res.status(400).json({error:"Choose a valid service request and action"});
+        }
+        if (action === "quote") {
+          const provider = await database.query(
+            "SELECT provider_id FROM public.service_provider_profiles WHERE provider_id=$1::uuid AND status='approved' AND is_accepting_requests=true",
+            [auth.user.id],
+          );
+          if (!provider.rows?.length) return res.status(403).json({error:"Only approved providers accepting requests can send quotes"});
+          const amount = Number(body.amount_naira);
+          if (!Number.isSafeInteger(amount) || amount < 1 || amount > 100000000) {
+            return res.status(400).json({error:"Enter a valid quote amount in naira"});
+          }
+          const result = await database.query(
+            `UPDATE public.service_requests
+             SET quoted_amount_kobo=$3::bigint,status='quoted',updated_at=now()
+             WHERE id=$1::uuid AND provider_id=$2::uuid AND status IN ('requested','quoted')
+             RETURNING id,status,quoted_amount_kobo,updated_at`,
+            [requestId,auth.user.id,amount*100],
+          );
+          if (!result.rows?.length) return res.status(404).json({error:"This request is not assigned to your provider account"});
+          return res.status(200).json({request:result.rows[0],message:"Your quote has been sent to the customer."});
+        }
+        if (action === "accept") {
+          const result = await database.query(
+            `UPDATE public.service_requests SET status='accepted',updated_at=now()
+             WHERE id=$1::uuid AND customer_id=$2::uuid AND status='quoted'
+             RETURNING id,status,quoted_amount_kobo,updated_at`,
+            [requestId,auth.user.id],
+          );
+          if (!result.rows?.length) return res.status(404).json({error:"No quoted request was found for your account"});
+          return res.status(200).json({request:result.rows[0],message:"Quote accepted. Contact the provider to confirm the schedule."});
+        }
+        const result = await database.query(
+          `UPDATE public.service_requests SET status='cancelled',updated_at=now()
+           WHERE id=$1::uuid AND customer_id=$2::uuid AND status IN ('requested','quoted')
+           RETURNING id,status,updated_at`,
+          [requestId,auth.user.id],
+        );
+        if (!result.rows?.length) return res.status(404).json({error:"This request cannot be cancelled"});
+        return res.status(200).json({request:result.rows[0],message:"Service request cancelled."});
+      }
+      if (req.method !== "POST") { res.setHeader("Allow","GET, POST, PATCH"); return res.status(405).json({error:"Method not allowed"}); }
       const body = req.body && typeof req.body === "object" ? req.body : {};
       const type = typeof body.service_type === "string" ? body.service_type : "decluttering";
       const description = typeof body.description === "string" ? body.description.trim() : "";
