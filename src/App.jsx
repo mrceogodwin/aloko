@@ -3,6 +3,8 @@ import { matchesListingQuery, sortListings, validateListingDraft } from "./marke
 import { hasAccessToken, openConversation, createListing } from "./api-client.js";
 import { getAuthSession, signUpWithEmail, signInWithEmail, signOutFromAloko } from "./auth.js";
 
+const heroTypingPhrases = ["Platform for all Declutter Businesses","Home Decluttering","Office Clear-outs","Moving & Relocation","Estate Clearances","Wardrobe Decluttering","Furniture Removal","Appliance Reuse","Donation Collection","Charity Redistribution","Storage Organisation","Garage Clear-outs","Kitchen Decluttering","Paperwork Sorting","E-waste Collection","Bulk Item Resale","Property Staging","Student Move-outs","Professional Organisers","Business Clear-outs","Responsible Reuse & Disposal"];
+
 const categories = [
   ["▣", "Electronics"], ["♧", "Fashion"], ["⌂", "Home & Living"], ["🚗", "Vehicles"],
   ["✿", "Health & Beauty"], ["◉", "Sports & Hobbies"], ["♙", "Baby & Kids"], ["✚", "Free items"],
@@ -37,6 +39,35 @@ function normalizeLiveListing(item) {
 }
 
 function App() {
+  const [typedHeadline, setTypedHeadline] = useState("");
+  useEffect(() => {
+    let phraseIndex = 0;
+    let characterIndex = 0;
+    let deleting = false;
+    let timeout;
+    const tick = () => {
+      const phrase = heroTypingPhrases[phraseIndex];
+      if (!deleting && characterIndex < phrase.length) {
+        characterIndex += 1;
+        setTypedHeadline(phrase.slice(0, characterIndex));
+        timeout = window.setTimeout(tick, 72);
+      } else if (!deleting) {
+        deleting = true;
+        timeout = window.setTimeout(tick, 1450);
+      } else if (characterIndex > 0) {
+        characterIndex -= 1;
+        setTypedHeadline(phrase.slice(0, characterIndex));
+        timeout = window.setTimeout(tick, 30);
+      } else {
+        deleting = false;
+        phraseIndex = (phraseIndex + 1) % heroTypingPhrases.length;
+        timeout = window.setTimeout(tick, 360);
+      }
+    };
+    timeout = window.setTimeout(tick, 420);
+    return () => window.clearTimeout(timeout);
+  }, []);
+
   const [liveProducts, setLiveProducts] = useState(null);
   const [listingLoadState, setListingLoadState] = useState("loading");
   const [listingReloadKey, setListingReloadKey] = useState(0);
@@ -171,8 +202,8 @@ function App() {
         <section className="hero flagship-hero" id="top">
           <div className="hero-inner wrap">
             <div className="hero-copy">
-              <span className="eyebrow hero-eyebrow">Platform for all Declutter Businesses</span>
-              <h1>Sell It. <em>Give It.</em><br/><span>Pass It On.</span></h1>
+              <span className="eyebrow hero-eyebrow">Nigeria’s Reuse &amp; Decluttering Marketplace</span>
+              <h1 className="hero-typing-headline"><span>{typedHeadline}</span><i aria-hidden="true" /></h1>
               <p>Buy and sell pre-owned items, give usable things away for free, discover bulk deals, or book decluttering services — all in one place.</p>
               <div className="hero-actions">
                 <button className="hero-primary" onClick={() => setListingFormOpen(true)}>♢ &nbsp; Start Selling <span>→</span></button>
