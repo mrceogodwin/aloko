@@ -74,7 +74,7 @@ test("listing creation derives seller identity and queues moderation regardless 
   const handler = createListingCreateHandler({ getDatabase: () => ({
     async query(sql, values) {
       received = { sql, values };
-      return { rows: [{ id: "listing-1", status: "pending_review" }] };
+      return { rows: [{ item: { id: "listing-1", status: "pending_review" }, eligible: true, credit_used: true, ledger_written: true }] };
     },
   }) });
   const res = responseRecorder();
@@ -86,6 +86,7 @@ test("listing creation derives seller identity and queues moderation regardless 
 
   assert.equal(res.statusCode, 201);
   assert.equal(res.body.item.status, "pending_review");
+  assert.equal(res.body.credit_balance_updated, true);
   assert.match(received.sql, /'pending_review'::public\.listing_status/);
   assert.equal(received.values[0], sellerId);
   assert.equal(received.values.length, 13);
@@ -93,6 +94,8 @@ test("listing creation derives seller identity and queues moderation regardless 
   assert.match(received.sql, /p\.account_type IN/);
   assert.match(received.sql, /seller_stores/);
   assert.match(received.sql, /verification_status = 'approved'/);
+  assert.match(received.sql, /UPDATE public\\.listing_credit_accounts/);
+  assert.match(received.sql, /INSERT INTO public\\.credit_ledger/);
   assert.equal(received.values.includes("active"), false);
   assert.equal(received.values.includes("approved"), false);
 });
