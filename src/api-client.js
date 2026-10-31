@@ -185,3 +185,11 @@ export function getMyServiceProviderProfile() {
 export function submitServiceProviderProfile(details) {
   return request("/api/service-providers", { method: "POST", body: details });
 }
+
+export function listServiceProviderApplications() {
+  return request("/api/service-provider-review");
+}
+
+export function reviewServiceProvider(provider_id, decision, note = "") {
+  return request("/api/service-provider-review", { method: "POST", body: { provider_id, decision, note } });
+}
