@@ -130,3 +130,15 @@ export function getBuyerPreferences() {
 export function saveBuyerPreferences(preferences) {
   return request("/api/buyer-preferences", { method: "PUT", body: preferences });
 }
+
+export function listFollowedSellers() {
+  return request("/api/saved-sellers");
+}
+
+export function followSeller(sellerId) {
+  return request("/api/saved-sellers", { method: "POST", body: { seller_id: sellerId } });
+}
+
+export function unfollowSeller(sellerId) {
+  return request("/api/saved-sellers", { method: "DELETE", body: { seller_id: sellerId } });
+}
