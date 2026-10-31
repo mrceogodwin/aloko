@@ -194,9 +194,9 @@ export function reviewServiceProvider(provider_id, decision, note = "") {
   return request("/api/service-provider-review", { method: "POST", body: { provider_id, decision, note } });
 }
 
-export function updateServiceRequest(request_id, action, amount_naira) {
+export function updateServiceRequest(request_id, action, amount_naira, extra = {}) {
   return request("/api/service-requests", {
     method: "PATCH",
-    body: { request_id, action, ...(amount_naira == null ? {} : { amount_naira }) },
+    body: { request_id, action, ...(amount_naira == null ? {} : { amount_naira }), ...extra },
   });
 }
