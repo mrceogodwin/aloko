@@ -169,3 +169,19 @@ export function createServiceRequest(details) {
 export function listMyServiceRequests() {
   return request("/api/service-requests");
 }
+
+export function listServiceProviders(filters = {}) {
+  const params = new URLSearchParams();
+  if (filters.service_type) params.set("service_type", filters.service_type);
+  if (filters.state) params.set("state", filters.state);
+  if (filters.city) params.set("city", filters.city);
+  return request(`/api/service-providers?${params.toString()}`);
+}
+
+export function getMyServiceProviderProfile() {
+  return request("/api/service-providers?mode=mine");
+}
+
+export function submitServiceProviderProfile(details) {
+  return request("/api/service-providers", { method: "POST", body: details });
+}
