@@ -26,15 +26,15 @@ test("admin can list pending seller applications without receiving private docum
   const handler = createSellerVerificationQueueHandler({
     getDatabase: () => ({ async query(sql) {
       assert.match(sql, /verification_applications/);
-      assert.match(sql, /has_identity_document/);
-      assert.doesNotMatch(sql, /identity_document_key,/);
-      return { rows: [{ id: applicationId, has_identity_document: true }] };
+      assert.match(sql, /cac_registration_number/);
+      assert.doesNotMatch(sql, /identity_document_key|business_document_keys/);
+      return { rows: [{ id: applicationId, legal_name: "Test Seller" }] };
     } }),
   });
   const res = responseRecorder();
   await handler({ method: "GET", auth: admin }, res);
   assert.equal(res.statusCode, 200);
-  assert.equal(res.body.items[0].has_identity_document, true);
+  assert.equal(res.body.items[0].legal_name, "Test Seller");
 });
 
 test("seller verification decisions require admin rather than moderator access", async () => {
@@ -48,7 +48,7 @@ test("seller verification decisions require admin rather than moderator access",
   assert.equal(res.statusCode, 403);
 });
 
-test("admin approval requires identity and business evidence before changing status", async () => {
+test("admin approval checks typed legal and CAC details without requiring document uploads", async () => {
   let sqlSeen = "";
   const handler = createSellerVerificationDecideHandler({
     getDatabase: () => ({ async query(sql) {
