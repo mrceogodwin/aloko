@@ -100,3 +100,20 @@ export function createListing(listing) {
     body: listing,
   });
 }
+
+
+export function listSavedListings() {
+  return request("/api/saved-listings");
+}
+
+export function saveListing(listingId) {
+  return request("/api/saved-listings", { method: "POST", body: { listing_id: listingId } });
+}
+
+export function unsaveListing(listingId) {
+  return request("/api/saved-listings", { method: "DELETE", body: { listing_id: listingId } });
+}
+
+export function getMarketplaceProfile() {
+  return request("/api/me");
+}
