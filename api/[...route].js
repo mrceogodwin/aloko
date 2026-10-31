@@ -40,7 +40,8 @@ function getRoute(req) {
   if (typeof route === "string" && route) return route;
   const host = req.headers?.host || "localhost";
   const pathname = new URL(req.url || "/", `https://${host}`).pathname;
-  return pathname.replace(/^\\/api\\/?/, "").replace(/\\/$/, "");
+  const prefix = "/api/";
+  return pathname.startsWith(prefix) ? pathname.slice(prefix.length).replace(/\/$/, "") : "";
 }
 
 export default async function handler(req, res) {
