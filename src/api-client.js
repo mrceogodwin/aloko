@@ -200,3 +200,10 @@ export function updateServiceRequest(request_id, action, amount_naira, extra = {
     body: { request_id, action, ...(amount_naira == null ? {} : { amount_naira }), ...extra },
   });
 }
+
+export function getProviderAvailability() {
+  return request("/api/provider-availability");
+}
+export function saveProviderAvailability(availability, timezone = "Africa/Lagos") {
+  return request("/api/provider-availability", { method: "PUT", body: { availability, timezone } });
+}
