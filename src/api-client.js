@@ -117,3 +117,7 @@ export function unsaveListing(listingId) {
 export function getMarketplaceProfile() {
   return request("/api/me");
 }
+
+export function getSellerStore(sellerId) {
+  return request(`/api/seller-store?seller_id=${encodeURIComponent(sellerId)}`);
+}
