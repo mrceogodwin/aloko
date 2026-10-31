@@ -371,3 +371,22 @@
 .seller-onboarding-form .seller-onboarding-check input{width:17px;min-height:17px;accent-color:#292a25}
 .seller-onboarding-footnote{margin:0;color:var(--muted,#777);font-size:12px;line-height:1.5}
 @media(max-width:640px){.seller-onboarding-entry{align-items:flex-start;flex-direction:column;padding:18px}.seller-onboarding-grid{grid-template-columns:1fr}.seller-onboarding-form fieldset{display:grid;gap:12px}}
+
+
+.admin-verification-panel{max-width:1000px;margin-inline:auto}
+.admin-verification-list{display:grid;gap:16px}
+.admin-verification-card{padding:22px;border:1px solid var(--line,#e7e5e0);border-radius:16px;background:#fff}
+.admin-verification-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.admin-verification-card-head h3{margin:7px 0 3px;font-size:19px}
+.admin-verification-card-head p{margin:0;color:var(--muted,#777);font-size:13px}
+.admin-verification-card dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:20px 0}
+.admin-verification-card dl div{min-width:0}
+.admin-verification-card dt{margin-bottom:5px;color:var(--muted,#777);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+.admin-verification-card dd{margin:0;overflow-wrap:anywhere;font-size:14px;font-weight:600}
+.admin-verification-note-field{display:grid;gap:8px;font-size:13px;font-weight:650}
+.admin-verification-note-field textarea{width:100%;padding:12px;border:1px solid var(--line,#deddd7);border-radius:10px;font:inherit;font-size:13px;resize:vertical}
+.admin-verification-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
+.admin-verification-actions button{padding:10px 14px;border:1px solid var(--line,#deddd7);border-radius:9px;background:#fff;font-weight:650;cursor:pointer}
+.admin-verification-actions button:first-child{background:#252720;color:#fff;border-color:#252720}
+.admin-verification-actions button:disabled{opacity:.5;cursor:wait}
+@media(max-width:640px){.admin-verification-card{padding:16px}.admin-verification-card dl{grid-template-columns:1fr}.admin-verification-card-head{flex-direction:column}}
