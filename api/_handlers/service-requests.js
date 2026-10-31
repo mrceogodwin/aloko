@@ -45,16 +45,25 @@ export function createServiceRequestsHandler({ getDatabase = getPool } = {}) {
       const city = typeof body.city === "string" ? body.city.trim() : "";
       const state = typeof body.state === "string" ? body.state.trim() : "";
       const date = body.preferred_date == null || body.preferred_date === "" ? null : body.preferred_date;
+      const providerId = body.provider_id == null || body.provider_id === "" ? null : body.provider_id;
       if (!TYPES.has(type) || description.length < 10 || description.length > 3000 ||
           !city || city.length > 100 || !state || state.length > 100 ||
-          (date !== null && (typeof date !== "string" || !/^\\d{4}-\\d{2}-\\d{2}$/.test(date) || Number.isNaN(Date.parse(date+"T00:00:00Z"))))) {
+          (date !== null && (typeof date !== "string" || !/^\\d{4}-\\d{2}-\\d{2}$/.test(date) || Number.isNaN(Date.parse(date+"T00:00:00Z"))) ||
+          (providerId !== null && (typeof providerId !== "string" || !UUID.test(providerId) || providerId === auth.user.id))) {
         return res.status(400).json({error:"Provide a service type, a description of at least 10 characters, city and state. Preferred date is optional."});
       }
+      if (providerId) {
+        const eligible = await database.query(
+          "SELECT provider_id FROM public.service_provider_profiles WHERE provider_id=$1::uuid AND status='approved' AND is_accepting_requests=true",
+          [providerId],
+        );
+        if (!eligible.rows?.length) return res.status(400).json({error:"That service provider is not currently accepting enquiries"});
+      }
       const result = await database.query(
-        `INSERT INTO public.service_requests (customer_id,service_type,description,city,state,preferred_date)
-         VALUES ($1::uuid,$2,$3,$4,$5,$6::date)
-         RETURNING id,service_type,description,city,state,preferred_date,status,created_at`,
-        [auth.user.id,type,description,city,state,date],
+        `INSERT INTO public.service_requests (customer_id,provider_id,service_type,description,city,state,preferred_date)
+         VALUES ($1::uuid,$2::uuid,$3,$4,$5,$6,$7::date)
+         RETURNING id,provider_id,service_type,description,city,state,preferred_date,status,created_at`,
+        [auth.user.id,providerId,type,description,city,state,date],
       );
       return res.status(201).json({request:result.rows?.[0]||null,message:"Your service enquiry has been sent to Aloko. We’ll connect you with a suitable provider."});
     } catch {
