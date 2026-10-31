@@ -65,6 +65,10 @@ test("admin approval checks typed legal and CAC details without requiring docume
   assert.match(sqlSeen, /length\(trim\(business_name\)\) >= 2/);
   assert.match(sqlSeen, /length\(trim\(cac_registration_number\)\) >= 4/);
   assert.doesNotMatch(sqlSeen, /identity_document_key|business_document_keys/);
+  assert.match(sqlSeen, /listing_credit_accounts/);
+  assert.match(sqlSeen, /credit_ledger/);
+  assert.match(sqlSeen, /introductory_grant/);
+  assert.match(sqlSeen, /SELECT r\.applicant_id, 3, now\(\)/);
   assert.equal(res.statusCode, 404);
 });
 
