@@ -172,7 +172,7 @@ function WorkspaceScreen({ screen, authUser, onLogin, onSell, onSellerOnboarding
 
   const localSavedListings = localListings.filter(item => localSaved.includes(item.id));
   const titleMap = { seller: "Seller workspace", "seller-onboarding": "Become an Aloko seller", inbox: "Messages", saved: "Saved items", account: "My account", store: storeData?.store?.display_name ? `${storeData.store.display_name}’s store` : "Seller storefront" };
-  if (!authUser && ["seller", "inbox", "account"].includes(screen)) {
+  if (!authUser && ["seller", "seller-onboarding", "inbox", "account"].includes(screen)) {
     return <section className="workspace-page"><div className="workspace-gate"><span className="workspace-icon">✦</span><span className="eyebrow">YOUR ALOKO ACCOUNT</span><h1>Everything in its right place.</h1><p>Sign in to manage your listings, talk to buyers and keep your Aloko activity together.</p><button className="workspace-primary" onClick={onLogin}>Sign in to continue <span>→</span></button><button className="workspace-link" onClick={onLogin}>New to Aloko? Create an account</button></div></section>;
   }
 
