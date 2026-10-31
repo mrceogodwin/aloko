@@ -94,3 +94,9 @@
 .listing-form-actions button:disabled{opacity:.65;cursor:wait}
 .listing-form-footnote{font-size:11px;line-height:1.5;color:#8b7e9b}
 @media(max-width:600px){.listing-post-form{grid-template-columns:1fr}.listing-post-form>label,.listing-form-actions,.listing-form-footnote{grid-column:1}.listing-form-row{grid-template-columns:1fr 1fr}.listing-form-actions{flex-direction:column}}
+
+.inline-auth-switch{border:0;background:none;color:#7814d5;font:inherit;font-weight:800;text-decoration:underline;cursor:pointer;padding:0 3px}
+.inline-auth-switch:disabled{opacity:.6;cursor:wait}
+.account-modal .listing-demo-note{line-height:1.55}
+.account-modal .listing-create-form{gap:14px}
+.account-modal .listing-create-form button:disabled{opacity:.65;cursor:wait}
