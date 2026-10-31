@@ -137,7 +137,10 @@ function App() {
   useEffect(() => {
     const controller = new AbortController();
     setListingLoadState("loading");
-    fetch("/api/listings?limit=24", { signal: controller.signal })
+    const params = new URLSearchParams({ limit: "24" });
+    if (selectedLocation !== "All locations") params.set("state", selectedLocation);
+    if (query.trim()) params.set("q", query.trim());
+    fetch(`/api/listings?${params.toString()}`, { signal: controller.signal })
       .then(r => { if (!r.ok) throw new Error("unavailable"); return r.json(); })
       .then(payload => {
         if (!payload || !Array.isArray(payload.items)) throw new Error("bad payload");
@@ -152,7 +155,7 @@ function App() {
         }
       });
     return () => controller.abort();
-  }, [listingReloadKey]);
+  }, [listingReloadKey, selectedLocation, query]);
 
   useEffect(() => {
     try { window.localStorage.setItem("aloko:saved-items", JSON.stringify(saved)); } catch {}
