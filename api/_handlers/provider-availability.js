@@ -29,7 +29,7 @@ export function createProviderAvailabilityHandler({getDatabase=getPool}={}) {
     const slots=body.availability;
     const timezone=typeof body.timezone==="string"?body.timezone:"Africa/Lagos";
     if(!Array.isArray(slots)||slots.length>28||!ZONE.test(timezone))return res.status(400).json({error:"Provide a valid weekly schedule and timezone"});
-    const seen=new Set();
+    const zoneResult=await database.query("SELECT name FROM pg_timezone_names WHERE name=$1",[timezone]);\n    if(!zoneResult.rows?.length)return res.status(400).json({error:"Choose a recognised timezone"});\n    const seen=new Set();
     for(const slot of slots){
      if(!slot||!DAYS.has(Number(slot.weekday))||typeof slot.starts_at!=="string"||!TIME.test(slot.starts_at)||typeof slot.ends_at!=="string"||!TIME.test(slot.ends_at)||slot.ends_at<=slot.starts_at)return res.status(400).json({error:"Each availability slot needs a valid weekday, start and end time"});
      const key=[slot.weekday,slot.starts_at,slot.ends_at].join("|");if(seen.has(key))return res.status(400).json({error:"Duplicate availability slot"});seen.add(key);
