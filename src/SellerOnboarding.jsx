@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getSellerOnboarding, submitSellerOnboarding } from "./api-client.js";
+import { getSellerOnboarding, submitSellerOnboarding, claimIntroductoryCredits } from "./api-client.js";
 
 const states = ["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","FCT","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"];
 
@@ -43,6 +43,13 @@ export default function SellerOnboarding({ onNotice }) {
           delivery_available: item.delivery_available === true
         }));
         setStatus(item.application_status || item.verification_status || null);
+        if (item.verification_status === "approved") {
+          claimIntroductoryCredits().then(grant => {
+            if (active && grant.ok && !grant.data?.already_granted) {
+              onNotice?.("Your seller store is approved. Three introductory listing credits have been added.");
+            }
+          }).catch(() => {});
+        }
       }
     }).catch(() => { if (active) setError("Network error loading seller onboarding."); })
       .finally(() => { if (active) setLoading(false); });
