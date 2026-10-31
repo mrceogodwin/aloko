@@ -14,6 +14,7 @@ import moderationQueue from "./_handlers/moderation-queue.js";
 import myListings from "./_handlers/my-listings.js";
 import reportListing from "./_handlers/report-listing.js";
 import savedListings from "./_handlers/saved-listings.js";
+import sellerStore from "./_handlers/seller-store.js";
 
 const handlers = {
   "conversations": conversations,
@@ -32,6 +33,7 @@ const handlers = {
   "my-listings": myListings,
   "report-listing": reportListing,
   "saved-listings": savedListings,
+  "seller-store": sellerStore,
 };
 
 function getRoute(req) {
