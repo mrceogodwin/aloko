@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getMyServiceProviderProfile, listServiceProviders, submitServiceProviderProfile, listMyServiceRequests, updateServiceRequest, createServiceRequest } from "./api-client.js";
+import { getMyServiceProviderProfile, listServiceProviders, submitServiceProviderProfile, listMyServiceRequests, updateServiceRequest, createServiceRequest, getProviderAvailability, saveProviderAvailability } from "./api-client.js";
 
 const states=["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","FCT","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"];
 const serviceOptions=[["decluttering","Decluttering & clear-outs"],["organising","Professional organising"],["bulk_removal","Bulk item removal"]];
@@ -11,7 +11,7 @@ export default function ServiceProviders({authUser,onLogin,onNotice}){
  const loadAvailability=async()=>{const r=await getProviderAvailability();if(r.ok)setAvailability(r.data?.availability||[]);};
  const saveAvailability=async()=>{setAvailabilityBusy(true);try{const r=await saveProviderAvailability(availability,"Africa/Lagos");if(!r.ok){onNotice(r.data?.error||"Could not save availability.");return;}setAvailability(r.data?.availability||[]);onNotice(r.data?.message||"Weekly availability saved.");}catch{onNotice("Network error saving availability.");}finally{setAvailabilityBusy(false);}};
  const addAvailability=()=>setAvailability(v=>[...v,{weekday:1,starts_at:"09:00",ends_at:"17:00",timezone:"Africa/Lagos",is_active:true}]);
- const updateAvailability=(i,k,v)=>setAvailability(items=>items.map((x,n)=>n===i?{...x,[k]:v}:x));
+ const updateAvailability=(i,k,v)=>setAvailability(current=>current.map((x,n)=>n===i?{...x,[k]:v}:x));
  const set=(k,v)=>setForm(s=>({...s,[k]:v}));
  const toggleType=v=>setForm(s=>({...s,service_types:s.service_types.includes(v)?s.service_types.filter(x=>x!==v):[...s.service_types,v].slice(0,3)}));
  const sendProviderRequest=async e=>{e.preventDefault();if(!selectedProvider||requestBrief.trim().length<10||sendingRequest)return;setSendingRequest(true);try{const r=await createServiceRequest({provider_id:selectedProvider.provider_id,service_type:selectedProvider.service_types[0],description:requestBrief.trim(),city:selectedProvider.city,state:selectedProvider.state,preferred_date:requestDate||null});if(!r.ok){onNotice(r.data?.error||"Could not send enquiry.");return;}setSelectedProvider(null);setRequestBrief("");setRequestDate("");onNotice(r.data?.message||"Enquiry sent to provider.");}catch{onNotice("Network error sending enquiry.");}finally{setSendingRequest(false);}};
