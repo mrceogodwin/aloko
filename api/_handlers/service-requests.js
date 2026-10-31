@@ -94,7 +94,7 @@ export function createServiceRequestsHandler({ getDatabase = getPool } = {}) {
       const providerId = body.provider_id == null || body.provider_id === "" ? null : body.provider_id;
       if (!TYPES.has(type) || description.length < 10 || description.length > 3000 ||
           !city || city.length > 100 || !state || state.length > 100 ||
-          (date !== null && (typeof date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(date+"T00:00:00Z"))) ||
+          (date !== null && (typeof date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(date+"T00:00:00Z")))) ||
           (providerId !== null && (typeof providerId !== "string" || !UUID.test(providerId) || providerId === auth.user.id))) {
         return res.status(400).json({error:"Provide a service type, a description of at least 10 characters, city and state. Preferred date is optional."});
       }
