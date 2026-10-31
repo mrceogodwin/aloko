@@ -288,7 +288,7 @@ function App() {
 
   useEffect(() => {
     let mounted = true;
-    getAuthSession().then(data => {
+    getAuthSession().then(async data => {
       if (!mounted) return;
       const user = data?.user || null;
       const token = user ? await getAuthJWTToken() : null;
