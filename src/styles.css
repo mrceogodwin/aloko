@@ -556,3 +556,10 @@
 .service-quoted-price{color:#247b68;font-size:13px}
 .service-history-actions .workspace-primary{padding:9px 13px;font-size:11px}
 @media(max-width:650px){.provider-request-card{grid-template-columns:1fr}.service-history-actions{align-items:flex-start;flex-direction:column}}
+
+.provider-enquiry-form{display:grid;gap:14px;padding:22px;border:1px solid #e9dff0;border-radius:18px;background:#fbf8fe}
+.provider-enquiry-form h3{margin:5px 0;color:#281344;font:800 20px Manrope,sans-serif}
+.provider-enquiry-form p,.provider-enquiry-form small{margin:0;color:#81748e;font-size:11px;line-height:1.55}
+.provider-enquiry-form label{display:grid;gap:7px;color:#51415f;font-size:12px;font-weight:800}
+.provider-enquiry-form textarea,.provider-enquiry-form input{width:100%;border:1px solid #e7dced;border-radius:10px;padding:12px;background:#fff;color:#2c1946;font:inherit;font-size:13px}
+.provider-enquiry-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap}
