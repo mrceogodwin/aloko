@@ -68,7 +68,7 @@ function normalizeLiveListing(item) {
 }
 
 
-function WorkspaceScreen({ screen, authUser, onLogin, onSell, onSellerOnboarding, onAdminVerification, onBuyerPreferences, onServices, onProviders, onNotice, onOpenListing, localSaved, initialConversationId, onConversationOpened, onSignOut, sellerStoreId, localListings = [] }) {
+function WorkspaceScreen({ screen, authUser, onLogin, onSell, onSellerOnboarding, onAdminVerification, onBuyerPreferences, onServices, onProviders, onAdminServiceProviders, onNotice, onOpenListing, localSaved, initialConversationId, onConversationOpened, onSignOut, sellerStoreId, localListings = [] }) {
   const [conversations, setConversations] = useState([]);
   const [activeConversation, setActiveConversation] = useState(initialConversationId || "");
   const [messages, setMessages] = useState([]);
@@ -582,7 +582,7 @@ function App() {
             <button className="post-button" onClick={() => setListingFormOpen(true)}>Sell an item</button>
           </div>
         </section>
-        </> : <WorkspaceScreen screen={activeScreen} authUser={authUser} onLogin={() => { setAccountMode("login"); setAccountModalOpen(true); }} onSell={() => setListingFormOpen(true)} onSellerOnboarding={() => navigate("seller-onboarding")} onAdminVerification={() => navigate("admin-verification")} onBuyerPreferences={() => navigate("buyer-preferences")} onServices={() => navigate("services")} onProviders={() => navigate("providers")} onNotice={showNotice} localSaved={saved} localListings={liveProducts} initialConversationId={activeConversationId} onConversationOpened={setActiveConversationId} sellerStoreId={sellerStoreId} onOpenListing={(item) => { setActiveScreen("home"); setSelectedListing(normalizeLiveListing(item)); window.scrollTo({ top: 0, behavior: "smooth" }); }} onSignOut={async () => { await signOutFromAloko(); setAuthUser(null); try { window.localStorage.removeItem("aloko:access-token"); } catch {} navigate("home"); showNotice("You have signed out."); }} />}
+        </> : <WorkspaceScreen screen={activeScreen} authUser={authUser} onLogin={() => { setAccountMode("login"); setAccountModalOpen(true); }} onSell={() => setListingFormOpen(true)} onSellerOnboarding={() => navigate("seller-onboarding")} onAdminVerification={() => navigate("admin-verification")} onBuyerPreferences={() => navigate("buyer-preferences")} onServices={() => navigate("services")} onProviders={() => navigate("providers")} onAdminServiceProviders={() => navigate("admin-service-providers")} onNotice={showNotice} localSaved={saved} localListings={liveProducts} initialConversationId={activeConversationId} onConversationOpened={setActiveConversationId} sellerStoreId={sellerStoreId} onOpenListing={(item) => { setActiveScreen("home"); setSelectedListing(normalizeLiveListing(item)); window.scrollTo({ top: 0, behavior: "smooth" }); }} onSignOut={async () => { await signOutFromAloko(); setAuthUser(null); try { window.localStorage.removeItem("aloko:access-token"); } catch {} navigate("home"); showNotice("You have signed out."); }} />}
       </main>
       <nav className="mobile-app-nav" aria-label="App navigation">{[["home","⌂","Home"],["seller","＋","Sell"],["inbox","✉","Inbox"],["saved","♡","Saved"],["account","◉","Account"]].map(([id,icon,label])=><button key={id} className={activeScreen===id?"active":""} onClick={()=>navigate(id)}><span>{icon}</span><small>{label}</small></button>)}</nav>
 
