@@ -91,6 +91,8 @@ test("listing creation derives seller identity and queues moderation regardless 
   assert.equal(received.values.length, 13);
   assert.equal(received.values[12], "seller");
   assert.match(received.sql, /p\.account_type IN/);
+  assert.match(received.sql, /seller_stores/);
+  assert.match(received.sql, /verification_status = 'approved'/);
   assert.equal(received.values.includes("active"), false);
   assert.equal(received.values.includes("approved"), false);
 });
