@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { matchesListingQuery, sortListings, validateListingDraft } from "./marketplace.js";
-import { hasAccessToken, openConversation, createListing } from "./api-client.js";
+import { hasAccessToken, openConversation, createListing, listConversations, listMessages, sendMessage, fetchMyListings, setListingStatus, listSavedListings, saveListing, unsaveListing, getMarketplaceProfile } from "./api-client.js";
 import { getAuthSession, signUpWithEmail, signInWithEmail, signOutFromAloko } from "./auth.js";
 
 const nigeriaStates = ["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","FCT","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"];
@@ -60,8 +60,132 @@ function normalizeLiveListing(item) {
   };
 }
 
+
+function WorkspaceScreen({ screen, authUser, onLogin, onSell, onNotice, onOpenListing, localSaved, initialConversationId, onConversationOpened, onSignOut }) {
+  const [conversations, setConversations] = useState([]);
+  const [activeConversation, setActiveConversation] = useState(initialConversationId || "");
+  const [messages, setMessages] = useState([]);
+  const [messageDraft, setMessageDraft] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [myListings, setMyListings] = useState([]);
+  const [savedListings, setSavedListings] = useState([]);
+  const [profile, setProfile] = useState(null);
+  const [workspaceError, setWorkspaceError] = useState("");
+
+  useEffect(() => {
+    if (!authUser || screen !== "inbox") return;
+    let cancelled = false;
+    setLoading(true); setWorkspaceError("");
+    listConversations().then(result => {
+      if (cancelled) return;
+      if (!result.ok) { setWorkspaceError(result.data?.error || "Could not load conversations."); return; }
+      setConversations(result.data?.items || []);
+      if (initialConversationId) setActiveConversation(initialConversationId);
+    }).catch(() => { if (!cancelled) setWorkspaceError("Network error loading conversations."); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [authUser, screen, initialConversationId]);
+
+  useEffect(() => {
+    if (!authUser || screen !== "inbox" || !activeConversation) { setMessages([]); return; }
+    let cancelled = false;
+    setLoading(true);
+    listMessages(activeConversation).then(result => {
+      if (cancelled) return;
+      if (!result.ok) { setWorkspaceError(result.data?.error || "Could not load messages."); return; }
+      setMessages(result.data?.items || []);
+    }).catch(() => { if (!cancelled) setWorkspaceError("Network error loading messages."); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [authUser, screen, activeConversation]);
+
+  useEffect(() => {
+    if (!authUser || screen !== "seller") return;
+    let cancelled = false;
+    setLoading(true); setWorkspaceError("");
+    fetchMyListings().then(result => {
+      if (cancelled) return;
+      if (!result.ok) { setWorkspaceError(result.data?.error || "Could not load your listings."); return; }
+      setMyListings(result.data?.items || []);
+    }).catch(() => { if (!cancelled) setWorkspaceError("Network error loading your listings."); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [authUser, screen]);
+
+  useEffect(() => {
+    if (!authUser || screen !== "saved") return;
+    let cancelled = false;
+    listSavedListings().then(result => {
+      if (cancelled) return;
+      if (result.ok) setSavedListings(result.data?.items || []);
+      else setSavedListings([]);
+    }).catch(() => { if (!cancelled) setSavedListings([]); });
+    return () => { cancelled = true; };
+  }, [authUser, screen, localSaved.length]);
+
+  useEffect(() => {
+    if (!authUser || screen !== "account") return;
+    let cancelled = false;
+    getMarketplaceProfile().then(result => { if (!cancelled && result.ok) setProfile(result.data?.user || null); });
+    return () => { cancelled = true; };
+  }, [authUser, screen]);
+
+  const submitMessage = async (event) => {
+    event.preventDefault();
+    const body = messageDraft.trim();
+    if (!body || !activeConversation || sending) return;
+    setSending(true);
+    const result = await sendMessage(activeConversation, body);
+    if (result.ok) {
+      setMessageDraft("");
+      const refreshed = await listMessages(activeConversation);
+      if (refreshed.ok) setMessages(refreshed.data?.items || []);
+      const convs = await listConversations();
+      if (convs.ok) setConversations(convs.data?.items || []);
+    } else onNotice(result.data?.error || "Your message could not be sent.");
+    setSending(false);
+  };
+
+  const updateStatus = async (listing, action) => {
+    const result = await setListingStatus(listing.id, action);
+    if (!result.ok) { onNotice(result.data?.error || "Could not update listing."); return; }
+    setMyListings(items => items.map(item => item.id === listing.id ? { ...item, status: result.data.item.status } : item));
+    onNotice(result.data?.message || "Listing updated.");
+  };
+
+  const titleMap = { seller: "Seller workspace", inbox: "Messages", saved: "Saved items", account: "My account" };
+  if (!authUser && ["seller", "inbox", "account"].includes(screen)) {
+    return <section className="workspace-page"><div className="workspace-gate"><span className="workspace-icon">✦</span><span className="eyebrow">YOUR ALOKO ACCOUNT</span><h1>Everything in its right place.</h1><p>Sign in to manage your listings, talk to buyers and keep your Aloko activity together.</p><button className="workspace-primary" onClick={onLogin}>Sign in to continue <span>→</span></button><button className="workspace-link" onClick={onLogin}>New to Aloko? Create an account</button></div></section>;
+  }
+
+  return <section className="workspace-page">
+    <div className="workspace-heading"><div><span className="eyebrow">ALOKO / YOUR SPACE</span><h1>{titleMap[screen] || "Your Aloko space"}</h1><p>{screen === "seller" ? "Manage your inventory and keep every listing up to date." : screen === "inbox" ? "Your conversations with buyers and sellers, all in one place." : screen === "saved" ? "The items and opportunities you want to come back to." : "Your identity and activity across the Aloko community."}</p></div>{screen === "seller" && <button className="workspace-primary" onClick={onSell}>＋ Create listing</button>}</div>
+    {workspaceError && <div className="workspace-alert" role="alert">{workspaceError} <button onClick={() => window.location.reload()}>Refresh</button></div>}
+    {screen === "seller" && <div className="workspace-panel">
+      <div className="workspace-stats"><div><span>ALL LISTINGS</span><strong>{myListings.length}</strong></div><div><span>ACTIVE</span><strong>{myListings.filter(x=>x.status==="active").length}</strong></div><div><span>UNDER REVIEW</span><strong>{myListings.filter(x=>x.status==="pending_review").length}</strong></div><div><span>SOLD</span><strong>{myListings.filter(x=>x.status==="sold").length}</strong></div></div>
+      <div className="workspace-panel-head"><div><h2>Your inventory</h2><p>Manage the items you have listed on Aloko.</p></div><span>{loading ? "Updating…" : "Live account data"}</span></div>
+      {myListings.length ? <div className="workspace-listings">{myListings.map(item=><article className="workspace-listing" key={item.id}><div className="workspace-listing-art">A.</div><div className="workspace-listing-copy"><strong>{item.title}</strong><span>{item.category} · {item.city}, {item.state}</span><small>{formatNaira(item.price_naira)} · {item.condition || "Condition not set"} · Qty {item.quantity}</small></div><span className={"workspace-status status-"+item.status}>{String(item.status).replaceAll("_"," ")}</span><div className="workspace-row-actions">{item.status==="active" && <button onClick={()=>updateStatus(item,"pause")}>Pause</button>}{item.status==="paused" && <button onClick={()=>updateStatus(item,"resume")}>Resume</button>}{["active","paused"].includes(item.status) && <button onClick={()=>updateStatus(item,"mark_sold")}>Mark sold</button>}</div></article>)}</div> : <div className="workspace-empty"><span>▧</span><h3>Your next listing starts here.</h3><p>When you publish an item, it will appear here with its review and availability status.</p><button className="workspace-primary" onClick={onSell}>Create your first listing</button></div>}
+    </div>}
+    {screen === "inbox" && <div className="workspace-inbox">
+      <aside className="workspace-conversation-list"><div className="workspace-panel-head"><div><h2>Inbox</h2><p>{conversations.length} conversations</p></div><button onClick={()=>listConversations().then(r=>r.ok&&setConversations(r.data.items||[]))}>↻</button></div>
+        {conversations.map(c=><button key={c.id} className={"workspace-conversation "+(activeConversation===c.id?"selected":"")} onClick={()=>{setActiveConversation(c.id);onConversationOpened(c.id);}}><span className="conversation-avatar">{(c.counterpart_name||"A").slice(0,1).toUpperCase()}</span><span className="conversation-copy"><strong>{c.counterpart_name||"Aloko member"}</strong><small>{c.listing_title||"Marketplace conversation"}</small><em>{c.last_message||"Start the conversation"}</em></span><time>{c.last_message_at?new Date(c.last_message_at).toLocaleDateString():"New"}</time></button>)}
+        {!conversations.length && !loading && <div className="workspace-mini-empty">No conversations yet. Open a listing and contact its seller to start one.</div>}
+      </aside>
+      <section className="workspace-chat"><div className="workspace-chat-head"><span className="conversation-avatar">{activeConversation ? "A" : "✉"}</span><div><strong>{conversations.find(c=>c.id===activeConversation)?.counterpart_name || "Choose a conversation"}</strong><small>{conversations.find(c=>c.id===activeConversation)?.listing_title || "Your Aloko inbox"}</small></div></div>
+        <div className="workspace-messages">{messages.length ? messages.map(m=><div key={m.id} className={"workspace-message "+(m.sender_id===authUser.id?"mine":"theirs")}><span>{m.sender_name}</span><p>{m.body}</p><time>{new Date(m.created_at).toLocaleString()}</time></div>) : <div className="workspace-mini-empty">{activeConversation ? "No messages yet. Say hello." : "Select a conversation to read your messages."}</div>}</div>
+        <form className="workspace-compose" onSubmit={submitMessage}><input value={messageDraft} onChange={e=>setMessageDraft(e.target.value)} disabled={!activeConversation||sending} placeholder={activeConversation?"Write a message…":"Choose a conversation first"}/><button type="submit" disabled={!activeConversation||sending||!messageDraft.trim()}>{sending?"Sending…":"Send ↑"}</button></form>
+      </section>
+    </div>}
+    {screen === "saved" && <div className="workspace-panel"><div className="workspace-panel-head"><div><h2>Your saved collection</h2><p>Saved on this device and synced to your account when available.</p></div><span>{authUser ? savedListings.length : localSaved.length} saved</span></div>{authUser ? savedListings.length ? <div className="workspace-listings">{savedListings.map(item=><article className="workspace-listing" key={item.id}><div className="workspace-listing-art">♡</div><div className="workspace-listing-copy"><strong>{item.title}</strong><span>{item.category} · {[item.city,item.state].filter(Boolean).join(", ")}</span><small>{formatNaira(item.price_naira)}</small></div><span className="workspace-status status-active">{item.status}</span></article>)}</div> : <div className="workspace-empty"><span>♡</span><h3>Your collection is waiting.</h3><p>Save listings you love and they will be collected here.</p></div> : <div className="workspace-empty"><span>♡</span><h3>Your saved finds</h3><p>Sign in to sync saved items across devices. Your current device has {localSaved.length} saved items.</p><button className="workspace-primary" onClick={onLogin}>Sign in to sync</button></div>}</div>}
+    {screen === "account" && <div className="workspace-panel workspace-profile-panel"><div className="workspace-profile-avatar">{(profile?.display_name||authUser?.name||authUser?.email||"A").slice(0,1).toUpperCase()}</div><div><span className="eyebrow">ALOKO MEMBER</span><h2>{profile?.display_name||authUser?.name||"Welcome to Aloko"}</h2><p>{authUser?.email}</p><div className="workspace-profile-meta"><span>{profile?.account_type||"Individual account"}</span><span>{profile?.role||"Marketplace member"}</span></div></div><button className="workspace-secondary" onClick={onSignOut}>Sign out</button></div>}
+  </section>;
+}
+
 function App() {
   const [typedHeadline, setTypedHeadline] = useState("");
+  const [activeScreen, setActiveScreen] = useState("home");
+  const [activeConversationId, setActiveConversationId] = useState("");
   const [showAllCategories, setShowAllCategories] = useState(false);
   useEffect(() => {
     let phraseIndex = 0;
@@ -205,8 +329,12 @@ function App() {
           <a className="brand flagship-brand" href="#top" aria-label="Aloko home">
             <img className="brand-mark-image" src="/aloko-mark.svg" alt="" /><span className="brand-text">Aloko</span>
           </a>
-          <nav className="main-nav" aria-label="Main navigation">
-            <a className="nav-current" href="#top">Home</a><a href="#explore">Browse</a><a href="#categories">Categories</a><a href="#free">Free Items</a><a href="#explore">Bulk Deals</a><a href="#services">Services</a>
+          <nav className="main-nav app-main-nav" aria-label="Main navigation">
+            <button className={activeScreen==="home"?"nav-current":""} onClick={()=>navigate("home")}>Home</button>
+            <button className={activeScreen==="home"?"":" "} onClick={()=>{navigate("home");setTimeout(()=>document.getElementById("explore")?.scrollIntoView({behavior:"smooth"}),80);}}>Discover</button>
+            <button className={activeScreen==="seller"?"nav-current":""} onClick={()=>navigate("seller")}>Sell</button>
+            <button className={activeScreen==="inbox"?"nav-current":""} onClick={()=>navigate("inbox")}>Messages</button>
+            <button className={activeScreen==="saved"?"nav-current":""} onClick={()=>navigate("saved")}>Saved</button>
           </nav>
           <nav className="nav-actions" aria-label="Account">
             <label className="header-state-picker" aria-label="Choose your state"><span>⌖</span><select value={selectedLocation} onChange={e => setSelectedLocation(e.target.value)}><option value="All locations">Nigeria</option>{nigeriaStates.map(state => <option key={state} value={state}>{state}</option>)}</select></label>
@@ -557,7 +685,7 @@ function App() {
                     if (!hasAccessToken()) { showNotice("Sign in is required to contact this seller."); setAccountMode("login"); setAccountModalOpen(true); return; }
                     showNotice("Opening your conversation…");
                     const result = await openConversation(selectedListing.id);
-                    if (result.ok) showNotice("Conversation opened. Your inbox experience is being completed.");
+                    if (result.ok) { setActiveConversationId(result.data?.conversation?.id || ""); navigate("inbox"); showNotice("Conversation ready. Send the seller a message."); }
                     else if (result.status === 401) { setAccountMode("login"); setAccountModalOpen(true); showNotice("Please sign in to contact this seller."); }
                     else showNotice(result.data?.error || "Could not start a conversation.");
                   }}>Contact seller <span>→</span></button>
