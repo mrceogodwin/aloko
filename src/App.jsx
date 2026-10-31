@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { matchesListingQuery, sortListings, validateListingDraft } from "./marketplace.js";
 import { hasAccessToken, openConversation, createListing } from "./api-client.js";
+import { getAuthSession, signUpWithEmail, signInWithEmail, signOutFromAloko } from "./auth.js";
 
 const categories = [
   ["▣", "Electronics"], ["♧", "Fashion"], ["⌂", "Home & Living"], ["🚗", "Vehicles"],
@@ -66,6 +67,23 @@ function App() {
   const [accountModalOpen, setAccountModalOpen] = useState(false);
   const [accountMode, setAccountMode] = useState("login");
   const [accountRole, setAccountRole] = useState("buyer");
+  const [authUser, setAuthUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(false);
+  const [authEmail, setAuthEmail] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
+  const [authName, setAuthName] = useState("");
+
+  useEffect(() => {
+    let mounted = true;
+    getAuthSession().then(data => {
+      if (!mounted) return;
+      const user = data?.user || null;
+      const token = data?.session?.token;
+      setAuthUser(user);
+      if (token) { try { window.localStorage.setItem("aloko:access-token", token); } catch {} }
+    }).catch(() => { if (mounted) setAuthUser(null); });
+    return () => { mounted = false; };
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -298,17 +316,50 @@ function App() {
       </footer>
 
       {accountModalOpen && (
-        <div className="listing-modal-backdrop" onClick={() => setAccountModalOpen(false)}>
+        <div className="listing-modal-backdrop" onClick={() => !authLoading && setAccountModalOpen(false)}>
           <section className="listing-modal account-modal" role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
-            <button className="listing-modal-close" onClick={() => setAccountModalOpen(false)}>×</button>
+            <button className="listing-modal-close" disabled={authLoading} onClick={() => setAccountModalOpen(false)}>×</button>
             <div className="listing-modal-content">
-              <h2>{accountMode === "login" ? "Welcome back." : "Join Aloko."}</h2>
-              <p className="listing-demo-note">Authentication is not connected yet. This form does not create an account or store passwords.</p>
-              <form className="listing-create-form" onSubmit={e => { e.preventDefault(); showNotice("Account access is not connected yet."); }}>
-                <label>Email<input type="email" required placeholder="you@example.com"/></label>
-                <label>Password<input type="password" required minLength={8}/></label>
-                <button type="submit" className="modal-contact-button">{accountMode === "login" ? "Log in" : "Create account"}</button>
-              </form>
+              <h2>{authUser ? "Your Aloko account." : accountMode === "login" ? "Welcome back." : "Join Aloko."}</h2>
+              {authUser ? (
+                <>
+                  <p className="listing-demo-note">Signed in as {authUser.email || "Aloko member"}.</p>
+                  <button className="modal-contact-button" disabled={authLoading} onClick={async () => {
+                    setAuthLoading(true);
+                    try { await signOutFromAloko(); setAuthUser(null); try { window.localStorage.removeItem("aloko:access-token"); } catch {} showNotice("You have signed out."); setAccountModalOpen(false); }
+                    catch (error) { showNotice(error.message); }
+                    finally { setAuthLoading(false); }
+                  }}>Sign out</button>
+                </>
+              ) : (
+                <>
+                  <p className="listing-demo-note">Create your account to save items, contact sellers and publish marketplace posts.</p>
+                  <form className="listing-create-form" onSubmit={async e => {
+                    e.preventDefault();
+                    if (authLoading) return;
+                    setAuthLoading(true);
+                    try {
+                      if (accountMode === "signup") await signUpWithEmail({ email: authEmail.trim(), password: authPassword, name: authName.trim() || authEmail.split("@")[0] });
+                      else await signInWithEmail({ email: authEmail.trim(), password: authPassword });
+                      const data = await getAuthSession();
+                      const user = data?.user || null;
+                      const token = data?.session?.token;
+                      if (token) { try { window.localStorage.setItem("aloko:access-token", token); } catch {} }
+                      setAuthUser(user);
+                      if (!user) throw new Error("Account request completed, but no active session was returned. Please sign in.");
+                      showNotice(accountMode === "signup" ? "Welcome to Aloko. Your account is ready." : "You are signed in.");
+                      setAccountModalOpen(false);
+                    } catch (error) { showNotice(error.message || "Could not complete account access."); }
+                    finally { setAuthLoading(false); }
+                  }}>
+                    {accountMode === "signup" && <label>Your name<input value={authName} onChange={e => setAuthName(e.target.value)} minLength={2} maxLength={80} required placeholder="Your name"/></label>}
+                    <label>Email<input type="email" value={authEmail} onChange={e => setAuthEmail(e.target.value)} required placeholder="you@example.com" autoComplete="email"/></label>
+                    <label>Password<input type="password" value={authPassword} onChange={e => setAuthPassword(e.target.value)} required minLength={8} autoComplete={accountMode === "login" ? "current-password" : "new-password"}/></label>
+                    <button type="submit" disabled={authLoading} className="modal-contact-button">{authLoading ? "Please wait…" : accountMode === "login" ? "Log in" : "Create account"}</button>
+                  </form>
+                  <p className="listing-demo-note">{accountMode === "login" ? "New to Aloko?" : "Already have an account?"} <button type="button" className="inline-auth-switch" onClick={() => setAccountMode(mode => mode === "login" ? "signup" : "login")}>{accountMode === "login" ? "Create an account" : "Log in"}</button></p>
+                </>
+              )}
             </div>
           </section>
         </div>
