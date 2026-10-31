@@ -122,39 +122,52 @@ function App() {
 
   return (
     <div className="app-shell">
-      <header className="topbar">
+      <header className="topbar flagship-topbar">
         <div className="wrap topbar-inner">
-          <a className="brand" href="#top" aria-label="Aloko home">
-            <span className="brand-mark">a</span>
-            <span className="brand-text">aloko<span className="brand-dot">.</span></span>
+          <a className="brand flagship-brand" href="#top" aria-label="Aloko home">
+            <span className="brand-mark" aria-hidden="true">A</span><span className="brand-text">Aloko</span>
           </a>
+          <nav className="main-nav" aria-label="Main navigation">
+            <a className="nav-current" href="#top">Home</a><a href="#explore">Browse</a><a href="#categories">Categories</a><a href="#free">Free Items</a><a href="#bulk">Bulk Deals</a><a href="#services">Services</a>
+          </nav>
           <nav className="nav-actions" aria-label="Account">
-            <button type="button" className="ghost-button" onClick={() => { setAccountMode("login"); setAccountModalOpen(true); }}>Log in</button>
-            <button type="button" className="ghost-button" onClick={() => { setAccountMode("signup"); setAccountModalOpen(true); }}>Create account</button>
-            <button className="mobile-saved-toggle" aria-pressed={savedOnly} onClick={() => { setSavedOnly(v => !v); setActiveCategory("All"); }}>
-              {savedOnly ? "Browse all" : `Saved (${saved.length})`}
-            </button>
-            <button className="post-button" onClick={() => setListingFormOpen(true)}>Sell an item</button>
+            <button type="button" className="nav-search-icon" aria-label="Focus search" onClick={() => document.querySelector(".hero-search input")?.focus()}>⌕</button>
+            <button type="button" className="ghost-button" onClick={() => { setAccountMode("login"); setAccountModalOpen(true); }}>Login</button>
+            <button type="button" className="account-create-button" onClick={() => { setAccountMode("signup"); setAccountModalOpen(true); }}>Create Account</button>
+            <button className="mobile-saved-toggle" aria-pressed={savedOnly} onClick={() => { setSavedOnly(v => !v); setActiveCategory("All"); }}>{savedOnly ? "Browse all" : `Saved (${saved.length})`}</button>
+            <button className="post-button" onClick={() => setListingFormOpen(true)}>Start Selling</button>
           </nav>
         </div>
       </header>
 
       <main>
-        <section className="hero wrap" id="top">
-          <div className="hero-copy">
-            <span className="eyebrow">Nigeria · local marketplace</span>
-            <h1>Sell it. Give it. Pass it on.</h1>
-            <p>Find a new home for things you no longer need — buy pre-loved items, give things away, and discover local decluttering help.</p>
-            <div className="hero-search">
-              <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search phones, furniture, free items…" aria-label="Search listings"/>
-              <button type="button" onClick={() => document.getElementById("explore")?.scrollIntoView({ behavior: "smooth" })}>Search</button>
+        <section className="hero flagship-hero" id="top">
+          <div className="hero-inner wrap">
+            <div className="hero-copy">
+              <span className="eyebrow hero-eyebrow">Nigeria’s reuse marketplace</span>
+              <h1>Sell It. <em>Give It.</em><br/><span>Pass It On.</span></h1>
+              <p>Buy and sell pre-owned items, give usable things away for free, discover bulk deals, or book decluttering services — all in one place.</p>
+              <div className="hero-actions">
+                <button className="hero-primary" onClick={() => setListingFormOpen(true)}>♢ &nbsp; Start Selling <span>→</span></button>
+                <button className="hero-secondary" onClick={() => document.getElementById("explore")?.scrollIntoView({behavior:"smooth"})}>Browse Listings <span>→</span></button>
+              </div>
+              <div className="hero-trust"><span>✦ Safe &amp; verified community</span><span>▣ Free &amp; paid listings</span><span>◉ Support local sustainability</span></div>
+            </div>
+            <div className="hero-art" aria-label="Aloko marketplace app preview">
+              <div className="hero-orb orb-left">♧<b>Good Things<br/>Live Longer</b></div>
+              <div className="hero-ribbon ribbon-one"></div><div className="hero-ribbon ribbon-two"></div>
+              <div className="hero-phone"><div className="phone-notch"></div><div className="phone-brand"><span>A</span> Aloko</div><div className="phone-search">⌕ &nbsp; Search for anything…</div><div className="phone-cats"><span>▣<small>Electronics</small></span><span>♧<small>Fashion</small></span><span>⌂<small>Home &amp; Living</small></span><span>♡<small>Free Items</small></span><span>♧<small>Bulk Deals</small></span><span>✧<small>Services</small></span></div><div className="phone-feature"><b>Give Things<br/>A New Home</b><span>↗</span></div></div>
+              <div className="hero-orb orb-right">Same items,<br/> brighter futures!</div>
             </div>
           </div>
         </section>
+        <section className="search-dock wrap" aria-label="Search marketplace">
+          <div className="hero-search"><span>⌕</span><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search for items, categories or locations…" aria-label="Search listings"/><label>⌖ <select value={selectedLocation} onChange={e => setSelectedLocation(e.target.value)}><option>All locations</option><option>Lagos</option><option>Abuja</option><option>Port Harcourt</option><option>Benin City</option></select></label><button type="button" onClick={() => document.getElementById("explore")?.scrollIntoView({behavior:"smooth"})}>⌕ &nbsp; Search</button></div>
+        </section>
 
-        <section className="categories wrap" aria-label="Categories">
+        <section className="categories wrap flagship-categories" id="categories" aria-label="Categories">
           <div className="section-head">
-            <h2>Browse by category</h2>
+            <h2>Explore categories</h2>
             <button className="view-all" onClick={() => { setActiveCategory("All"); setQuery(""); setSavedOnly(false); }}>View all</button>
           </div>
           <div className="category-row">
@@ -178,7 +191,7 @@ function App() {
         <section className="listings wrap" id="explore">
           <div className="section-head">
             <h2>
-              {listingLoadState === "live" ? `${visibleProducts.length} live listings`
+              {listingLoadState === "live" ? "Featured Listings"
                 : listingLoadState === "error" ? "Listings temporarily unavailable"
                 : "Loading listings…"}
             </h2>
@@ -220,7 +233,7 @@ function App() {
         </section>
 
         <section className="giveaway-section wrap" id="free">
-          <div className="giveaway-card">
+          <div className="giveaway-card flagship-giveaway">
             <div>
               <span className="eyebrow">One person's extra is another's treasure</span>
               <h2>Good things, given freely.</h2>
@@ -237,7 +250,7 @@ function App() {
           </div>
         </section>
 
-        <section className="seller-cta wrap">
+        <section className="seller-cta wrap flagship-seller-cta">
           <div>
             <span className="eyebrow">Ready to pass it on?</span>
             <h2>List something in minutes.</h2>
