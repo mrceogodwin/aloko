@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { matchesListingQuery, sortListings, validateListingDraft } from "./marketplace.js";
-import { hasAccessToken, openConversation } from "./api-client.js";
+import { hasAccessToken, openConversation, createListing } from "./api-client.js";
 
 const categories = [
   ["▣", "Electronics"], ["♧", "Fashion"], ["⌂", "Home & Living"], ["🚗", "Vehicles"],
@@ -56,6 +56,7 @@ function App() {
   const [notice, setNotice] = useState("");
   const [selectedListing, setSelectedListing] = useState(null);
   const [listingFormOpen, setListingFormOpen] = useState(false);
+  const [listingSubmitting, setListingSubmitting] = useState(false);
   const [localDraftExists, setLocalDraftExists] = useState(() => {
     try { return Boolean(window.localStorage.getItem("aloko:listing-draft")); } catch { return false; }
   });
@@ -314,28 +315,76 @@ function App() {
       )}
 
       {listingFormOpen && (
-        <div className="listing-modal-backdrop" onClick={() => setListingFormOpen(false)}>
-          <section className="listing-modal" role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
-            <button className="listing-modal-close" onClick={() => setListingFormOpen(false)}>×</button>
+        <div className="listing-modal-backdrop" onClick={() => !listingSubmitting && setListingFormOpen(false)}>
+          <section className="listing-modal listing-post-modal" role="dialog" aria-modal="true" aria-labelledby="listing-post-title" onClick={e => e.stopPropagation()}>
+            <button className="listing-modal-close" type="button" disabled={listingSubmitting} onClick={() => setListingFormOpen(false)}>×</button>
             <div className="listing-modal-content">
-              <h2>List an item</h2>
-              <p className="listing-demo-note">Drafts save on this device only until seller login is connected.</p>
-              <form className="listing-create-form" onSubmit={e => {
+              <span className="eyebrow">SELL · GIVE · PASS IT ON</span>
+              <h2 id="listing-post-title">Create a marketplace post</h2>
+              <p className="listing-demo-note">Complete your item details. Published submissions enter moderation before appearing publicly. Sign-in is required to submit.</p>
+              <form className="listing-create-form listing-post-form" onSubmit={async e => {
                 e.preventDefault();
+                if (listingSubmitting) return;
                 const validation = validateListingDraft(listingDraft);
                 if (!validation.valid) { showNotice(Object.values(validation.errors)[0]); return; }
+                if (!hasAccessToken()) {
+                  showNotice("Publishing requires a verified seller account. Account sign-in is not connected yet.");
+                  return;
+                }
+                const [city, ...stateParts] = listingDraft.place.split(",");
+                const state = stateParts.join(",").trim();
+                if (!city.trim() || !state) { showNotice("Enter location as City, State."); return; }
+                const priceNaira = Number(listingDraft.price);
+                const conditionMap = {"New":"new","Like new":"like_new","Good":"good","Fair":"fair","For parts":"for_parts"};
+                const payload = {
+                  title: listingDraft.title.trim(),
+                  description: listingDraft.description.trim(),
+                  category: listingDraft.category,
+                  kind: listingDraft.kind,
+                  condition: conditionMap[listingDraft.condition],
+                  price_kobo: listingDraft.kind === "giveaway" ? 0 : Math.round(priceNaira * 100),
+                  quantity: Number(listingDraft.quantity),
+                  city: city.trim(),
+                  state,
+                  pickup_available: listingDraft.fulfillment !== "delivery",
+                  delivery_available: listingDraft.fulfillment !== "pickup"
+                };
+                setListingSubmitting(true);
                 try {
-                  window.localStorage.setItem("aloko:listing-draft", JSON.stringify({ ...listingDraft, savedAt: new Date().toISOString() }));
-                  setLocalDraftExists(true);
-                  showNotice("Draft saved on this device only. Publishing needs sign-in.");
+                  const result = await createListing(payload);
+                  if (!result.ok) {
+                    showNotice(result.data?.error || (result.status === 401 ? "Your session has expired. Sign in again." : "Could not submit this listing."));
+                    return;
+                  }
+                  try { window.localStorage.removeItem("aloko:listing-draft"); } catch {}
+                  setLocalDraftExists(false);
+                  setListingDraft({title:"",price:"",place:"",description:"",kind:"sale",category:"Home & Living",condition:"Good",quantity:"1",fulfillment:"pickup"});
                   setListingFormOpen(false);
-                } catch { showNotice("Could not save draft."); }
+                  showNotice("Listing submitted for review. It will appear after approval.");
+                  setListingReloadKey(k => k + 1);
+                } catch {
+                  showNotice("Network error. Your listing was not submitted.");
+                } finally {
+                  setListingSubmitting(false);
+                }
               }}>
-                <label>Title<input required minLength={4} value={listingDraft.title} onChange={e => setListingDraft(v => ({ ...v, title: e.target.value }))}/></label>
-                <label>Price (₦)<input type="number" min={0} value={listingDraft.price} onChange={e => setListingDraft(v => ({ ...v, price: e.target.value }))}/></label>
-                <label>Location<input required value={listingDraft.place} onChange={e => setListingDraft(v => ({ ...v, place: e.target.value }))} placeholder="City, State"/></label>
-                <label>Description<textarea required minLength={10} value={listingDraft.description} onChange={e => setListingDraft(v => ({ ...v, description: e.target.value }))} rows={3}/></label>
-                <button type="submit" className="modal-contact-button">Save draft</button>
+                <label>Post type<select value={listingDraft.kind} onChange={e => setListingDraft(v => ({...v,kind:e.target.value,category:e.target.value === "giveaway" ? "Free items" : (v.category === "Free items" ? "Home & Living" : v.category),price:e.target.value === "giveaway" ? "0" : (v.price === "0" ? "" : v.price)}))}><option value="sale">Sell an item</option><option value="giveaway">Give away for free</option><option value="bulk">Bulk deal</option></select></label>
+                <label>Listing title<input required minLength={4} maxLength={90} value={listingDraft.title} onChange={e => setListingDraft(v => ({...v,title:e.target.value}))} placeholder="e.g. Gently used 3-seater sofa"/></label>
+                <label>Category<select value={listingDraft.category} onChange={e => setListingDraft(v => ({...v,category:e.target.value}))}><option>Home &amp; Living</option><option>Phones &amp; Tech</option><option>Fashion</option><option>Appliances</option><option>Furniture</option><option>Books &amp; Hobbies</option><option>Free items</option></select></label>
+                <div className="listing-form-row">
+                  <label>{listingDraft.kind === "giveaway" ? "Price" : "Price (₦)"}<input type="number" min={listingDraft.kind === "giveaway" ? 0 : 1} step="1" required value={listingDraft.price} disabled={listingDraft.kind === "giveaway"} onChange={e => setListingDraft(v => ({...v,price:e.target.value}))} placeholder="Enter amount"/></label>
+                  <label>Quantity<input type="number" min="1" max="1000000" step="1" required value={listingDraft.quantity} onChange={e => setListingDraft(v => ({...v,quantity:e.target.value}))}/></label>
+                </div>
+                <label>Condition<select value={listingDraft.condition} onChange={e => setListingDraft(v => ({...v,condition:e.target.value}))}><option>New</option><option>Like new</option><option>Good</option><option>Fair</option><option>For parts</option></select></label>
+                <label>Location (City, State)<input required value={listingDraft.place} onChange={e => setListingDraft(v => ({...v,place:e.target.value}))} placeholder="e.g. Ikeja, Lagos"/></label>
+                <label>Description<textarea required minLength={10} maxLength={1200} value={listingDraft.description} onChange={e => setListingDraft(v => ({...v,description:e.target.value}))} rows={4} placeholder="Describe the item, its condition and anything buyers should know."/></label>
+                <label>Fulfilment<select value={listingDraft.fulfillment} onChange={e => setListingDraft(v => ({...v,fulfillment:e.target.value}))}><option value="pickup">Pickup available</option><option value="delivery">Delivery available</option><option value="both">Pickup and delivery</option></select></label>
+                <div className="listing-form-actions"><button type="button" className="modal-save-button" disabled={listingSubmitting} onClick={() => {
+                  const validation=validateListingDraft(listingDraft);
+                  if(!validation.valid){showNotice(Object.values(validation.errors)[0]);return;}
+                  try{window.localStorage.setItem("aloko:listing-draft",JSON.stringify({...listingDraft,savedAt:new Date().toISOString()}));setLocalDraftExists(true);showNotice("Draft saved on this device.");}catch{showNotice("Could not save draft.");}
+                }}>Save draft</button><button type="submit" className="modal-contact-button" disabled={listingSubmitting}>{listingSubmitting ? "Submitting…" : "Submit for review"}</button></div>
+                <small className="listing-form-footnote">Image uploads are not enabled yet. Add photos will be available when Aloko’s storage provider is configured.</small>
               </form>
             </div>
           </section>
