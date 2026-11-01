@@ -8,6 +8,9 @@ import BuyerPreferences from "./BuyerPreferences.jsx";
 import ServiceRequests from "./ServiceRequests.jsx";
 import ServiceProviders from "./ServiceProviders.jsx";
 import AdminServiceProviderReview from "./AdminServiceProviderReview.jsx";
+import ModeratorDesk from "./ModeratorDesk.jsx";
+import RoleMenuDrawer from "./RoleMenuDrawer.jsx";
+import { getAlokoDashboard } from "./role-navigation.js";
 
 const nigeriaStates = ["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","FCT","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"];
 
@@ -72,7 +75,7 @@ function normalizeLiveListing(item) {
 }
 
 
-function WorkspaceScreen({ screen, authUser, onLogin, onSell, onSellerOnboarding, onAdminVerification, onBuyerPreferences, onServices, onProviders, onAdminServiceProviders, onNotice, onOpenListing, localSaved, initialConversationId, onConversationOpened, onSignOut, sellerStoreId, localListings = [] }) {
+function WorkspaceScreen({ screen, authUser, onLogin, onSell, onSellerOnboarding, onAdminVerification, onBuyerPreferences, onServices, onProviders, onAdminServiceProviders, onNotice, onOpenListing, localSaved, initialConversationId, onConversationOpened, onSignOut, onNavigate, sellerStoreId, localListings = [] }) {
   const [conversations, setConversations] = useState([]);
   const [activeConversation, setActiveConversation] = useState(initialConversationId || "");
   const [messages, setMessages] = useState([]);
@@ -137,7 +140,7 @@ function WorkspaceScreen({ screen, authUser, onLogin, onSell, onSellerOnboarding
   }, [authUser, screen, localSaved.length]);
 
   useEffect(() => {
-    if (!authUser || !["account", "admin-verification", "admin-service-providers"].includes(screen)) return;
+    if (!authUser || !["account", "admin-verification", "admin-service-providers", "moderator-desk"].includes(screen)) return;
     let cancelled = false;
     getMarketplaceProfile().then(result => { if (!cancelled && result.ok) setProfile(result.data?.user || null); });
     return () => { cancelled = true; };
@@ -180,20 +183,23 @@ function WorkspaceScreen({ screen, authUser, onLogin, onSell, onSellerOnboarding
   };
 
   const localSavedListings = localListings.filter(item => localSaved.includes(item.id));
-  const titleMap = { seller: "Seller workspace", "seller-onboarding": "Become an Aloko seller", "admin-verification": "Seller verification", "buyer-preferences": "Your shopping preferences", services: "Services & professionals", "admin-service-providers": "Provider applications", providers: "Service provider network", inbox: "Messages", saved: "Saved items", account: "My account", store: storeData?.store?.display_name ? `${storeData.store.display_name}’s store` : "Seller storefront" };
-  if (!authUser && ["seller", "seller-onboarding", "inbox", "account", "buyer-preferences", "services", "admin-service-providers"].includes(screen)) {
+  const titleMap = { "buyer-dashboard": "My Aloko", seller: "Seller workspace", "seller-onboarding": "Become an Aloko seller", "admin-verification": "Seller verification", "moderator-desk": "Moderator Desk", "buyer-preferences": "Your shopping preferences", services: "Services & professionals", "admin-service-providers": "Provider applications", providers: "Service provider network", inbox: "Messages", saved: "Saved items", account: "My account", store: storeData?.store?.display_name ? `${storeData.store.display_name}’s store` : "Seller storefront" };
+  if (!authUser && ["buyer-dashboard", "seller", "seller-onboarding", "inbox", "account", "buyer-preferences", "services", "admin-service-providers"].includes(screen)) {
     return <section className="workspace-page"><div className="workspace-gate"><span className="workspace-icon">✦</span><span className="eyebrow">YOUR ALOKO ACCOUNT</span><h1>Everything in its right place.</h1><p>Sign in to manage your listings, talk to buyers and keep your Aloko activity together.</p><button className="workspace-primary" onClick={onLogin}>Sign in to continue <span>→</span></button><button className="workspace-link" onClick={onLogin}>New to Aloko? Create an account</button></div></section>;
   }
 
   return <section className="workspace-page">
     <div className="workspace-heading"><div><span className="eyebrow">ALOKO / YOUR SPACE</span><h1>{titleMap[screen] || "Your Aloko space"}</h1><p>{screen === "seller" ? "Manage your inventory and keep every listing up to date." : screen === "inbox" ? "Your conversations with buyers and sellers, all in one place." : screen === "saved" ? "The items and opportunities you want to come back to." : screen === "store" ? "Explore this seller’s currently available listings." : "Your identity and activity across the Aloko community."}</p></div>{screen === "seller" && <button className="workspace-primary" onClick={onSell}>＋ Create listing</button>}</div>
     {workspaceError && <div className="workspace-alert" role="alert">{workspaceError} <button onClick={() => window.location.reload()}>Refresh</button></div>}
+    {screen === "buyer-dashboard" && <div className="workspace-panel"><div className="workspace-panel-head"><div><span className="eyebrow">YOUR ALOKO</span><h2>Welcome back, {authUser?.name || authUser?.email?.split("@")[0] || "there"}.</h2><p>Your marketplace activity, saved finds and conversations in one place.</p></div><span>Buyer account</span></div><div className="workspace-stats"><div><span>SAVED FINDS</span><strong>{localSaved.length}</strong></div><div><span>ACCOUNT</span><strong>Active</strong></div><div><span>MEMBERSHIP</span><strong>Free</strong></div><div><span>SELLING</span><strong>Optional</strong></div></div><div className="workspace-panel-head"><div><h2>Your shortcuts</h2><p>Pick up where you left off.</p></div></div><div className="buyer-dashboard-actions"><button className="workspace-secondary" onClick={() => onNavigate("saved")}>♡ Saved items →</button><button className="workspace-secondary" onClick={() => onNavigate("inbox")}>✉ Messages →</button><button className="workspace-secondary" onClick={onBuyerPreferences}>⚙ Shopping preferences →</button><button className="workspace-secondary" onClick={onServices}>⌂ Decluttering services →</button><button className="workspace-secondary" onClick={onSellerOnboarding}>＋ Become a seller →</button></div></div>}
+    {screen === "business-dashboard" && <div className="workspace-panel"><div className="workspace-panel-head"><div><span className="eyebrow">BUSINESS OPERATIONS</span><h2>Welcome to your Business Hub.</h2><p>Manage your business catalogue and customer activity from one workspace.</p></div><span>Business account</span></div><div className="workspace-stats"><div><span>CATALOGUE ITEMS</span><strong>{localListings.length}</strong></div><div><span>ACCOUNT</span><strong>Active</strong></div><div><span>BUSINESS TOOLS</span><strong>Workspace</strong></div><div><span>TEAM ACCESS</span><strong>Coming next</strong></div></div><div className="workspace-panel-head"><div><h2>Business tools</h2><p>Open an area to continue managing your business.</p></div></div><div className="buyer-dashboard-actions"><button className="workspace-secondary" onClick={() => onNavigate("seller")}>▦ Manage catalogue →</button><button className="workspace-secondary" onClick={() => onNavigate("inbox")}>✉ Customer enquiries →</button><button className="workspace-secondary" onClick={() => onNavigate("services")}>⌂ Decluttering services →</button><button className="workspace-secondary" onClick={() => onNavigate("account")}>⚙ Business profile & settings →</button></div><p className="demo-note">Business verification, inventory controls, team permissions, sales reporting and payment administration are not yet available in this workspace.</p></div>}
     {screen === "seller-onboarding" && <SellerOnboarding onNotice={onNotice} />}
     {screen === "buyer-preferences" && <BuyerPreferences onNotice={onNotice} />}
     {screen === "services" && <ServiceRequests authUser={authUser} onLogin={onLogin} onNotice={onNotice} onProviders={onProviders} />}
     {screen === "providers" && <ServiceProviders authUser={authUser} onLogin={onLogin} onNotice={onNotice} />}
     {screen === "admin-service-providers" && (profile?.role === "admin" ? <AdminServiceProviderReview onNotice={onNotice} /> : <div className="workspace-panel"><div className="workspace-empty"><h3>Administrator access required</h3></div></div>)}
     {screen === "admin-verification" && (["admin","moderator"].includes(profile?.role || authUser?.role) ? <AdminSellerVerification canDecide={(profile?.role || authUser?.role) === "admin"} onNotice={onNotice} /> : <div className="workspace-panel"><div className="workspace-empty"><h3>Staff access required</h3><p>This area is available to authorised Aloko moderators and administrators.</p></div></div>)}
+    {screen === "moderator-desk" && (["admin","moderator"].includes(profile?.role || authUser?.role) ? <ModeratorDesk onNotice={onNotice} onSellerApplications={() => onNavigate("admin-verification")} /> : <div className="workspace-panel"><div className="workspace-empty"><h3>Staff access required</h3><p>This area is available to authorised Aloko moderators and administrators.</p></div></div>)}
     {screen === "seller" && <div className="workspace-panel">
       <div className="seller-onboarding-entry"><div><span className="eyebrow">GROW WITH ALOKO</span><strong>Start selling with a verified store</strong><p>Complete your seller details to unlock listing access after review.</p></div><button className="workspace-secondary" onClick={onSellerOnboarding}>Set up seller account →</button></div>
       <div className="workspace-stats"><div><span>ALL LISTINGS</span><strong>{myListings.length}</strong></div><div><span>ACTIVE</span><strong>{myListings.filter(x=>x.status==="active").length}</strong></div><div><span>UNDER REVIEW</span><strong>{myListings.filter(x=>x.status==="pending_review").length}</strong></div><div><span>SOLD</span><strong>{myListings.filter(x=>x.status==="sold").length}</strong></div></div>
@@ -221,7 +227,7 @@ function WorkspaceScreen({ screen, authUser, onLogin, onSell, onSellerOnboarding
       </> : <div className="workspace-empty"><span>⌂</span><h3>{loading ? "Loading storefront…" : "Storefront unavailable"}</h3><p>{workspaceError || "This seller profile could not be found."}</p></div>}
     </div>}
     {screen === "saved" && <div className="workspace-panel"><div className="workspace-panel-head"><div><h2>Your saved collection</h2><p>Saved on this device and synced to your account when available.</p></div><span>{authUser ? savedListings.length : localSavedListings.length} saved</span></div>{authUser ? savedListings.length ? <div className="workspace-listings">{savedListings.map(item=><article className="workspace-listing" key={item.id}><div className="workspace-listing-art">♡</div><div className="workspace-listing-copy"><strong>{item.title}</strong><span>{item.category} · {[item.city,item.state].filter(Boolean).join(", ")}</span><small>{formatNaira(item.price_naira)}</small></div><button className="workspace-open-link" onClick={()=>onOpenListing(item)}>View item →</button></article>)}</div> : <div className="workspace-empty"><span>♡</span><h3>Your collection is waiting.</h3><p>Save listings you love and they will be collected here.</p></div> : localSavedListings.length ? <div className="workspace-listings">{localSavedListings.map(item=><article className="workspace-listing" key={item.id}><div className="workspace-listing-art">♡</div><div className="workspace-listing-copy"><strong>{item.title}</strong><span>{item.category} · {item.place}</span><small>{item.price}</small></div><button className="workspace-open-link" onClick={()=>onOpenListing(item)}>View item →</button></article>)}</div> : <div className="workspace-empty"><span>♡</span><h3>Your saved finds</h3><p>Save an item from the marketplace to collect it here. Sign in to sync your collection across devices.</p><button className="workspace-primary" onClick={onLogin}>Sign in to sync</button></div>}</div>}
-    {screen === "account" && <div className="workspace-panel workspace-profile-panel"><div className="workspace-profile-avatar">{(profile?.display_name||authUser?.name||authUser?.email||"A").slice(0,1).toUpperCase()}</div><div><span className="eyebrow">ALOKO MEMBER</span><h2>{profile?.display_name||authUser?.name||"Welcome to Aloko"}</h2><p>{authUser?.email}</p><div className="workspace-profile-meta"><span>{profile?.account_type||"Individual account"}</span><span>{profile?.role||"Marketplace member"}</span></div></div>{["admin","moderator"].includes(profile?.role || authUser?.role) && <button className="workspace-secondary" onClick={onAdminVerification}>Review seller applications →</button>}<button className="workspace-secondary" onClick={onAdminServiceProviders}>Review service providers →</button><button className="workspace-secondary" onClick={onBuyerPreferences}>Shopping preferences →</button><button className="workspace-secondary" onClick={onServices}>Decluttering services →</button><button className="workspace-secondary" onClick={onSignOut}>Sign out</button></div>}
+    {screen === "account" && <div className="workspace-panel workspace-profile-panel"><div className="workspace-profile-avatar">{(profile?.display_name||authUser?.name||authUser?.email||"A").slice(0,1).toUpperCase()}</div><div><span className="eyebrow">ALOKO MEMBER</span><h2>{profile?.display_name||authUser?.name||"Welcome to Aloko"}</h2><p>{authUser?.email}</p><div className="workspace-profile-meta"><span>{profile?.account_type||"Individual account"}</span><span>{profile?.role||"Marketplace member"}</span></div></div>{["admin","moderator"].includes(profile?.role || authUser?.role) && <button className="workspace-secondary" onClick={onAdminVerification}>Review seller applications →</button>}{profile?.role === "admin" && <button className="workspace-secondary" onClick={onAdminServiceProviders}>Review service providers →</button>}<button className="workspace-secondary" onClick={onBuyerPreferences}>Shopping preferences →</button><button className="workspace-secondary" onClick={onServices}>Decluttering services →</button><button className="workspace-secondary" onClick={onSignOut}>Sign out</button></div>}
   </section>;
 }
 
@@ -282,10 +288,14 @@ function App() {
     title: "", price: "", place: "", description: "", kind: "sale", category: "Home & Living", condition: "Good", quantity: "1", fulfillment: "pickup"
   });
   const [accountModalOpen, setAccountModalOpen] = useState(false);
+  const [legalPage, setLegalPage] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [accountMode, setAccountMode] = useState("login");
   const [accountRole, setAccountRole] = useState("buyer");
   const [accountTypeRequired, setAccountTypeRequired] = useState(false);
   const [authUser, setAuthUser] = useState(null);
+  const [roleProfile, setRoleProfile] = useState(null);
+  const [roleRedirectRequested, setRoleRedirectRequested] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
   const [authEmail, setAuthEmail] = useState("");
   const [authPassword, setAuthPassword] = useState("");
@@ -313,6 +323,28 @@ function App() {
     }).catch(() => { if (mounted) setAuthUser(null); });
     return () => { mounted = false; };
   }, []);
+
+  useEffect(() => {
+    if (!authUser || !hasAccessToken()) { setRoleProfile(null); return; }
+    let cancelled = false;
+    getMarketplaceProfile().then(result => {
+      if (cancelled || !result.ok || !result.data?.user) return;
+      const profile = result.data.user;
+      setRoleProfile(profile);
+      if (roleRedirectRequested) {
+        const destination = getAlokoDashboard(profile);
+        navigate(destination.screen);
+        setRoleRedirectRequested(false);
+        showNotice(`Welcome to Aloko. Your ${destination.label} is ready.`);
+      }
+    }).catch(() => {
+      if (!cancelled && roleRedirectRequested) {
+        setRoleRedirectRequested(false);
+        showNotice("You are signed in. Your dashboard could not be loaded; open Menu to try again.");
+      }
+    });
+    return () => { cancelled = true; };
+  }, [authUser, roleRedirectRequested]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -414,12 +446,13 @@ function App() {
   };
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${authUser ? "member-shell" : "guest-shell"}`}>
       <header className="topbar flagship-topbar">
         <div className="wrap topbar-inner">
           <button type="button" className="brand flagship-brand" onClick={()=>navigate("home")} aria-label="Aloko home">
             <img className="brand-mark-image" src="/aloko-mark.svg" alt="" /><span className="brand-text">Aloko</span>
           </button>
+          {!authUser && <div className="guest-header-search"><span>⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search items, services or sellers…" aria-label="Search items, services or sellers"/><button type="button" onClick={()=>document.getElementById("explore")?.scrollIntoView({behavior:"smooth"})}>Search</button></div>}
           <nav className="main-nav app-main-nav" aria-label="Main navigation">
             <button className={activeScreen==="home"?"nav-current":""} onClick={()=>navigate("home")}>Home</button>
             <button className={activeScreen==="home"?"":" "} onClick={()=>{navigate("home");setTimeout(()=>document.getElementById("explore")?.scrollIntoView({behavior:"smooth"}),80);}}>Discover</button>
@@ -437,7 +470,15 @@ function App() {
           </nav>
         </div>
       </header>
-      <div className="announcement-ticker" aria-label="Aloko marketplace updates"><div className="ticker-track"><span>PLATFORM FOR ALL DECLUTTER BUSINESSES</span><b>✦</b><span>Sell pre-loved items</span><b>✦</b><span>Give usable things away</span><b>✦</b><span>Book home clear-outs</span><b>✦</b><span>Discover bulk reuse deals</span><b>✦</b><span>Find trusted local organisers</span><b>✦</b><span>Make room. Create value.</span><b>✦</b><span>PLATFORM FOR ALL DECLUTTER BUSINESSES</span><b>✦</b><span>Sell pre-loved items</span><b>✦</b><span>Give usable things away</span><b>✦</b><span>Book home clear-outs</span><b>✦</b><span>Discover bulk reuse deals</span><b>✦</b></div></div>
+      {authUser && <RoleMenuDrawer profile={roleProfile || authUser} onNavigate={navigate} onSignOut={async () => {
+        await signOutFromAloko();
+        setAuthUser(null);
+        setRoleProfile(null);
+        try { window.localStorage.removeItem("aloko:access-token"); } catch {}
+        navigate("home");
+        showNotice("You have signed out.");
+      }} />}
+      {authUser && <div className="announcement-ticker" aria-label="Aloko marketplace updates"><div className="ticker-track"><span>PLATFORM FOR ALL DECLUTTER BUSINESSES</span><b>✦</b><span>Sell pre-loved items</span><b>✦</b><span>Give usable things away</span><b>✦</b><span>Book home clear-outs</span><b>✦</b><span>Discover bulk reuse deals</span><b>✦</b><span>Find trusted local organisers</span><b>✦</b><span>Make room. Create value.</span><b>✦</b><span>PLATFORM FOR ALL DECLUTTER BUSINESSES</span><b>✦</b><span>Sell pre-loved items</span><b>✦</b><span>Give usable things away</span><b>✦</b><span>Book home clear-outs</span><b>✦</b><span>Discover bulk reuse deals</span><b>✦</b></div></div>}
 
       <main>
         {activeScreen === "home" ? <>
@@ -445,38 +486,73 @@ function App() {
           <div className="hero-inner wrap">
             <div className="hero-copy">
               <span className="eyebrow hero-eyebrow">Nigeria’s Reuse &amp; Decluttering Marketplace</span>
-              <h1 className="hero-typing-headline"><span>{typedHeadline.includes("Give It.") ? <>{typedHeadline.split("Give It.")[0]}<em className="hero-highlight">Give It.</em>{typedHeadline.split("Give It.").slice(1).join("Give It.")}</> : typedHeadline}</span><i aria-hidden="true" /></h1>
+              <h1 className="hero-typing-headline"><span>Find it. Sell it.<br/>Give it a <em className="hero-highlight">new home.</em></span></h1>
               <p>Buy and sell pre-owned items, give usable things away for free, discover bulk deals, or book decluttering services — all in one place.</p>
               <div className="hero-actions">
-                <button className="hero-primary" onClick={() => setListingFormOpen(true)}>♢ &nbsp; Start Selling <span>→</span></button>
-                <button className="hero-secondary" onClick={() => document.getElementById("explore")?.scrollIntoView({behavior:"smooth"})}>Browse Listings <span>→</span></button>
+                <button className="hero-primary" onClick={() => authUser ? setListingFormOpen(true) : (setAccountMode("signup"), setAccountModalOpen(true))}>♢ &nbsp; Start Selling <span>→</span></button>
+                <button className="hero-secondary" onClick={() => authUser ? document.getElementById("explore")?.scrollIntoView({behavior:"smooth"}) : (setAccountMode("signup"), setAccountModalOpen(true))}>Browse Listings <span>→</span></button>
               </div>
               <div className="hero-trust"><span>✦ Safe &amp; verified community</span><span>▣ Free &amp; paid listings</span><span>◉ Support local sustainability</span></div>
             </div>
-            <div className="hero-art" aria-label="Aloko marketplace app preview">
-              <div className="hero-orb orb-left">♧<b>Good Things<br/>Live Longer</b></div>
-              <div className="hero-ribbon ribbon-one"></div><div className="hero-ribbon ribbon-two"></div>
-              <div className="hero-phone"><div className="phone-notch"></div><div className="phone-brand"><img src="/aloko-mark.svg" alt="" /> Aloko</div><div className="phone-search">⌕ &nbsp; Search for anything…</div><div className="phone-cats"><span>▣<small>Electronics</small></span><span>♧<small>Fashion</small></span><span>⌂<small>Home &amp; Living</small></span><span>♡<small>Free Items</small></span><span>♧<small>Bulk Deals</small></span><span>✧<small>Services</small></span></div><div className="phone-feature"><b>Give Things<br/>A New Home</b><span>↗</span></div></div>
-              <div className="hero-orb orb-right">Same items,<br/> brighter futures!</div>
+            <div className="hero-art" aria-label="Aloko reuse marketplace lifestyle display">
+              <img className="hero-lifestyle-image" src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=90" alt="Warm modern living room with pre-loved furniture" />
+              <div className="hero-art-badge"><strong>Declutter.</strong><strong>Earn.</strong><strong>Reuse.</strong><strong>Sustain ♻</strong></div>
+              <div className="hero-art-caption"><span>ALOKO FINDS</span><b>Give good things<br/>a new home.</b></div>
             </div>
           </div>
         </section>
-        <section className="featured-placements wrap" aria-label="Featured Aloko promotions">
+        <>
+        <section className="featured-placements wrap" aria-label="Discover Nigerian marketplace categories">
           <div className="featured-placements-head"><div><span className="eyebrow">Handpicked by Aloko</span><h2>Discover what’s worth passing on.</h2></div><span className="featured-note">FEATURED SPACES</span></div>
-          <div className="featured-portrait-grid">
-            <button className="featured-portrait-card featured-portrait-home" type="button" onClick={() => { setActiveCategory("Home & Living"); document.getElementById("explore")?.scrollIntoView({behavior:"smooth"}); }}>
-              <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=900&q=85" alt="Beautifully organised contemporary living room" loading="lazy"/>
-              <span className="featured-stamp">FEATURED</span><span className="featured-portrait-copy"><small>THE HOME EDIT</small><strong>Make room for better living.</strong><em>Explore home finds ↗</em></span>
-            </button>
-            <button className="featured-portrait-card featured-portrait-seller" type="button" onClick={() => setListingFormOpen(true)}>
-              <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=900&q=85" alt="Small business owner preparing products for customers" loading="lazy"/>
-              <span className="featured-stamp">FEATURED</span><span className="featured-portrait-copy"><small>SELLER SPOTLIGHT</small><strong>Give useful things a second story.</strong><em>Open your Aloko store ↗</em></span>
-            </button>
-            <button className="featured-portrait-card featured-portrait-services" type="button" onClick={() => document.getElementById("services")?.scrollIntoView({behavior:"smooth"})}>
-              <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=85" alt="Professional home organisation and cleaning service" loading="lazy"/>
-              <span className="featured-stamp">FEATURED</span><span className="featured-portrait-copy"><small>DECLUTTER SERVICES</small><strong>From full clear-outs to fresh starts.</strong><em>Explore services ↗</em></span>
-            </button>
+          <div className="aloko-orbit-grid">
+            {[
+              ["Home & Living","photo-1600210492486-724fe5c67fb0","Explore home finds","Home & Living"],
+              ["Phones & Gadgets","photo-1511707171634-5f897ff02aa9","Phones, tablets & more","Electronics"],
+              ["Fashion (Naija Style)","photo-1539109136881-3be0616acf4b","Ankara, aso-ebi & style","Fashion"],
+              ["Power & Energy","photo-1473341304170-971dl2e7d5a","Generators & inverters","Electronics"],
+              ["Electronics & Appliances","photo-1593359677879-a4bb92f829d1","TVs & appliances","Electronics"],
+              ["Cars & Vehicles","photo-1492144534655-ae79c964c9d7","Cars & mobility","Vehicles"],
+              ["Property","photo-1600596542815-ffad4c1539a9","Homes for sale & rent","Property"],
+              ["Food & Catering","photo-1512621776951-a57141f2eefd","Food vendors & catering","Kitchenware"],
+              ["Beauty & Personal Care","photo-1522335789203-aabd1fc54bc9","Beauty & self-care","Health & Beauty"],
+              ["Farm Produce","photo-1540420773420-3366772f4999","Yam, garri & fresh produce","Home & Living"],
+              ["Books & Learning","photo-1507842217343-583bb7270b66","Books & study materials","Books"],
+              ["Sports & Fitness","photo-1517836357463-d25dfeac3438","Fitness & sports gear","Sports & Hobbies"],
+              ["Office & Business","photo-1497366754035-f200968a6e72","Office & business equipment","Bulk Deals"],
+              ["Baby & Kids","photo-1516627145497-ae6968895b74","Baby essentials","Baby & Kids"],
+              ["Free Items (Giveaway)","photo-1607082349566-187342175e2f","Give useful things a new home","Free items"]
+            ].map(([label,photo,caption,category])=>(
+              <button className="aloko-orbit-item" key={label} type="button" onClick={()=>{
+                setActiveCategory(category);
+                document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});
+              }}>
+                <span className="aloko-orbit-image"><img src={`https://images.unsplash.com/${photo}?auto=format&fit=crop&w=480&q=85`} alt="" loading="lazy"/><span className="aloko-orbit-gloss"/></span>
+                <strong>{label}</strong><small>{caption}</small>
+              </button>
+            ))}
           </div>
+          <button className="aloko-orbit-more" type="button" onClick={()=>{setShowAllCategories(true);document.getElementById("categories")?.scrollIntoView({behavior:"smooth"});}}>MORE <span>»</span></button>
+        </section>
+
+        <section className="mobile-promo-strip wrap" aria-label="Aloko marketplace highlights">
+          <button className="mobile-promo-card promo-services" type="button" onClick={()=>navigate("services")}>
+            <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=85" alt="" loading="lazy"/>
+            <span className="promo-card-shade"/>
+            <span className="promo-card-copy"><small>BOOK A SERVICE</small><strong>Decluttering<br/>Services</strong><em>Find trusted local help ↗</em></span>
+            <span className="promo-card-icon">✦</span>
+          </button>
+          <button className="mobile-promo-card promo-giveaway" type="button" onClick={()=>{setActiveCategory("Free items");document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}}>
+            <img src="https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=900&q=85" alt="" loading="lazy"/>
+            <span className="promo-card-shade"/>
+            <span className="promo-card-copy"><small>GIVE AWAY FOR FREE</small><strong>Give useful things<br/>a new home</strong><em>List for free ↗</em></span>
+            <span className="promo-card-icon">♡</span>
+          </button>
+          <button className="mobile-promo-card promo-bulk" type="button" onClick={()=>{setActiveCategory("Bulk Deals");document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}}>
+            <img src="https://images.unsplash.com/photo-1607083206968-13611e3d76db?auto=format&fit=crop&w=900&q=85" alt="" loading="lazy"/>
+            <span className="promo-card-shade"/>
+            <span className="promo-card-copy"><small>BETTER VALUE IN VOLUME</small><strong>Bulk deals &<br/>clear-outs</strong><em>Explore deals ↗</em></span>
+            <span className="promo-card-icon">▣</span>
+          </button>
         </section>
 
         <section className="declutter-network wrap" id="declutter"><div className="network-heading"><span className="eyebrow">One platform. Every stage of decluttering.</span><h2>Built for the people who help spaces, things and communities start fresh.</h2><p>Aloko brings decluttering businesses, professional organisers, reuse sellers, charities and people looking for a fresh start into one discoverable marketplace.</p></div><div className="service-ticker" aria-label="20 decluttering business services">{["Home decluttering","Office clear-outs","Moving & relocation","Estate clearances","Wardrobe edits","Furniture removal","Appliance reuse","Donation collection","Charity redistribution","Storage organisation","Garage clear-outs","Kitchen resets","Paperwork sorting","E-waste collection","Bulk item resale","Property staging","Student move-outs","Deep organisation","Business clear-outs","Responsible disposal"].map((item,i)=><span key={item}><i>{String(i+1).padStart(2,"0")}</i>{item}</span>)}</div></section>
@@ -617,17 +693,19 @@ function App() {
             <button className="post-button" onClick={() => setListingFormOpen(true)}>Sell an item</button>
           </div>
         </section>
-        </> : <WorkspaceScreen screen={activeScreen} authUser={authUser} onLogin={() => { setAccountMode("login"); setAccountModalOpen(true); }} onSell={() => setListingFormOpen(true)} onSellerOnboarding={() => navigate("seller-onboarding")} onAdminVerification={() => navigate("admin-verification")} onBuyerPreferences={() => navigate("buyer-preferences")} onServices={() => navigate("services")} onProviders={() => navigate("providers")} onAdminServiceProviders={() => navigate("admin-service-providers")} onNotice={showNotice} localSaved={saved} localListings={liveProducts} initialConversationId={activeConversationId} onConversationOpened={setActiveConversationId} sellerStoreId={sellerStoreId} onOpenListing={(item) => { setActiveScreen("home"); setSelectedListing(normalizeLiveListing(item)); window.scrollTo({ top: 0, behavior: "smooth" }); }} onSignOut={async () => { await signOutFromAloko(); setAuthUser(null); try { window.localStorage.removeItem("aloko:access-token"); } catch {} navigate("home"); showNotice("You have signed out."); }} />}
+        </>
+        {!authUser && <div className="guest-legal-footer"><span className="guest-powered">Powered by <strong>Squadglobal</strong></span><nav aria-label="Legal information">{["Terms of Use","Privacy Policy","Community Guidelines","Safety & Transactions"].map(label=><button type="button" key={label} onClick={()=>setLegalPage(label)}>{label}</button>)}</nav></div>}
+        </> : <WorkspaceScreen screen={activeScreen} authUser={authUser} onNavigate={navigate} onLogin={() => { setAccountMode("login"); setAccountModalOpen(true); }} onSell={() => setListingFormOpen(true)} onSellerOnboarding={() => navigate("seller-onboarding")} onAdminVerification={() => navigate("admin-verification")} onBuyerPreferences={() => navigate("buyer-preferences")} onServices={() => navigate("services")} onProviders={() => navigate("providers")} onAdminServiceProviders={() => navigate("admin-service-providers")} onNotice={showNotice} localSaved={saved} localListings={liveProducts} initialConversationId={activeConversationId} onConversationOpened={setActiveConversationId} sellerStoreId={sellerStoreId} onOpenListing={(item) => { setActiveScreen("home"); setSelectedListing(normalizeLiveListing(item)); window.scrollTo({ top: 0, behavior: "smooth" }); }} onSignOut={async () => { await signOutFromAloko(); setAuthUser(null); try { window.localStorage.removeItem("aloko:access-token"); } catch {} navigate("home"); showNotice("You have signed out."); }} />}
       </main>
-      {authUser && <nav className="mobile-app-nav" aria-label="App navigation">{[["home","⌂","Home"],["seller","＋","Sell"],["inbox","✉","Inbox"],["saved","♡","Saved"],["account","◉","Account"]].map(([id,icon,label])=><button key={id} className={activeScreen===id?"active":""} onClick={()=>navigate(id)}><span>{icon}</span><small>{label}</small></button>)}</nav>}
+      <nav className="mobile-app-nav" aria-label="App navigation">{(authUser?[["home","⌂","Home"],["seller","＋","Sell"],["inbox","✉","Messages"],["saved","♡","Saved"],["account","◉","Account"]]:[["home","⌂","Home"],["buy","▣","Buy"],["sell","＋","Sell"],["inbox","✉","Messages"],["account","◉","Account"]]).map(([id,icon,label])=><button key={id} className={activeScreen===id?"active":""} onClick={()=>{if(!authUser){setAccountMode("signup");setAccountModalOpen(true);}else navigate(id);}}><span>{icon}</span><small>{label}</small></button>)}</nav>
 
-      <footer className="site-footer">
+      {authUser && <footer className="site-footer">
         <div className="wrap footer-inner">
           <span>© {new Date().getFullYear()} Aloko</span>
           <span>Sell it. Give it. Pass it on.</span>
           <span className="powered-by">Powered by <strong>Squadglobal</strong></span>
         </div>
-      </footer>
+      </footer>}
 
       {accountModalOpen && (
         <div className="listing-modal-backdrop" onClick={() => !authLoading && setAccountModalOpen(false)}>
@@ -647,8 +725,8 @@ function App() {
                         const onboarding = await updateAccountType(accountRole);
                         if (!onboarding.ok) throw new Error(onboarding.data?.error || "Account setup could not be completed.");
                         setAccountTypeRequired(false);
-                        showNotice("Your Aloko account type is saved.");
                         setAccountModalOpen(false);
+                        setRoleRedirectRequested(true);
                       } catch (error) { showNotice(error.message || "Could not complete account setup."); }
                       finally { setAuthLoading(false); }
                     }}>
@@ -737,6 +815,7 @@ function App() {
                       <option value="decluttering_provider">Decluttering service provider</option>
                     </select></label>}
                     {accountMode === "signup" && <label>Your name<input value={authName} onChange={e => setAuthName(e.target.value)} minLength={2} maxLength={80} required placeholder="Your name"/></label>}
+                    {accountMode === "signup" && <label className="auth-terms-check"><input type="checkbox" checked={acceptedTerms} onChange={e=>setAcceptedTerms(e.target.checked)} required/><span>I agree to Aloko’s <button type="button" onClick={()=>setLegalPage("Terms of Use")}>Terms of Use</button> and <button type="button" onClick={()=>setLegalPage("Privacy Policy")}>Privacy Policy</button>.</span></label>}
                     <label>Email<input type="email" value={authEmail} onChange={e => setAuthEmail(e.target.value)} required placeholder="you@example.com" autoComplete="email"/></label>
                     <label>Password<input type="password" value={authPassword} onChange={e => setAuthPassword(e.target.value)} required minLength={8} autoComplete={accountMode === "login" ? "current-password" : "new-password"}/></label>
                     <button type="submit" disabled={authLoading} className="modal-contact-button">{authLoading ? "Please wait…" : accountMode === "login" ? "Log in" : "Create account"}</button>
@@ -875,6 +954,47 @@ function App() {
         </div>
       )}
 
+      {legalPage && (
+        <div className="listing-modal-backdrop legal-backdrop" onClick={()=>setLegalPage("")}>
+          <section className="listing-modal legal-reader" role="dialog" aria-modal="true" aria-labelledby="legal-reader-title" onClick={e=>e.stopPropagation()}>
+            <button className="listing-modal-close" type="button" onClick={()=>setLegalPage("")} aria-label="Close">×</button>
+            <div className="listing-modal-content">
+              <span className="eyebrow">ALOKO · PLATFORM INFORMATION</span>
+              <h2 id="legal-reader-title">{legalPage}</h2>
+              {legalPage === "Terms of Use" ? <>
+                <p>These terms govern your access to and use of Aloko, a marketplace for pre-owned goods, giveaways, bulk deals and decluttering services in Nigeria.</p>
+                <h3>Accounts and eligibility</h3><p>You must provide accurate registration information, keep your login credentials secure and use only the account type that truthfully describes your activity. You are responsible for activity carried out through your account.</p>
+                <h3>Listings and transactions</h3><p>Members must publish truthful descriptions, accurate prices and genuine photographs, and must have the right to offer each item or service. Aloko may review, restrict or remove listings that breach platform rules or applicable law.</p>
+                <h3>Payments and delivery</h3><p>Unless a specific Aloko checkout flow says otherwise, buyers and sellers must confirm payment, inspection, collection and delivery arrangements directly and carefully. Do not assume Aloko holds funds or guarantees a transaction.</p>
+                <h3>Verification and access</h3><p>Some seller, business and service-provider features require additional information or approval. Submission does not guarantee approval. Aloko may suspend access where necessary for safety, compliance or platform integrity.</p>
+                <h3>Acceptable use</h3><p>Do not use Aloko for fraud, stolen goods, counterfeit goods, prohibited items, harassment, misleading listings or unlawful activity. Report suspected abuse through the available platform channels.</p>
+                <h3>Changes and contact</h3><p>Platform features and these terms may be updated. Continued use after an announced update means you accept the revised terms. Contact Aloko through the support details published in the platform for questions or complaints.</p>
+              </> : legalPage === "Privacy Policy" ? <>
+                <p>This notice explains the personal information Aloko may process to provide marketplace accounts and services.</p>
+                <h3>Information we collect</h3><p>Depending on your account and activity, this may include your name, email address, phone number, location, account type, profile and verification details, listings, messages, service requests and technical/security logs.</p>
+                <h3>How information is used</h3><p>We use information to create and secure accounts, operate listings and messaging, support verification and moderation, personalise local discovery, prevent fraud and meet legal obligations.</p>
+                <h3>Sharing and visibility</h3><p>Public profile and listing information may be visible to other members. We do not publish private contact or verification information as public listing content. Information may be shared with service providers supporting the platform or where required by law.</p>
+                <h3>Security and retention</h3><p>We use reasonable technical and organisational safeguards. No online service can promise absolute security. Information is retained only as needed for platform operations, legal requirements, dispute handling and security.</p>
+                <h3>Your choices</h3><p>You may update account details and contact support about access, correction or deletion requests, subject to legal and operational retention requirements.</p>
+              </> : legalPage === "Community Guidelines" ? <>
+                <p>Aloko is built around reuse, trust and respectful local commerce. These rules apply to buyers, sellers, businesses, resellers and service providers.</p>
+                <h3>Be honest</h3><p>Use genuine photos, accurate descriptions, fair prices and clear availability. Disclose defects, ownership restrictions and relevant conditions.</p>
+                <h3>Respect people</h3><p>No threats, hate, discrimination, harassment, impersonation, spam or misuse of another member’s personal information.</p>
+                <h3>Respect property and the law</h3><p>Only list goods and services you are authorised to offer. Counterfeit, stolen, illegal, dangerous or otherwise prohibited items are not allowed.</p>
+                <h3>Keep the community safe</h3><p>Do not manipulate reviews, evade moderation, create duplicate accounts to bypass restrictions or attempt to move members into deceptive payment arrangements. Report suspicious conduct.</p>
+                <h3>Enforcement</h3><p>Aloko may review reports, remove content, limit features or suspend accounts where there is a credible safety, fraud or policy concern.</p>
+              </> : <>
+                <p>Use good judgement when arranging purchases, collections, deliveries and service appointments with other members.</p>
+                <h3>Before paying</h3><p>Inspect goods where practical, verify the seller and item, confirm the full price and agree on payment terms. Be cautious of pressure, unusual payment requests and prices that seem implausible.</p>
+                <h3>Collection and delivery</h3><p>Meet in a safe public place where appropriate, take someone with you for higher-value collections and confirm delivery details in writing. Do not share passwords or one-time verification codes.</p>
+                <h3>Service bookings</h3><p>Confirm the provider’s identity, scope of work, location, schedule, fees and cancellation terms before work begins. Do not make advance payments unless you understand and trust the arrangement.</p>
+                <h3>Report concerns</h3><p>Keep relevant messages and transaction details. Report suspicious listings, impersonation, unsafe behaviour or suspected fraud to Aloko promptly.</p>
+              </>}
+              <p className="legal-review-note">These platform notices are an initial product draft and should receive Nigerian legal review before public production launch.</p>
+            </div>
+          </section>
+        </div>
+      )}
       {notice && <div className="toast" role="status">{notice}</div>}
     </div>
   );

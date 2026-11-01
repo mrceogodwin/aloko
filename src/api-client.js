@@ -226,3 +226,18 @@ export function updateAccountType(accountType) {
     body: { account_type: accountType },
   });
 }
+
+
+export function listModerationQueue() {
+  return request("/api/moderation-queue");
+}
+
+export function decideListingModeration(listing_id, decision, reason = "") {
+  return request("/api/moderation-decide", { method: "POST", body: { listing_id, decision, reason } });
+}
+
+export function listModerationReports() { return request("/api/report-queue"); }
+export function updateModerationReport(report_id, status, resolution_note = "") { return request("/api/report-decide", { method: "POST", body: { report_id, status, resolution_note } }); }
+
+export function searchModerationUsers(query) { return request(`/api/user-search?q=${encodeURIComponent(query)}`); }
+export function setModerationUserSuspension(user_id, suspended, reason) { return request("/api/user-suspension", { method: "POST", body: { user_id, suspended, reason } }); }

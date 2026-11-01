@@ -159,7 +159,11 @@ test("moderation approval publishes without charging a second listing credit", a
   }, res);
   assert.equal(res.statusCode, 200);
   assert.equal(res.body.item.status, "active");
-  assert.equal(calls.length, 3);
+  // One read confirms the pending listing; one atomic UPDATE + audit CTE
+  // publishes it. Moderation must never debit the listing credit again.
+  assert.equal(calls.length, 2);
+  assert.match(calls[1].sql, /INSERT INTO public\.audit_logs/);
+  assert.match(calls[1].sql, /JOIN logged ON logged\.target_id=changed\.id::text/);
   assert.ok(calls.every(call => !/listing_credit_accounts|credit_ledger|spend/i.test(call.sql)));
 });
 

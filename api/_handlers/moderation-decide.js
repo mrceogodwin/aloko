@@ -12,30 +12,28 @@ const LOAD_PENDING_SQL = `
 `;
 
 const APPROVE_SQL = `
-  UPDATE public.listings
-  SET status = 'active'::public.listing_status,
-      published_at = now(),
-      moderation_note = NULL,
-      updated_at = now()
-  WHERE id = $1::uuid
-    AND status = 'pending_review'::public.listing_status
-  RETURNING id, title, status, published_at, updated_at, seller_id, kind
+  WITH changed AS (
+    UPDATE public.listings SET status='active'::public.listing_status,published_at=now(),moderation_note=NULL,updated_at=now()
+    WHERE id=$1::uuid AND status='pending_review'::public.listing_status
+    RETURNING id,title,status,published_at,updated_at,seller_id,kind
+  ), logged AS (
+    INSERT INTO public.audit_logs(actor_id,action,target_type,target_id,details)
+    SELECT $2::uuid,'approve_listing','listing',id,jsonb_build_object('decision','approve','credit_charged_at_submission',kind <> 'giveaway') FROM changed
+    RETURNING target_id
+  )
+  SELECT changed.* FROM changed JOIN logged ON logged.target_id=changed.id::text
 `;
-
 const REJECT_SQL = `
-  UPDATE public.listings
-  SET status = 'rejected'::public.listing_status,
-      published_at = NULL,
-      moderation_note = $2,
-      updated_at = now()
-  WHERE id = $1::uuid
-    AND status = 'pending_review'::public.listing_status
-  RETURNING id, title, status, moderation_note, updated_at
-`;
-
-const AUDIT_SQL = `
-  INSERT INTO public.audit_logs (actor_id, action, target_type, target_id, details)
-  VALUES ($1::uuid, $2, 'listing', $3, $4::jsonb)
+  WITH changed AS (
+    UPDATE public.listings SET status='rejected'::public.listing_status,published_at=NULL,moderation_note=$2,updated_at=now()
+    WHERE id=$1::uuid AND status='pending_review'::public.listing_status
+    RETURNING id,title,status,moderation_note,updated_at,seller_id,kind
+  ), logged AS (
+    INSERT INTO public.audit_logs(actor_id,action,target_type,target_id,details)
+    SELECT $3::uuid,'reject_listing','listing',id,jsonb_build_object('decision','reject','reason',$2) FROM changed
+    RETURNING target_id
+  )
+  SELECT changed.* FROM changed JOIN logged ON logged.target_id=changed.id::text
 `;
 
 export function createModerationDecideHandler({ getDatabase = getPool } = {}) {
@@ -82,18 +80,10 @@ export function createModerationDecideHandler({ getDatabase = getPool } = {}) {
 
     try {
       if (decision === "reject") {
-        const result = await database.query(REJECT_SQL, [listingId, reason]);
+        const result = await database.query(REJECT_SQL, [listingId, reason, auth.user.id]);
         if (!result.rows?.length) {
           return res.status(404).json({ error: "Listing not found or not pending review" });
         }
-        try {
-          await database.query(AUDIT_SQL, [
-            auth.user.id,
-            "reject_listing",
-            listingId,
-            JSON.stringify({ decision, reason }),
-          ]);
-        } catch { /* audit best-effort */ }
         return res.status(200).json({
           item: result.rows[0],
           message: "Listing rejected",
@@ -109,22 +99,11 @@ export function createModerationDecideHandler({ getDatabase = getPool } = {}) {
       }
       const listing = pending.rows[0];
 
-      const result = await database.query(APPROVE_SQL, [listingId]);
+      const result = await database.query(APPROVE_SQL, [listingId, auth.user.id]);
       if (!result.rows?.length) {
         return res.status(404).json({ error: "Listing not found or not pending review" });
       }
 
-      try {
-        await database.query(AUDIT_SQL, [
-          auth.user.id,
-          "approve_listing",
-          listingId,
-          JSON.stringify({
-            decision: "approve",
-            credit_charged_at_submission: listing.kind !== "giveaway",
-          }),
-        ]);
-      } catch { /* audit best-effort */ }
 
       return res.status(200).json({
         item: result.rows[0],

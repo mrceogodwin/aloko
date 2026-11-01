@@ -68,6 +68,8 @@ test("admin approval checks typed legal and CAC details without requiring docume
   assert.match(sqlSeen, /listing_credit_accounts/);
   assert.match(sqlSeen, /credit_ledger/);
   assert.match(sqlSeen, /introductory_grant/);
+  assert.match(sqlSeen, /pg_advisory_xact_lock\(hashtextextended\(r\.applicant_id::text, 0\)\)/);
+  assert.match(sqlSeen, /CROSS JOIN credit_lock/);
   assert.match(sqlSeen, /SELECT r\.applicant_id, 3, now\(\)/);
   assert.equal(res.statusCode, 404);
 });
@@ -96,4 +98,24 @@ test("seller verification decisions reject invalid identifiers and actions", asy
     body: { application_id: "bad-id", decision: "approve" },
   }, res);
   assert.equal(res.statusCode, 400);
+});
+
+test("seller verification decision fails closed when atomic audit write fails", async () => {
+  let sqlSeen = "";
+  const handler = createSellerVerificationDecideHandler({
+    getDatabase: () => ({ async query(sql) {
+      sqlSeen = sql;
+      throw new Error("audit storage unavailable");
+    } }),
+  });
+  const res = responseRecorder();
+  await handler({
+    method: "POST", auth: admin,
+    body: { application_id: applicationId, decision: "approve" },
+  }, res);
+  assert.equal(res.statusCode, 500);
+  assert.match(sqlSeen, /WITH reviewed AS/);
+  assert.match(sqlSeen, /INSERT INTO public.audit_logs/);
+  assert.match(sqlSeen, /JOIN logged/);
+  assert.doesNotMatch(sqlSeen, /best-effort/i);
 });

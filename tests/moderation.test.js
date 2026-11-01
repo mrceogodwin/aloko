@@ -142,3 +142,14 @@ test("moderation decide returns 404 when listing is not pending", async () => {
   }, res);
   assert.equal(res.statusCode, 404);
 });
+
+test("listing decision is atomic with its audit record and fails closed on audit error", async () => {
+  const calls=[];
+  const handler=createModerationDecideHandler({getDatabase:()=>({async query(sql){calls.push(sql);if(sql.includes("WITH changed AS"))throw Error("audit storage unavailable");return {rows:[{id:listingId}]};}})});
+  const res=responseRecorder();
+  await handler({method:"POST",body:{listing_id:listingId,decision:"reject",reason:"Policy violation"},auth:{user:{id:moderatorId,role:"moderator"}}},res);
+  assert.equal(res.statusCode,500);
+  assert.equal(calls.length,1);
+  assert.match(calls[0],/INSERT INTO public.audit_logs/);
+  assert.match(calls[0],/WITH changed AS/);
+});

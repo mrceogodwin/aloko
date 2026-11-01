@@ -1,0 +1,22 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {createReportQueueHandler} from "../api/_handlers/report-queue.js";
+import {createReportDecideHandler} from "../api/_handlers/report-decide.js";
+function response(){return {statusCode:200,headers:{},body:null,setHeader(k,v){this.headers[k]=v;},status(c){this.statusCode=c;return this;},json(b){this.body=b;return this;}};}
+const staff="aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",rid="bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+test("report queue denies non-staff",async()=>{const h=createReportQueueHandler({getDatabase:()=>({async query(){return {rows:[]};}})});const r=response();await h({method:"GET",auth:{user:{id:staff,role:"buyer"}}},r);assert.equal(r.statusCode,403);});
+test("moderator can view report queue",async()=>{const h=createReportQueueHandler({getDatabase:()=>({async query(sql){assert.match(sql,/listing_reports/);return {rows:[{id:rid,status:"open"}]};}})});const r=response();await h({method:"GET",auth:{user:{id:staff,role:"moderator"}}},r);assert.equal(r.statusCode,200);assert.equal(r.body.count,1);});
+test("report decision validates state and resolution note",async()=>{const h=createReportDecideHandler({getDatabase:()=>({async query(){return {rows:[]};}})});const a=response();await h({method:"POST",auth:{user:{id:staff,role:"moderator"}},body:{report_id:rid,status:"delete"}},a);assert.equal(a.statusCode,400);const b=response();await h({method:"POST",auth:{user:{id:staff,role:"moderator"}},body:{report_id:rid,status:"resolved"}},b);assert.equal(b.statusCode,400);});
+test("moderator can assign report for investigation and action is audited",async()=>{const calls=[];const h=createReportDecideHandler({getDatabase:()=>({async query(sql){calls.push(sql);if(sql.includes("UPDATE public.listing_reports"))return {rows:[{id:rid,status:"investigating",assigned_to:staff}]};return {rows:[]};}})});const r=response();await h({method:"POST",auth:{user:{id:staff,role:"moderator"}},body:{report_id:rid,status:"investigating"}},r);assert.equal(r.statusCode,200);assert.ok(calls.some(s=>/audit_logs/.test(s)));});
+test("moderator can resolve report with a note",async()=>{const h=createReportDecideHandler({getDatabase:()=>({async query(sql){if(sql.includes("UPDATE public.listing_reports"))return {rows:[{id:rid,status:"resolved"}]};return {rows:[]};}})});const r=response();await h({method:"POST",auth:{user:{id:staff,role:"moderator"}},body:{report_id:rid,status:"resolved",resolution_note:"Reviewed and actioned"}},r);assert.equal(r.statusCode,200);});
+
+test("report decision fails closed when atomic audit write fails",async()=>{
+ const calls=[];
+ const h=createReportDecideHandler({getDatabase:()=>({async query(sql){calls.push(sql);throw Error("audit storage unavailable");}})});
+ const r=response();
+ await h({method:"POST",auth:{user:{id:staff,role:"moderator"}},body:{report_id:rid,status:"investigating"}},r);
+ assert.equal(r.statusCode,500);
+ assert.equal(calls.length,1);
+ assert.match(calls[0],/WITH changed AS/);
+ assert.match(calls[0],/INSERT INTO public.audit_logs/);
+});
