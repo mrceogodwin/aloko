@@ -8,6 +8,7 @@ import BuyerPreferences from "./BuyerPreferences.jsx";
 import ServiceRequests from "./ServiceRequests.jsx";
 import ServiceProviders from "./ServiceProviders.jsx";
 import AdminServiceProviderReview from "./AdminServiceProviderReview.jsx";
+import RoleMenuDrawer from "./RoleMenuDrawer.jsx";
 
 const nigeriaStates = ["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","FCT","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"];
 
@@ -286,6 +287,7 @@ function App() {
   const [accountRole, setAccountRole] = useState("buyer");
   const [accountTypeRequired, setAccountTypeRequired] = useState(false);
   const [authUser, setAuthUser] = useState(null);
+  const [roleProfile, setRoleProfile] = useState(null);
   const [authLoading, setAuthLoading] = useState(false);
   const [authEmail, setAuthEmail] = useState("");
   const [authPassword, setAuthPassword] = useState("");
@@ -313,6 +315,15 @@ function App() {
     }).catch(() => { if (mounted) setAuthUser(null); });
     return () => { mounted = false; };
   }, []);
+
+  useEffect(() => {
+    if (!authUser || !hasAccessToken()) { setRoleProfile(null); return; }
+    let cancelled = false;
+    getMarketplaceProfile().then(result => {
+      if (!cancelled && result.ok && result.data?.user) setRoleProfile(result.data.user);
+    }).catch(() => {});
+    return () => { cancelled = true; };
+  }, [authUser]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -437,6 +448,14 @@ function App() {
           </nav>
         </div>
       </header>
+      {authUser && <RoleMenuDrawer profile={roleProfile || authUser} onNavigate={navigate} onSignOut={async () => {
+        await signOutFromAloko();
+        setAuthUser(null);
+        setRoleProfile(null);
+        try { window.localStorage.removeItem("aloko:access-token"); } catch {}
+        navigate("home");
+        showNotice("You have signed out.");
+      }} />}
       <div className="announcement-ticker" aria-label="Aloko marketplace updates"><div className="ticker-track"><span>PLATFORM FOR ALL DECLUTTER BUSINESSES</span><b>✦</b><span>Sell pre-loved items</span><b>✦</b><span>Give usable things away</span><b>✦</b><span>Book home clear-outs</span><b>✦</b><span>Discover bulk reuse deals</span><b>✦</b><span>Find trusted local organisers</span><b>✦</b><span>Make room. Create value.</span><b>✦</b><span>PLATFORM FOR ALL DECLUTTER BUSINESSES</span><b>✦</b><span>Sell pre-loved items</span><b>✦</b><span>Give usable things away</span><b>✦</b><span>Book home clear-outs</span><b>✦</b><span>Discover bulk reuse deals</span><b>✦</b></div></div>
 
       <main>
