@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createListingsHandler } from "../api/listings.js";
+import { createListingsHandler } from "../api/_handlers/listings.js";
 
 function responseRecorder() {
   return {
