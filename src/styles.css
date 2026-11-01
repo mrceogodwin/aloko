@@ -772,3 +772,34 @@
 @media(min-width:761px){
  .guest-shell .hero-inner{grid-template-columns:1.05fr .95fr}
 }
+
+/* Guest landing legal footer and readable policy sheets */
+.guest-shell .flagship-hero{display:flex;flex-direction:column}
+.guest-shell .hero-inner{flex:1 1 auto}
+.guest-legal-footer{position:relative;z-index:4;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px max(16px,calc((100% - 1240px)/2));border-top:1px solid #ffffff22;background:#16052f55;color:#eee3fa}
+.guest-powered{font-size:11px;white-space:nowrap;letter-spacing:.2px}
+.guest-powered strong{font-weight:900;color:#fff}
+.guest-legal-footer nav{display:flex;align-items:center;justify-content:flex-end;gap:15px;flex-wrap:wrap}
+.guest-legal-footer nav button,.auth-terms-check button{border:0;padding:0;background:transparent;color:#ead5ff;text-decoration:underline;text-underline-offset:3px;font:inherit;cursor:pointer}
+.guest-legal-footer nav button{font-size:10px;white-space:nowrap}
+.legal-backdrop{z-index:90}
+.legal-reader{max-width:720px;max-height:min(84svh,850px);overflow:hidden}
+.legal-reader .listing-modal-content{max-height:84svh;overflow:auto;padding:34px}
+.legal-reader h2{margin:12px 0 18px}
+.legal-reader h3{font:800 15px Manrope,sans-serif;color:#32144e;margin:22px 0 6px}
+.legal-reader p{font-size:13px;line-height:1.7;color:#655773}
+.legal-review-note{margin-top:26px;padding:12px;border-radius:10px;background:#f7f0fc;color:#775c8d!important;font-size:11px!important}
+.auth-terms-check{display:flex!important;grid-template-columns:18px 1fr;align-items:flex-start;gap:9px!important;font-size:12px!important;line-height:1.5;color:#685878!important}
+.auth-terms-check input{width:16px!important;height:16px;margin:2px 0 0;flex:0 0 auto}
+.auth-terms-check span{display:block}
+.auth-terms-check button{color:#7120a8;font-weight:800}
+@media(max-width:760px){
+ .guest-shell .flagship-hero{min-height:0}
+ .guest-shell .hero-inner{min-height:0}
+ .guest-legal-footer{padding:9px 14px calc(10px + env(safe-area-inset-bottom));flex-direction:column;gap:7px;text-align:center}
+ .guest-legal-footer nav{justify-content:center;gap:8px 13px}
+ .guest-legal-footer nav button{font-size:9px}
+ .guest-powered{font-size:10px}
+ .legal-reader{max-height:88svh}
+ .legal-reader .listing-modal-content{max-height:88svh;padding:26px 20px}
+}
