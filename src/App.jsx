@@ -20,6 +20,10 @@ const categories = [
   ["📚", "Books"], ["🏡", "Property & Garden"], ["🧸", "Toys & Games"], ["🧰", "Tools"],
   ["🎨", "Art & Collectibles"], ["🧳", "Travel & Luggage"], ["🍼", "Baby Essentials"], ["🌿", "Garden & Outdoor"],
   ["⌂", "Property"], ["🚙", "Cars & Motorcycles"], ["🛵", "Bicycles & Mobility"], ["📱", "Phones & Accessories"], ["💻", "Computers & Office Tech"], ["🔌", "Home Appliances"], ["🛏", "Bedroom & Bedding"], ["🛋", "Home Decor"], ["👟", "Shoes & Bags"], ["💍", "Jewellery & Watches"], ["🧴", "Personal Care"], ["🧑‍🍳", "Kitchen & Dining"], ["🧹", "Cleaning Equipment"], ["🏋", "Fitness Equipment"], ["🎮", "Gaming"], ["🎵", "Musical Instruments"], ["🧱", "Building Materials"], ["🌱", "Plants & Garden"], ["♻", "Recycling & Scrap"], ["📦", "Office Clear-outs"], ["🏠", "Estate Clearances"], ["🧺", "Wardrobe Clear-outs"], ["🪑", "Furniture Clear-outs"], ["🚚", "Moving & Relocation"], ["🤝", "Donation & Charity"], ["🧑‍🔧", "Professional Services"],
+  ["🏬", "Business & Commercial Equipment"], ["🍽️", "Restaurant & Catering Equipment"],
+  ["🧹", "Home Decluttering"], ["📦", "Business Surplus & Liquidation"],
+  ["🪟", "Building Materials & Salvage"], ["🗄️", "Office Furniture & Equipment"],
+  ["♻️", "Recycling & Responsible Disposal"], ["🧸", "Baby, Kids & Maternity"],
 ];
 
 const demoPhotoByCategory = {
@@ -355,7 +359,14 @@ function App() {
         activeCategory === "Electronics" ? /electronics|phones|tech/i.test(p.category) :
         activeCategory === "Health & Beauty" ? /health|beauty/i.test(p.category) :
         activeCategory === "Sports & Hobbies" ? /sports|hobbies/i.test(p.category) :
-        activeCategory === "Baby & Kids" ? /baby|kids|children/i.test(p.category) :
+        activeCategory === "Baby & Kids" || activeCategory === "Baby, Kids & Maternity" ? /baby|kids|children|maternity/i.test(p.category) :
+        activeCategory === "Electronics & Gadgets" ? /electronics|phones|tech|computer|gadget/i.test(p.category) :
+        activeCategory === "Automotive & Mobility" ? /vehicle|car|motor|auto|bicycle|mobility/i.test(p.category) :
+        activeCategory === "Tools, Equipment & Machinery" ? /tool|equipment|machinery|industrial/i.test(p.category) :
+        activeCategory === "Outdoor, Garden & Sports" ? /outdoor|garden|sports|fitness|plant/i.test(p.category) :
+        activeCategory === "Business & Commercial Equipment" ? /business|commercial|office|restaurant|catering/i.test(p.category) :
+        activeCategory === "Building Materials & Salvage" ? /building|material|salvage|timber|tile/i.test(p.category) :
+        activeCategory === "Recycling & Responsible Disposal" ? /recycl|scrap|e-waste|disposal/i.test(p.category) :
         p.category === activeCategory)) &&
     (!savedOnly || saved.includes(p.id)) &&
     (selectedLocation === "All locations" || p.state === selectedLocation || p.place?.split(", ").includes(selectedLocation)) &&
@@ -782,7 +793,7 @@ function App() {
               }}>
                 <label>Post type<select value={listingDraft.kind} onChange={e => setListingDraft(v => ({...v,kind:e.target.value,category:e.target.value === "giveaway" ? "Free items" : (v.category === "Free items" ? "Home & Living" : v.category),price:e.target.value === "giveaway" ? "0" : (v.price === "0" ? "" : v.price)}))}><option value="sale">Sell an item</option><option value="giveaway">Give away for free</option><option value="bulk">Bulk deal</option></select></label>
                 <label>Listing title<input required minLength={4} maxLength={90} value={listingDraft.title} onChange={e => setListingDraft(v => ({...v,title:e.target.value}))} placeholder="e.g. Gently used 3-seater sofa"/></label>
-                <label>Category<select value={listingDraft.category} onChange={e => setListingDraft(v => ({...v,category:e.target.value}))}><option>Home &amp; Living</option><option>Phones &amp; Tech</option><option>Fashion</option><option>Appliances</option><option>Furniture</option><option>Books &amp; Hobbies</option><option>Free items</option></select></label>
+                <label>Category<select value={listingDraft.category} onChange={e => setListingDraft(v => ({...v,category:e.target.value}))}>{categories.filter(([, label]) => !["Free items", "Bulk Deals", "Services"].includes(label)).map(([icon, label]) => <option key={label} value={label}>{label}</option>)}<option value="Phones &amp; Tech">Phones &amp; Tech</option><option value="Appliances">Appliances</option><option value="Books &amp; Hobbies">Books &amp; Hobbies</option></select></label>
                 <div className="listing-form-row">
                   <label>{listingDraft.kind === "giveaway" ? "Price" : "Price (₦)"}<input type="number" min={listingDraft.kind === "giveaway" ? 0 : 1} step="1" required value={listingDraft.price} disabled={listingDraft.kind === "giveaway"} onChange={e => setListingDraft(v => ({...v,price:e.target.value}))} placeholder="Enter amount"/></label>
                   <label>Quantity<input type="number" min="1" max="1000000" step="1" required value={listingDraft.quantity} onChange={e => setListingDraft(v => ({...v,quantity:e.target.value}))}/></label>
