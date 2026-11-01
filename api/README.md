@@ -12,6 +12,8 @@ Serverless handlers for a Vercel-compatible runtime. Deployment remains restrict
 
 ## Authenticated (Bearer / `req.auth.user`)
 
+| `GET /api/account-onboarding` | any | Read primary account-type onboarding status |
+| `POST /api/account-onboarding` | any | Set the primary account type once after verified sign-in |
 | Route | Roles | Purpose |
 | --- | --- | --- |
 | `GET /api/me` | any | Current profile |
