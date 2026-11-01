@@ -19,9 +19,20 @@ export function createUserSuspensionHandler({getDatabase=getPool}={}) {
   if(reason.length<3)return res.status(400).json({error:"A reason of at least 3 characters is required"});
   const database=getDatabase();if(!database)return res.status(503).json({error:"User management is temporarily unavailable"});
   try {
-   const result=await database.query(`UPDATE public.profiles p SET is_suspended=$2,updated_at=now() WHERE p.id=$1::uuid AND NOT EXISTS (SELECT 1 FROM public.staff_memberships sm WHERE sm.user_id=p.id AND sm.is_active=true) RETURNING p.id,p.display_name,p.is_suspended,p.updated_at`,[userId,suspended]);
+   const result=await database.query(`WITH changed AS (
+    UPDATE public.profiles p
+    SET is_suspended=$2,updated_at=now()
+    WHERE p.id=$1::uuid
+      AND NOT EXISTS (SELECT 1 FROM public.staff_memberships sm WHERE sm.user_id=p.id AND sm.is_active=true)
+    RETURNING p.id,p.display_name,p.is_suspended,p.updated_at
+   ), logged AS (
+    INSERT INTO public.audit_logs(actor_id,action,target_type,target_id,details)
+    SELECT $3::uuid,$4,'profile',changed.id,$5::jsonb FROM changed
+    RETURNING target_id
+   )
+   SELECT changed.id,changed.display_name,changed.is_suspended,changed.updated_at
+   FROM changed JOIN logged ON logged.target_id=changed.id`,[userId,suspended,auth.user.id,suspended?"suspend_user":"reinstate_user",JSON.stringify({reason})]);
    if(!result.rows?.length)return res.status(404).json({error:"User not found or protected staff account"});
-   try{await database.query(`INSERT INTO public.audit_logs(actor_id,action,target_type,target_id,details) VALUES($1::uuid,$2,'profile',$3,$4::jsonb)`,[auth.user.id,suspended?"suspend_user":"reinstate_user",userId,JSON.stringify({reason})]);}catch{}
    return res.status(200).json({user:result.rows[0],message:suspended?"User suspended":"User reinstated"});
   }catch{return res.status(500).json({error:"Could not update user status"});}
  };
