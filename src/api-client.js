@@ -214,3 +214,15 @@ export function saveProviderAvailabilityException(exception) {
 export function deleteProviderAvailabilityException(id) {
   return request("/api/provider-availability", { method: "DELETE", body: { id } });
 }
+
+
+export function getAccountOnboarding() {
+  return request("/api/account-onboarding", { method: "GET" });
+}
+
+export function updateAccountType(accountType) {
+  return request("/api/account-onboarding", {
+    method: "POST",
+    body: { account_type: accountType },
+  });
+}
