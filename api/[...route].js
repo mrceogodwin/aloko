@@ -1,3 +1,4 @@
+import accountOnboarding from "./account-onboarding.js";
 import conversations from "./_handlers/conversations.js";
 import health from "./_handlers/health.js";
 import listingCredits from "./_handlers/listing-credits.js";
@@ -16,6 +17,7 @@ import reportListing from "./_handlers/report-listing.js";
 import savedListings from "./_handlers/saved-listings.js";
 
 const handlers = {
+  "account-onboarding": accountOnboarding,
   "conversations": conversations,
   "health": health,
   "listing-credits": listingCredits,

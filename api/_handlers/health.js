@@ -40,10 +40,17 @@ export function createHealthHandler({ getDatabase = getPool } = {}) {
     try {
       const result = await database.query(
         `SELECT to_regclass('public.listings') IS NOT NULL AS listings_ok,
-                to_regclass('public.profiles') IS NOT NULL AS profiles_ok`
+                to_regclass('public.profiles') IS NOT NULL AS profiles_ok,
+                EXISTS (
+                  SELECT 1 FROM information_schema.columns
+                  WHERE table_schema = 'public'
+                    AND table_name = 'profiles'
+                    AND column_name = 'account_type_selected_at'
+                ) AS account_onboarding_ok`
       );
       const row = result.rows?.[0] || {};
-      if (row.listings_ok && row.profiles_ok) schema = "ready";
+      if (row.listings_ok && row.profiles_ok && row.account_onboarding_ok) schema = "ready";
+      else if (row.listings_ok && row.profiles_ok) schema = "missing_account_onboarding";
       else if (!row.listings_ok && !row.profiles_ok) schema = "missing_foundation";
       else schema = "incomplete";
     } catch {
@@ -58,7 +65,7 @@ export function createHealthHandler({ getDatabase = getPool } = {}) {
       hint:
         schema === "ready"
           ? undefined
-          : "Apply database/migrations/001_marketplace_foundation.sql on the Neon project used by DATABASE_URL",
+          : "Apply the pending Aloko database migrations to the Neon project used by DATABASE_URL",
     });
   };
 }

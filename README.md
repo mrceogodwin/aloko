@@ -28,8 +28,8 @@ The active frontend is React + Vite in `src/`. The original static homepage is r
 
 ## Not connected yet
 
-- Live authentication provider (Neon Auth or Clerk) and production middleware wiring.
-- Frontend login/register UI and Bearer-token attachment on protected requests.
+- Production authentication provider configuration and production middleware verification.
+- Email verification policy and production sender configuration.
 - Account-backed saved items, conversations, service requests, and seller dashboards.
 - Image upload/storage and serving listing images from storage keys.
 - Moderation/admin workflows, payment-provider checkout/webhooks, listing-credit purchases and deductions, and promotion activation.
@@ -39,7 +39,7 @@ The listing draft and saved items are browser-local conveniences, not persisted 
 
 ## Schema and launch boundaries
 
-`database/migrations/001_marketplace_foundation.sql` is applied to the dedicated Aloko production database. `database/migrations/002_platform_operations.sql` remains unapplied on production and must be reviewed and explicitly approved before it is run. CI may apply both migrations to a disposable Postgres service only for validation.
+`database/migrations/001_marketplace_foundation.sql` is applied to the dedicated Aloko production database. `database/migrations/002_platform_operations.sql` and `database/migrations/003_buyer_account_type.sql` remain unapplied on production and must be reviewed and explicitly approved before they are run. CI may apply migrations to a disposable Postgres service only for validation.
 
 At launch, buyers arrange item purchases directly with sellers (for example, bank transfer, cash, or seller contact). Aloko listing-credit and promotion fees are separate platform payments; item checkout or escrow is not part of the current design. Decluttering service payment arrangements are also separate unless a later product decision changes this.
 

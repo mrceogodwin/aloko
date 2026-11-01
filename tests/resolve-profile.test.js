@@ -90,7 +90,7 @@ test("ensureProfile inserts then resolves", async () => {
       return {
         rows: [{
           id,
-          account_type: "individual",
+          account_type: "buyer",
           is_suspended: false,
           display_name: "Aloko member",
         }],
@@ -99,7 +99,7 @@ test("ensureProfile inserts then resolves", async () => {
   };
   const profile = await ensureProfile(id, db);
   assert.equal(profile.id, id);
-  assert.equal(profile.role, "seller");
+  assert.equal(profile.role, "buyer");
   assert.equal(calls.length, 2);
   assert.match(calls[0].sql, /ON CONFLICT \(id\) DO NOTHING/);
 });
