@@ -1215,3 +1215,110 @@
   .guest-shell .mobile-promo-strip { grid-row:3; }
   .guest-shell .listings { grid-row:4; }
 }
+
+
+/* Aloko mobile: natural vertical homepage scroll with persistent app chrome. */
+@media (max-width:760px) {
+  html, body, #root { min-height:100%; height:auto; overflow-x:hidden; }
+  body { overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; }
+  .guest-shell {
+    position:relative!important; inset:auto!important; display:block!important;
+    width:100%; height:auto!important; min-height:100dvh; max-height:none!important;
+    overflow:visible!important; padding-bottom:calc(68px + env(safe-area-inset-bottom));
+  }
+  .guest-shell .topbar.flagship-topbar {
+    position:sticky!important; top:0; z-index:60;
+    height:auto!important; min-height:102px; flex:none!important;
+    padding-top:env(safe-area-inset-top);
+  }
+  .guest-shell .topbar-inner {
+    height:auto!important; min-height:102px!important;
+    grid-template-rows:48px 42px; padding-bottom:7px;
+  }
+  .guest-shell>main {
+    position:relative!important; display:block!important;
+    height:auto!important; min-height:0!important; max-height:none!important;
+    flex:none!important; overflow:visible!important; padding:0 0 18px!important;
+  }
+  .guest-shell>main>section { display:block!important; }
+  .guest-shell .featured-placements,
+  .guest-shell .declutter-network,
+  .guest-shell .search-dock,
+  .guest-shell .community-showcase,
+  .guest-shell .benefits-section,
+  .guest-shell .subscribe-section,
+  .guest-shell .seller-cta,
+  .guest-shell .guest-legal-footer { display:none!important; }
+
+  .guest-shell .flagship-hero {
+    height:auto!important; min-height:0!important; flex:none!important;
+    overflow:hidden; padding:22px 0 18px;
+  }
+  .guest-shell .hero-inner {
+    height:auto!important; min-height:0!important;
+    grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);
+  }
+  .guest-shell .flagship-categories {
+    display:block!important; height:auto!important; flex:none!important;
+    margin:0!important; padding:15px 0 13px!important;
+    overflow:visible!important; background:#fff;
+  }
+  .guest-shell .flagship-categories .section-head { display:flex!important; }
+  .guest-shell .category-row {
+    display:flex!important; gap:9px; overflow-x:auto!important; overflow-y:hidden!important;
+    padding:4px 14px 8px; scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  .guest-shell .category-row::-webkit-scrollbar { display:none; }
+  .guest-shell .category-chip { flex:0 0 76px; width:76px; scroll-snap-align:start; }
+  .guest-shell .mobile-promo-strip {
+    display:flex!important; grid-template-columns:none!important;
+    gap:9px; overflow-x:auto!important; overflow-y:hidden!important;
+    margin:12px 0!important; padding:0 12px 8px!important;
+    scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  .guest-shell .mobile-promo-strip::-webkit-scrollbar { display:none; }
+  .guest-shell .mobile-promo-card {
+    flex:0 0 78vw; width:78vw; height:clamp(105px,30vw,145px)!important;
+    scroll-snap-align:start;
+  }
+  .guest-shell .listings {
+    display:block!important; height:auto!important; min-height:0!important;
+    overflow:visible!important; margin:10px 0 18px!important; padding:8px 12px!important;
+  }
+  .guest-shell .listings .section-head { display:flex!important; }
+  .guest-shell .product-grid {
+    display:flex!important; flex:initial!important; height:auto!important; min-height:0!important;
+    overflow-x:auto!important; overflow-y:hidden!important; padding:3px 2px 10px!important;
+    scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  .guest-shell .product-grid::-webkit-scrollbar { display:none; }
+  .guest-shell .product-card {
+    flex:0 0 min(43vw,190px)!important; width:min(43vw,190px)!important;
+    height:clamp(175px,49vw,220px)!important; min-height:0!important;
+    scroll-snap-align:start;
+  }
+  .guest-shell .product-image { flex:0 0 61%!important; height:61%!important; }
+  .guest-shell .showcase-section {
+    display:block!important; margin:12px 0 20px!important; padding:12px!important;
+    overflow:visible!important; background:#fff;
+  }
+  .guest-shell .showcase-carousel {
+    display:flex!important; gap:10px; overflow-x:auto!important; overflow-y:hidden!important;
+    scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  .guest-shell .showcase-carousel::-webkit-scrollbar { display:none; }
+  .guest-shell .showcase-card { flex:0 0 72vw; scroll-snap-align:start; }
+  .guest-shell .giveaway-section,.guest-shell .services-section {
+    display:block!important; margin:16px 12px!important;
+  }
+  .guest-shell .mobile-app-nav {
+    position:fixed!important; left:0; right:0; bottom:0; z-index:80;
+    height:calc(62px + env(safe-area-inset-bottom))!important;
+    min-height:62px; padding:5px 10px max(5px,env(safe-area-inset-bottom))!important;
+  }
+}
+@media (max-width:390px) {
+  .guest-shell .hero-copy h1 { font-size:clamp(22px,6.1vw,27px)!important; }
+  .guest-shell .product-card { flex-basis:46vw!important; width:46vw!important; }
+}
