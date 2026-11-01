@@ -61,7 +61,8 @@ test("new buyer profile can select its primary account type", async () => {
   const res = responseRecorder();
   await handler({ method: "POST", body: { account_type: "individual" } }, res);
   assert.match(sqlSeen, /UPDATE public\.profiles/);
-  assert.match(sqlSeen, /account_type = 'buyer' OR account_type = \$1/);
+  assert.match(sqlSeen, /account_type_selected_at = COALESCE\(account_type_selected_at, now\(\)\)/);
+  assert.match(sqlSeen, /account_type_selected_at IS NULL OR account_type = \$1/);
   assert.deepEqual(valuesSeen, ["individual", userId]);
   assert.equal(res.statusCode, 200);
   assert.equal(res.body.profile.account_type, "individual");
@@ -70,7 +71,7 @@ test("new buyer profile can select its primary account type", async () => {
 test("existing primary account type cannot be switched through account onboarding", async () => {
   const database = {
     async query(sql) {
-      assert.match(sql, /account_type = 'buyer' OR account_type = \$1/);
+      assert.match(sql, /account_type_selected_at IS NULL OR account_type = \$1/);
       return { rows: [] };
     },
   };
