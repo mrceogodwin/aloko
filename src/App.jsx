@@ -29,6 +29,21 @@ const categories = [
   ["♻️", "Recycling & Responsible Disposal"], ["🧸", "Baby, Kids & Maternity"],
 ];
 
+const categoryArtwork = {
+  "Electronics":"photo-1511707171634-5f897ff02aa9",
+  "Fashion":"photo-1490481651871-ab68de25d43d",
+  "Home & Living":"photo-1600210492486-724fe5c67fb0",
+  "Vehicles":"photo-1492144534655-ae79c964c9d7",
+  "Health & Beauty":"photo-1522335789203-aabd1fc54bc9",
+  "Sports & Hobbies":"photo-1517836357463-d25dfeac3438",
+  "Baby & Kids":"photo-1516627145497-ae6968895b74",
+  "Free items":"photo-1607082349566-187342175e2f",
+  "Bulk Deals":"photo-1607083206968-13611e3d76db",
+  "Furniture":"photo-1555041469-a586c61ea9bc",
+  "Kitchenware":"photo-1556911220-bff31c812dba"
+};
+
+
 const demoPhotoByCategory = {
   "Home & Living": "photo-1600210492486-724fe5c67fb0",
   Furniture: "photo-1555041469-a586c61ea9bc",
@@ -493,15 +508,47 @@ function App() {
                 <button className="hero-primary" onClick={() => authUser ? setListingFormOpen(true) : (setAccountMode("signup"), setAccountModalOpen(true))}>♢ &nbsp; Start Selling <span>→</span></button>
                 <button className="hero-secondary" onClick={() => {document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}}>Browse Listings <span>→</span></button>
               </div>
-              <div className="hero-trust"><span>✦ Safe &amp; verified community</span><span>▣ Free &amp; paid listings</span><span>◉ Support local sustainability</span></div>
+              <div className="hero-benefits" aria-label="Marketplace services">
+                <div><span>♻</span><small>Buy &amp; Sell<br/>Pre-owned</small></div>
+                <div><span>♧</span><small>Give Away<br/>(Free)</small></div>
+                <div><span>▱</span><small>Bulk<br/>Deals</small></div>
+                <div><span>▣</span><small>Book<br/>Decluttering</small></div>
+              </div>
             </div>
             <div className="hero-art" aria-label="Aloko reuse marketplace lifestyle display">
-              <img className="hero-lifestyle-image" src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=90" alt="Warm modern living room with pre-loved furniture" />
+              <img className="hero-lifestyle-image" src="/aloko-home-scene.svg" alt="Aloko reuse marketplace scene with emerald sofa, lamp, reuse box, headphones and sneakers" />
               <div className="hero-art-badge"><strong>Declutter.</strong><strong>Earn.</strong><strong>Reuse.</strong><strong>Sustain ♻</strong></div>
               <div className="hero-art-caption"><span>ALOKO FINDS</span><b>Give good things<br/>a new home.</b></div>
             </div>
           </div>
         </section>
+        <section className="categories wrap flagship-categories" id="categories" aria-label="Categories">
+          <div className="section-head">
+            <h2>Explore categories</h2>
+            <button className="view-all" onClick={() => { setActiveCategory("All"); setQuery(""); setSavedOnly(false); }}>View all</button>
+          </div>
+          <div className="category-row">
+            {(showAllCategories ? categories : categories.slice(0, 8)).map(([icon, label]) => (
+              <button
+                key={label}
+                className={activeCategory === label ? "category-chip active" : "category-chip"}
+                onClick={() => {
+                setSavedOnly(false);
+                if (label === "Services") {
+                  document.getElementById("services")?.scrollIntoView({ behavior: "smooth" });
+                  return;
+                }
+                setActiveCategory(label);
+              }}
+              >
+                <span className="category-icon"><img className="category-art-image" src={`https://images.unsplash.com/${categoryArtwork[label] || "photo-1600210492486-724fe5c67fb0"}?auto=format&fit=crop&w=180&q=80`} alt="" loading="lazy"/></span>
+                <span>{label}</span>
+              </button>
+            ))}
+            <button className="category-chip category-more" type="button" aria-expanded={showAllCategories} onClick={() => setShowAllCategories(v => !v)}><span className="category-icon category-more-icon">▦</span><span>{showAllCategories ? "Less" : "More"}</span></button>
+          </div>
+        </section>
+        
         <>
         <section className="featured-placements wrap" aria-label="Discover Nigerian marketplace categories">
           <div className="featured-placements-head"><div><span className="eyebrow">Handpicked by Aloko</span><h2>Discover what’s worth passing on.</h2></div><span className="featured-note">FEATURED SPACES</span></div>
@@ -562,32 +609,7 @@ function App() {
           <div className="hero-search"><span>⌕</span><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search for items, categories or locations…" aria-label="Search listings"/><label>⌖ <select value={selectedLocation} onChange={e => setSelectedLocation(e.target.value)}><option value="All locations">All Nigeria</option>{nigeriaStates.map(state => <option key={state} value={state}>{state}</option>)}</select></label><button type="button" onClick={() => document.getElementById("explore")?.scrollIntoView({behavior:"smooth"})}>⌕ &nbsp; Search</button></div>
         </section>
 
-        <section className="categories wrap flagship-categories" id="categories" aria-label="Categories">
-          <div className="section-head">
-            <h2>Explore categories</h2>
-            <button className="view-all" onClick={() => { setActiveCategory("All"); setQuery(""); setSavedOnly(false); }}>View all</button>
-          </div>
-          <div className="category-row">
-            {(showAllCategories ? categories : categories.slice(0, 8)).map(([icon, label]) => (
-              <button
-                key={label}
-                className={activeCategory === label ? "category-chip active" : "category-chip"}
-                onClick={() => {
-                setSavedOnly(false);
-                if (label === "Services") {
-                  document.getElementById("services")?.scrollIntoView({ behavior: "smooth" });
-                  return;
-                }
-                setActiveCategory(label);
-              }}
-              >
-                <span className="category-icon" aria-hidden="true">{icon}</span>
-                <span>{label}</span>
-              </button>
-            ))}
-            <button className="category-chip category-more" type="button" aria-expanded={showAllCategories} onClick={() => setShowAllCategories(v => !v)}><span className="category-icon">＋</span><span>{showAllCategories ? "Less" : "More"}</span></button>
-          </div>
-        </section>
+        
 
         <section className="listings wrap" id="explore">
           <div className="section-head">
