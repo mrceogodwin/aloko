@@ -494,11 +494,10 @@ function App() {
               </div>
               <div className="hero-trust"><span>✦ Safe &amp; verified community</span><span>▣ Free &amp; paid listings</span><span>◉ Support local sustainability</span></div>
             </div>
-            <div className="hero-art" aria-label="Aloko marketplace app preview">
-              <div className="hero-orb orb-left">♧<b>Good Things<br/>Live Longer</b></div>
-              <div className="hero-ribbon ribbon-one"></div><div className="hero-ribbon ribbon-two"></div>
-              <div className="hero-phone"><div className="phone-notch"></div><div className="phone-brand"><img src="/aloko-mark.svg" alt="" /> Aloko</div><div className="phone-search">⌕ &nbsp; Search for anything…</div><div className="phone-cats"><span>▣<small>Electronics</small></span><span>♧<small>Fashion</small></span><span>⌂<small>Home &amp; Living</small></span><span>♡<small>Free Items</small></span><span>♧<small>Bulk Deals</small></span><span>✧<small>Services</small></span></div><div className="phone-feature"><b>Give Things<br/>A New Home</b><span>↗</span></div></div>
-              <div className="hero-orb orb-right">Same items,<br/> brighter futures!</div>
+            <div className="hero-art" aria-label="Aloko reuse marketplace lifestyle display">
+              <img className="hero-lifestyle-image" src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=90" alt="Warm modern living room with pre-loved furniture" />
+              <div className="hero-art-badge"><strong>Declutter.</strong><strong>Earn.</strong><strong>Reuse.</strong><strong>Sustain ♻</strong></div>
+              <div className="hero-art-caption"><span>ALOKO FINDS</span><b>Give good things<br/>a new home.</b></div>
             </div>
           </div>
         </section>
@@ -698,7 +697,7 @@ function App() {
         {!authUser && <div className="guest-legal-footer"><span className="guest-powered">Powered by <strong>Squadglobal</strong></span><nav aria-label="Legal information">{["Terms of Use","Privacy Policy","Community Guidelines","Safety & Transactions"].map(label=><button type="button" key={label} onClick={()=>setLegalPage(label)}>{label}</button>)}</nav></div>}
         </> : <WorkspaceScreen screen={activeScreen} authUser={authUser} onNavigate={navigate} onLogin={() => { setAccountMode("login"); setAccountModalOpen(true); }} onSell={() => setListingFormOpen(true)} onSellerOnboarding={() => navigate("seller-onboarding")} onAdminVerification={() => navigate("admin-verification")} onBuyerPreferences={() => navigate("buyer-preferences")} onServices={() => navigate("services")} onProviders={() => navigate("providers")} onAdminServiceProviders={() => navigate("admin-service-providers")} onNotice={showNotice} localSaved={saved} localListings={liveProducts} initialConversationId={activeConversationId} onConversationOpened={setActiveConversationId} sellerStoreId={sellerStoreId} onOpenListing={(item) => { setActiveScreen("home"); setSelectedListing(normalizeLiveListing(item)); window.scrollTo({ top: 0, behavior: "smooth" }); }} onSignOut={async () => { await signOutFromAloko(); setAuthUser(null); try { window.localStorage.removeItem("aloko:access-token"); } catch {} navigate("home"); showNotice("You have signed out."); }} />}
       </main>
-      {authUser && <nav className="mobile-app-nav" aria-label="App navigation">{[["home","⌂","Home"],["seller","＋","Sell"],["inbox","✉","Inbox"],["saved","♡","Saved"],["account","◉","Account"]].map(([id,icon,label])=><button key={id} className={activeScreen===id?"active":""} onClick={()=>navigate(id)}><span>{icon}</span><small>{label}</small></button>)}</nav>}
+      <nav className="mobile-app-nav" aria-label="App navigation">{(authUser?[["home","⌂","Home"],["seller","＋","Sell"],["inbox","✉","Messages"],["saved","♡","Saved"],["account","◉","Account"]]:[["home","⌂","Home"],["buy","▣","Buy"],["sell","＋","Sell"],["inbox","✉","Messages"],["account","◉","Account"]]).map(([id,icon,label])=><button key={id} className={activeScreen===id?"active":""} onClick={()=>{if(!authUser){setAccountMode("signup");setAccountModalOpen(true);}else navigate(id);}}><span>{icon}</span><small>{label}</small></button>)}</nav>
 
       {authUser && <footer className="site-footer">
         <div className="wrap footer-inner">
