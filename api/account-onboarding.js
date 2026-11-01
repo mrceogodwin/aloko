@@ -17,7 +17,7 @@ export default async function handler(req, res) {
   }
 
   const accountType = req.body?.account_type;
-  if (typeof accountType !== "string" || !ACCOUNT_TYPES.has(accountType)) {
+  if (accountType !== undefined && (typeof accountType !== "string" || !ACCOUNT_TYPES.has(accountType))) {
     return res.status(400).json({ error: "Choose a valid Aloko account type" });
   }
 
@@ -35,13 +35,19 @@ export default async function handler(req, res) {
   }
 
   try {
-    const result = await database.query(
-      `UPDATE public.profiles
-       SET account_type = $1, updated_at = now()
-       WHERE id = $2::uuid
-       RETURNING id, display_name, account_type, city, state`,
-      [accountType, auth.user.id],
-    );
+    const result = accountType
+      ? await database.query(
+          `UPDATE public.profiles
+           SET account_type = $1, updated_at = now()
+           WHERE id = $2::uuid
+           RETURNING id, display_name, account_type, city, state`,
+          [accountType, auth.user.id],
+        )
+      : await database.query(
+          `SELECT id, display_name, account_type, city, state
+           FROM public.profiles WHERE id = $1::uuid LIMIT 1`,
+          [auth.user.id],
+        );
     const profile = result.rows?.[0];
     if (!profile) {
       return res.status(404).json({ error: "Account profile could not be found" });
