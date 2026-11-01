@@ -10,6 +10,7 @@ import ServiceProviders from "./ServiceProviders.jsx";
 import AdminServiceProviderReview from "./AdminServiceProviderReview.jsx";
 import ModeratorDesk from "./ModeratorDesk.jsx";
 import RoleMenuDrawer from "./RoleMenuDrawer.jsx";
+import { getAlokoDashboard } from "./role-navigation.js";
 
 const nigeriaStates = ["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","FCT","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"];
 
@@ -292,6 +293,7 @@ function App() {
   const [accountTypeRequired, setAccountTypeRequired] = useState(false);
   const [authUser, setAuthUser] = useState(null);
   const [roleProfile, setRoleProfile] = useState(null);
+  const [roleRedirectRequested, setRoleRedirectRequested] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
   const [authEmail, setAuthEmail] = useState("");
   const [authPassword, setAuthPassword] = useState("");
