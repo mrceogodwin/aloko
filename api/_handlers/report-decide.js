@@ -19,9 +19,25 @@ export function createReportDecideHandler({getDatabase=getPool}={}) {
   if(["resolved","dismissed"].includes(status)&&note.length<3)return res.status(400).json({error:"A resolution note of at least 3 characters is required"});
   const database=getDatabase();if(!database)return res.status(503).json({error:"Report management is temporarily unavailable"});
   try {
-   const result=await database.query(`UPDATE public.listing_reports SET status=$2,assigned_to=CASE WHEN $2='investigating' THEN $3::uuid ELSE assigned_to END,resolution_note=CASE WHEN $2 IN ('resolved','dismissed') THEN $4 ELSE resolution_note END,resolved_at=CASE WHEN $2 IN ('resolved','dismissed') THEN now() ELSE NULL END WHERE id=$1::uuid AND status IN ('open','investigating') RETURNING id,listing_id,status,assigned_to,resolution_note,resolved_at`,[id,status,auth.user.id,note||null]);
-   if(!result.rows?.length)return res.status(404).json({error:"Report not found or no longer actionable"});
-   try{await database.query(`INSERT INTO public.audit_logs(actor_id,action,target_type,target_id,details) VALUES($1::uuid,$2,'listing_report',$3,$4::jsonb)`,[auth.user.id,`report_${status}`,id,JSON.stringify({status,resolution_note:note||null})]);}catch{}
+   const result=await database.query(`
+    WITH changed AS (
+     UPDATE public.listing_reports
+     SET status=$2,
+         assigned_to=CASE WHEN $2='investigating' THEN $3::uuid ELSE assigned_to END,
+         resolution_note=CASE WHEN $2 IN ('resolved','dismissed') THEN $4 ELSE resolution_note END,
+         resolved_at=CASE WHEN $2 IN ('resolved','dismissed') THEN now() ELSE NULL END
+     WHERE id=$1::uuid AND status IN ('open','investigating')
+     RETURNING id,listing_id,status,assigned_to,resolution_note,resolved_at
+    ), logged AS (
+     INSERT INTO public.audit_logs(actor_id,action,target_type,target_id,details)
+     SELECT $3::uuid,'report_'||$2,'listing_report',id,
+       jsonb_build_object('status',$2,'resolution_note',$4)
+     FROM changed
+     RETURNING target_id
+    )
+    SELECT changed.* FROM changed JOIN logged ON logged.target_id=changed.id
+   `,[id,status,auth.user.id,note||null]);
+   if(!result.rows?.length)return res.status(404).json({error:"Report not found or audit could not be recorded"});
    return res.status(200).json({report:result.rows[0],message:`Report marked ${status}`});
   }catch{return res.status(500).json({error:"Could not update report"});}
  };
