@@ -28,8 +28,8 @@ The active frontend is React + Vite in `src/`. The original static homepage is r
 
 ## Not connected yet
 
-- Live authentication provider (Neon Auth or Clerk) and production middleware wiring.
-- Frontend login/register UI and Bearer-token attachment on protected requests.
+- Production authentication provider configuration and production middleware verification.
+- Email verification policy and production sender configuration.
 - Account-backed saved items, conversations, service requests, and seller dashboards.
 - Image upload/storage and serving listing images from storage keys.
 - Moderation/admin workflows, payment-provider checkout/webhooks, listing-credit purchases and deductions, and promotion activation.
