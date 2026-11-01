@@ -473,7 +473,7 @@ function App() {
           <button type="button" className="brand flagship-brand" onClick={()=>navigate("home")} aria-label="Aloko home">
             <img className="brand-mark-image" src="/aloko-mark.svg" alt="" /><span className="brand-lockup"><span className="brand-text">Aloko</span><small>Sell it. Give it. Pass it on.</small></span>
           </button>
-          {!authUser && <div className="guest-header-search"><label className="mobile-location-picker" aria-label="Choose location"><span>⌖</span><select value={selectedLocation} onChange={e=>setSelectedLocation(e.target.value)}><option value="All locations">Nigeria</option>{nigeriaStates.map(state=><option key={state} value={state}>{state}</option>)}</select></label><span className="mobile-search-icon" aria-hidden="true">⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}} placeholder="Search for items, services or sellers…" aria-label="Search items, services or sellers"/><input ref={cameraInputRef} className="camera-search-input" type="file" accept="image/*" capture="environment" aria-label="Choose a photo for visual search" onChange={e=>{if(e.target.files?.[0])showNotice("Photo selected. Image-based listing search is not connected yet.");e.target.value="";}}/><button className="mobile-camera-search" type="button" aria-label="Camera search (visual search stub)" onClick={()=>cameraInputRef.current?.click()}>▧</button><button className="mobile-search-submit" type="button" onClick={()=>document.getElementById("explore")?.scrollIntoView({behavior:"smooth"})}>Search</button></div>}
+          {!authUser && <div className="guest-header-search"><label className="mobile-location-picker" aria-label="Choose location"><span>⌖</span><select value={selectedLocation} onChange={e=>setSelectedLocation(e.target.value)}><option value="All locations">Nigeria</option>{nigeriaStates.map(state=><option key={state} value={state}>{state}</option>)}</select></label><span className="mobile-search-icon" aria-hidden="true">⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}} placeholder="Search for items, services or sellers…" aria-label="Search items, services or sellers"/><input ref={cameraInputRef} className="camera-search-input" type="file" accept="image/*" capture="environment" aria-label="Choose a photo for visual search" onChange={e=>{if(e.target.files?.[0])showNotice("Photo selected. Image-based listing search is not connected yet.");e.target.value="";}}/><button className="mobile-camera-search" type="button" aria-label="Camera search (visual search stub)" onClick={()=>cameraInputRef.current?.click()}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v10H3V8a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/><circle cx="12" cy="13" r="3.2" fill="none" stroke="currentColor" strokeWidth="1.8"/></svg></button><button className="mobile-search-submit" type="button" onClick={()=>document.getElementById("explore")?.scrollIntoView({behavior:"smooth"})}>Search</button></div>}
           <nav className="main-nav app-main-nav" aria-label="Main navigation">
             <button className={activeScreen==="home"?"nav-current":""} onClick={()=>navigate("home")}>Home</button>
             <button className={activeScreen==="home"?"":" "} onClick={()=>{navigate("home");setTimeout(()=>document.getElementById("explore")?.scrollIntoView({behavior:"smooth"}),80);}}>Discover</button>
@@ -482,7 +482,7 @@ function App() {
             <button className={activeScreen==="saved"?"nav-current":""} onClick={()=>navigate("saved")}>Saved</button>
           </nav>
           <nav className="nav-actions" aria-label="Account">
-            {!authUser && <><button type="button" className="mobile-header-action notification-stub" aria-label="Notifications (stub)" onClick={()=>showNotice("Notifications are not available yet.")}>♧</button><button type="button" className="mobile-header-action" aria-label="Saved listings" aria-pressed={savedOnly} onClick={()=>{setSavedOnly(v=>!v);setActiveCategory("All");}}>♡</button><button type="button" className="mobile-header-action mobile-menu-stub" aria-label="Open marketplace menu" aria-expanded={guestMenuOpen} onClick={()=>setGuestMenuOpen(v=>!v)}>☰</button></>}
+            {!authUser && <><button type="button" className="mobile-header-action notification-stub" aria-label="Notifications (not connected yet)" onClick={()=>showNotice("The notification centre is not connected yet.")}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg><i/></button><button type="button" className="mobile-header-action" aria-label="Saved listings" aria-pressed={savedOnly} onClick={()=>{setSavedOnly(v=>!v);setActiveCategory("All");}}>♡</button><button type="button" className="mobile-header-action mobile-menu-stub" aria-label="Open marketplace menu" aria-expanded={guestMenuOpen} onClick={()=>setGuestMenuOpen(v=>!v)}>☰</button></>}
             <label className="header-state-picker" aria-label="Choose your state"><span>⌖</span><select value={selectedLocation} onChange={e => setSelectedLocation(e.target.value)}><option value="All locations">Nigeria</option>{nigeriaStates.map(state => <option key={state} value={state}>{state}</option>)}</select></label>
             <button type="button" className="nav-search-icon" aria-label="Focus search" onClick={() => document.querySelector(".hero-search input")?.focus()}>⌕</button>
             <button type="button" className="ghost-button" onClick={() => authUser ? navigate("account") : (setAccountMode("login"), setAccountModalOpen(true))}>{authUser ? "My account" : "Login"}</button>
@@ -517,15 +517,15 @@ function App() {
               <span className="eyebrow hero-eyebrow">Nigeria’s Reuse &amp; Decluttering Marketplace</span>
               <h1 className="hero-typing-headline"><span>Find it. Sell it.<br/>Give it a <em className="hero-highlight">new home.</em></span></h1>
               <p>Buy and sell pre-owned items, give usable things away for free, discover bulk deals, or book decluttering services — all in one place.</p>
-              <div className="hero-actions">
-                <button className="hero-primary" onClick={() => authUser ? setListingFormOpen(true) : (setAccountMode("signup"), setAccountModalOpen(true))}>♢ &nbsp; Start Selling <span>→</span></button>
-                <button className="hero-secondary" onClick={() => {document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}}>Browse Listings <span>→</span></button>
-              </div>
               <div className="hero-benefits" aria-label="Marketplace services">
                 <div><span>♻</span><small>Buy &amp; Sell<br/>Pre-owned</small></div>
                 <div><span>♧</span><small>Give Away<br/>(Free)</small></div>
                 <div><span>▱</span><small>Bulk<br/>Deals</small></div>
                 <div><span>▣</span><small>Book<br/>Decluttering</small></div>
+              </div>
+              <div className="hero-actions">
+                <button className="hero-primary" onClick={() => authUser ? setListingFormOpen(true) : (setAccountMode("signup"), setAccountModalOpen(true))}>♢ &nbsp; Start Selling <span>→</span></button>
+                <button className="hero-secondary" onClick={() => {document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}}>Browse Listings <span>→</span></button>
               </div>
             </div>
             <div className="hero-art" aria-label="Aloko reuse marketplace lifestyle display">
@@ -541,7 +541,7 @@ function App() {
             <button className="view-all" onClick={() => { setActiveCategory("All"); setQuery(""); setSavedOnly(false); }}>View all</button>
           </div>
           <div className="category-row">
-            {(showAllCategories ? categories : categories.slice(0, 8)).map(([icon, label]) => (
+            {(showAllCategories ? categories : categories.slice(0, 7)).map(([icon, label]) => (
               <button
                 key={label}
                 className={activeCategory === label ? "category-chip active" : "category-chip"}
