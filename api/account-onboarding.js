@@ -10,7 +10,8 @@ const ACCOUNT_TYPES = new Set([
   "decluttering_provider",
 ]);
 
-export default async function handler(req, res) {
+export function createAccountOnboardingHandler({ getDatabase = getPool, authenticate = populateAuth } = {}) {
+  return async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Method not allowed" });
@@ -21,12 +22,12 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Choose a valid Aloko account type" });
   }
 
-  const database = getPool();
+  const database = getDatabase();
   if (!database) {
     return res.status(503).json({ error: "Account setup is temporarily unavailable" });
   }
 
-  const auth = await populateAuth(req, {
+  const auth = await authenticate(req, {
     database,
     bootstrapProfile: true,
   });
@@ -40,6 +41,7 @@ export default async function handler(req, res) {
           `UPDATE public.profiles
            SET account_type = $1, updated_at = now()
            WHERE id = $2::uuid
+             AND (account_type = 'buyer' OR account_type = $1)
            RETURNING id, display_name, account_type, city, state`,
           [accountType, auth.user.id],
         )
@@ -50,11 +52,16 @@ export default async function handler(req, res) {
         );
     const profile = result.rows?.[0];
     if (!profile) {
-      return res.status(404).json({ error: "Account profile could not be found" });
+      return accountType
+        ? res.status(409).json({ error: "Your primary account type is already set. Use the relevant onboarding flow to add another capability." })
+        : res.status(404).json({ error: "Account profile could not be found" });
     }
 
     return res.status(200).json({ profile });
   } catch {
     return res.status(500).json({ error: "Could not complete account setup" });
-  }
+  };
+  };
 }
+
+export default createAccountOnboardingHandler();
