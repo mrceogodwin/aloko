@@ -7,6 +7,7 @@ ALTER TABLE public.profiles
 
 UPDATE public.profiles
 SET account_type_selected_at = COALESCE(created_at, now())
-WHERE account_type_selected_at IS NULL;
+WHERE account_type_selected_at IS NULL
+  AND account_type <> 'buyer';
 
 COMMIT;
