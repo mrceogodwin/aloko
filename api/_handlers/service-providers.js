@@ -18,7 +18,7 @@ export function createServiceProvidersHandler({ getDatabase = getPool } = {}) {
       const populated=await populateAuth(req,{database,bootstrapProfile:true});
       if(!populated.ok)return res.status(populated.status).json({error:populated.error});
     }
-    const auth=isPrivate||req.method==="POST"?authorize(req,["buyer","seller","business","decluttering_provider"]):null;
+    const auth=isPrivate||req.method==="POST"?authorize(req,["buyer","seller","business","service_provider"]):null;
     if(auth&&!auth.ok)return res.status(auth.status).json({error:auth.error});
     if(auth&&!UUID.test(auth.user.id))return res.status(401).json({error:"Marketplace account is not configured"});
     if(!database)return res.status(503).json({error:"Service providers are temporarily unavailable"});
