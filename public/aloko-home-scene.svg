@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-labelledby="t d">
+<title id="t">Aloko reuse marketplace still life</title><desc id="d">Emerald sofa, floor lamp, leafy plant, Aloko reuse box, headphones and trainers on a warm studio floor.</desc>
+<defs>
+ <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#06432f"/><stop offset=".55" stop-color="#00613c"/><stop offset="1" stop-color="#092d24"/></linearGradient>
+ <linearGradient id="lime" x2="1" y2="1"><stop stop-color="#e4ff36"/><stop offset="1" stop-color="#8fe300"/></linearGradient>
+ <linearGradient id="sofa" x2=".8" y2="1"><stop stop-color="#08774c"/><stop offset="1" stop-color="#003d2b"/></linearGradient>
+ <linearGradient id="gold" x2="1" y2="1"><stop stop-color="#fff0a5"/><stop offset=".45" stop-color="#c88b36"/><stop offset="1" stop-color="#70451c"/></linearGradient>
+ <linearGradient id="box" x2="0" y2="1"><stop stop-color="#eac58a"/><stop offset="1" stop-color="#b97937"/></linearGradient>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur stdDeviation="15"/></filter>
+</defs>
+<rect width="900" height="620" rx="28" fill="url(#bg)"/>
+<path d="M630 0h270v290c-90-45-153-111-270-290Z" fill="url(#lime)" opacity=".92"/>
+<ellipse cx="480" cy="555" rx="390" ry="44" fill="#001b15" opacity=".55" filter="url(#shadow)"/>
+<!-- plant -->
+<path d="M520 425Q492 252 390 175M518 390Q535 232 610 144M513 350Q425 260 330 265" stroke="#8dbd3e" stroke-width="10" fill="none" stroke-linecap="round"/>
+<g fill="#9ccf35"><path d="M395 180Q295 94 287 198q44 57 108-18Z"/><path d="M610 151Q635 53 711 78q-8 84-101 91Z"/><path d="M337 267Q233 213 220 302q55 47 117-35Z"/><path d="M536 261Q541 155 619 170q-5 79-83 103Z"/></g>
+<path d="M483 430h73l-9 92h-55Z" fill="#b8783e"/><path d="M474 430h91l-12 18h-67Z" fill="#d69a5d"/>
+<!-- lamp -->
+<path d="M735 316 691 108Q683 78 707 61" stroke="#c58c42" stroke-width="10" fill="none" stroke-linecap="round"/>
+<path d="M700 61Q757 34 790 75l-18 47q-50 10-81-19Z" fill="url(#gold)" stroke="#e7b65b" stroke-width="5"/>
+<path d="M704 110q40 29 80 6l-8 18q-40 25-69-5Z" fill="#fff1b5"/>
+<path d="M684 317h104" stroke="#c28b43" stroke-width="9" stroke-linecap="round"/>
+<!-- sofa body -->
+<path d="M270 305q0-44 49-44h342q47 0 47 48v161q0 39-40 39H309q-39 0-39-39Z" fill="url(#sofa)" stroke="#0a8755" stroke-width="8"/>
+<path d="M300 294q0-44 46-44h295q43 0 43 44v92H300Z" fill="#0a8750"/>
+<path d="M300 300q95-30 180 2v94H300Z" fill="#08784b"/><path d="M480 300q86-28 166 1v95H480Z" fill="#00623f"/>
+<path d="M276 360q-45-10-48 40v89q0 25 29 25h40V363Z" fill="#005238"/>
+<path d="M666 361q48-13 51 40v88q0 25-28 25h-40V364Z" fill="#00452f"/>
+<path d="M324 493v35m326-35v35" stroke="#57391f" stroke-width="14" stroke-linecap="round"/>
+<path d="M348 315q45-23 94-4v70q-44 18-94 0Z" fill="#0b8855" opacity=".85"/>
+<!-- box foreground -->
+<path d="M500 390h212l-8 160H509Z" fill="url(#box)" stroke="#8f592e" stroke-width="5"/>
+<path d="M500 390l27-26h188l-3 26Z" fill="#f1d3a1"/><path d="M606 390v160" stroke="#a56b36" stroke-width="4" opacity=".65"/>
+<rect x="552" y="438" width="110" height="74" rx="8" fill="#f7e8c8" transform="rotate(-4 552 438)"/>
+<path d="M593 453h30l9 24h-47Z" fill="#075237"/><path d="M608 446v-8m-10 8h20" stroke="#075237" stroke-width="5" stroke-linecap="round"/>
+<text x="608" y="493" text-anchor="middle" font-family="Arial,sans-serif" font-size="21" font-weight="800" fill="#06452f">Aloko</text>
+<!-- headphones -->
+<path d="M720 432q0-91 69-91t69 91" fill="none" stroke="#151d1b" stroke-width="20"/>
+<path d="M720 432q0-91 69-91t69 91" fill="none" stroke="#89918a" stroke-width="5"/>
+<rect x="708" y="418" width="32" height="72" rx="14" fill="#151b19" stroke="#9aa49e" stroke-width="5"/><rect x="837" y="418" width="32" height="72" rx="14" fill="#151b19" stroke="#9aa49e" stroke-width="5"/>
+<!-- trainer -->
+<path d="M735 518q30-8 47-43l28 14q28 25 61 29 25 4 27 30H720q-13-12 15-30Z" fill="#f6f4e9" stroke="#cbd2c9" stroke-width="5"/>
+<path d="m783 479 20 16 31 8" stroke="#0c5137" stroke-width="9" fill="none"/><path d="m773 493 27 20m-37-7 25 18m-9-40 26 18" stroke="#fff" stroke-width="5"/>
+<path d="M718 548h180" stroke="#e5f2e8" stroke-width="9" stroke-linecap="round"/>
+<path d="M0 578q220-36 440 0t460 0v42H0Z" fill="#00291e" opacity=".65"/>
+</svg>
