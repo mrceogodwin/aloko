@@ -7,7 +7,8 @@ export function createProviderAvailabilityHandler({getDatabase=getPool}={}) {
  return async function handler(req,res) {
   res.setHeader("Cache-Control","no-store");const database=getDatabase();
   if(!req?.auth?.user){const p=await populateAuth(req,{database,bootstrapProfile:true});if(!p.ok)return res.status(p.status).json({error:p.error});}
-  const auth=authorize(req); // Approved provider capability is verified against the provider profile below.if(!auth.ok)return res.status(auth.status).json({error:auth.error});
+  const auth=authorize(req); // Approved provider capability is verified against the provider profile below.
+  if(!auth.ok)return res.status(auth.status).json({error:auth.error});
   if(!database)return res.status(503).json({error:"Provider availability is unavailable"});
   const limited=rateLimit(req,{scope:"provider-availability",limit:req.method==="PUT"?5:30,windowMs:60000});
   if(!limited.ok){res.setHeader("Retry-After",String(limited.retryAfterSec));return res.status(limited.status).json({error:limited.error});}
