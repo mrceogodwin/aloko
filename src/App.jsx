@@ -720,7 +720,7 @@ function App() {
                   </form>
                   <p className="listing-demo-note">{accountMode === "login" ? "New to Aloko?" : "Already have an account?"} <button type="button" className="inline-auth-switch" onClick={() => setAccountMode(mode => mode === "login" ? "signup" : "login")}>{accountMode === "login" ? "Create an account" : "Log in"}</button></p>
                 </>
-              )})}
+              )}
             </div>
           </section>
         </div>
