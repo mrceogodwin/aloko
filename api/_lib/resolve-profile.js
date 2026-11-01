@@ -1,8 +1,9 @@
 /**
  * Resolve an Aloko marketplace profile from a verified auth provider user ID.
  *
- * Role is derived server-side from profile.account_type (and later staff_memberships
- * once migration 002 is applied). Clients never supply the role.
+ * Marketplace roles come from the profile's account type. Privileged staff roles
+ * are resolved separately from active staff_memberships rows, never from client
+ * input or the public profile's account_type.
  *
  * Returns null when the profile is missing or the id is invalid so callers fail closed.
  */
@@ -12,10 +13,11 @@ const UUID_RE =
 
 const SELLER_TYPES = new Set(["individual", "reseller"]);
 const BUSINESS_TYPES = new Set(["business", "bulk_distributor"]);
+const STAFF_ROLES = new Set(["moderator", "admin"]);
 
 /**
  * Map profile account_type to an application role used by authorize().
- * Staff roles (moderator/admin) are not derived here until staff_memberships exists.
+ * Staff permissions are never inferred from account_type.
  * @param {string} accountType
  * @returns {string}
  */
@@ -47,9 +49,30 @@ export async function resolveProfile(userId, database) {
     const row = result?.rows?.[0];
     if (!row) return null;
 
+    let role = roleFromAccountType(row.account_type);
+
+    // The production schema may not have migration 002 yet. In that case,
+    // retain the ordinary marketplace role and keep all staff endpoints closed.
+    // Once the migration is applied, only an active, database-backed membership
+    // can grant moderator/admin permissions.
+    try {
+      const membership = await database.query(
+        `SELECT role
+         FROM public.staff_memberships
+         WHERE user_id = $1::uuid
+           AND is_active = true
+         LIMIT 1`,
+        [userId],
+      );
+      const staffRole = membership?.rows?.[0]?.role;
+      if (STAFF_ROLES.has(staffRole)) role = staffRole;
+    } catch {
+      // Missing staff_memberships table or query failure must never grant staff.
+    }
+
     return {
       id: row.id,
-      role: roleFromAccountType(row.account_type),
+      role,
       suspended: row.is_suspended === true,
       account_type: row.account_type,
       display_name: row.display_name ?? null,
