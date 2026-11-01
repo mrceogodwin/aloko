@@ -452,6 +452,7 @@ function App() {
           <button type="button" className="brand flagship-brand" onClick={()=>navigate("home")} aria-label="Aloko home">
             <img className="brand-mark-image" src="/aloko-mark.svg" alt="" /><span className="brand-text">Aloko</span>
           </button>
+          {!authUser && <div className="guest-header-search"><span>⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search items, services or sellers…" aria-label="Search items, services or sellers"/><button type="button" onClick={()=>document.getElementById("explore")?.scrollIntoView({behavior:"smooth"})}>Search</button></div>}
           <nav className="main-nav app-main-nav" aria-label="Main navigation">
             <button className={activeScreen==="home"?"nav-current":""} onClick={()=>navigate("home")}>Home</button>
             <button className={activeScreen==="home"?"":" "} onClick={()=>{navigate("home");setTimeout(()=>document.getElementById("explore")?.scrollIntoView({behavior:"smooth"}),80);}}>Discover</button>
@@ -500,14 +501,8 @@ function App() {
               <div className="hero-orb orb-right">Same items,<br/> brighter futures!</div>
             </div>
           </div>
-          {!authUser && <div className="guest-legal-footer">
-            <span className="guest-powered">Powered by <strong>Squadglobal</strong></span>
-            <nav aria-label="Legal information">
-              {["Terms of Use","Privacy Policy","Community Guidelines","Safety & Transactions"].map(label=><button type="button" key={label} onClick={()=>setLegalPage(label)}>{label}</button>)}
-            </nav>
-          </div>}
         </section>
-        {authUser && <>
+        <>
         <section className="featured-placements wrap" aria-label="Discover Nigerian marketplace categories">
           <div className="featured-placements-head"><div><span className="eyebrow">Handpicked by Aloko</span><h2>Discover what’s worth passing on.</h2></div><span className="featured-note">FEATURED SPACES</span></div>
           <div className="aloko-orbit-grid">
@@ -699,7 +694,8 @@ function App() {
             <button className="post-button" onClick={() => setListingFormOpen(true)}>Sell an item</button>
           </div>
         </section>
-        </>}
+        </>
+        {!authUser && <div className="guest-legal-footer"><span className="guest-powered">Powered by <strong>Squadglobal</strong></span><nav aria-label="Legal information">{["Terms of Use","Privacy Policy","Community Guidelines","Safety & Transactions"].map(label=><button type="button" key={label} onClick={()=>setLegalPage(label)}>{label}</button>)}</nav></div>}
         </> : <WorkspaceScreen screen={activeScreen} authUser={authUser} onNavigate={navigate} onLogin={() => { setAccountMode("login"); setAccountModalOpen(true); }} onSell={() => setListingFormOpen(true)} onSellerOnboarding={() => navigate("seller-onboarding")} onAdminVerification={() => navigate("admin-verification")} onBuyerPreferences={() => navigate("buyer-preferences")} onServices={() => navigate("services")} onProviders={() => navigate("providers")} onAdminServiceProviders={() => navigate("admin-service-providers")} onNotice={showNotice} localSaved={saved} localListings={liveProducts} initialConversationId={activeConversationId} onConversationOpened={setActiveConversationId} sellerStoreId={sellerStoreId} onOpenListing={(item) => { setActiveScreen("home"); setSelectedListing(normalizeLiveListing(item)); window.scrollTo({ top: 0, behavior: "smooth" }); }} onSignOut={async () => { await signOutFromAloko(); setAuthUser(null); try { window.localStorage.removeItem("aloko:access-token"); } catch {} navigate("home"); showNotice("You have signed out."); }} />}
       </main>
       {authUser && <nav className="mobile-app-nav" aria-label="App navigation">{[["home","⌂","Home"],["seller","＋","Sell"],["inbox","✉","Inbox"],["saved","♡","Saved"],["account","◉","Account"]].map(([id,icon,label])=><button key={id} className={activeScreen===id?"active":""} onClick={()=>navigate(id)}><span>{icon}</span><small>{label}</small></button>)}</nav>}
