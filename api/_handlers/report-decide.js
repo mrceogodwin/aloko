@@ -35,7 +35,7 @@ export function createReportDecideHandler({getDatabase=getPool}={}) {
      FROM changed
      RETURNING target_id
     )
-    SELECT changed.* FROM changed JOIN logged ON logged.target_id=changed.id
+    SELECT changed.* FROM changed JOIN logged ON logged.target_id=changed.id::text
    `,[id,status,auth.user.id,note||null]);
    if(!result.rows?.length)return res.status(404).json({error:"Report not found or audit could not be recorded"});
    return res.status(200).json({report:result.rows[0],message:`Report marked ${status}`});
