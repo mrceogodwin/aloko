@@ -8,6 +8,7 @@ import listingsStatus from "./_handlers/listings-status.js";
 import listingsUpdate from "./_handlers/listings-update.js";
 import listings from "./_handlers/listings.js";
 import me from "./_handlers/me.js";
+import profile from "./_handlers/profile.js";
 import messages from "./_handlers/messages.js";
 import moderationDecide from "./_handlers/moderation-decide.js";
 import moderationQueue from "./_handlers/moderation-queue.js";
@@ -26,6 +27,7 @@ const handlers = {
   "listings-update": listingsUpdate,
   "listings": listings,
   "me": me,
+  "profile": profile,
   "messages": messages,
   "moderation-decide": moderationDecide,
   "moderation-queue": moderationQueue,
