@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 140"><defs>
+ <linearGradient id="tile" x2="1" y2="1"><stop stop-color="#f5faef"/><stop offset="1" stop-color="#e3f0d9"/></linearGradient>
+ <linearGradient id="lime" x2="1" y2="1"><stop stop-color="#dfff2c"/><stop offset="1" stop-color="#9be500"/></linearGradient>
+ <filter id="sh"><feGaussianBlur stdDeviation="4"/></filter></defs>
+ <rect width="180" height="140" rx="20" fill="url(#tile)"/><ellipse cx="90" cy="119" rx="49" ry="8" fill="#153b281a" filter="url(#sh)"/><circle cx="90" cy="57" r="33" fill="#b97839"/><circle cx="62" cy="32" r="15" fill="#b97839"/><circle cx="118" cy="32" r="15" fill="#b97839"/><circle cx="62" cy="32" r="8" fill="#e6b37c"/><circle cx="118" cy="32" r="8" fill="#e6b37c"/><ellipse cx="90" cy="100" rx="36" ry="27" fill="#c98a4b"/><ellipse cx="90" cy="63" rx="21" ry="17" fill="#e9c18d"/><circle cx="82" cy="54" r="3" fill="#34251b"/><circle cx="99" cy="54" r="3" fill="#34251b"/><ellipse cx="90" cy="65" rx="5" ry="4" fill="#6a3d2c"/><path d="M84 73q6 6 12 0" stroke="#6a3d2c" stroke-width="2" fill="none"/></svg>
