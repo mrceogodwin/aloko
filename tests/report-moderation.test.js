@@ -9,3 +9,14 @@ test("moderator can view report queue",async()=>{const h=createReportQueueHandle
 test("report decision validates state and resolution note",async()=>{const h=createReportDecideHandler({getDatabase:()=>({async query(){return {rows:[]};}})});const a=response();await h({method:"POST",auth:{user:{id:staff,role:"moderator"}},body:{report_id:rid,status:"delete"}},a);assert.equal(a.statusCode,400);const b=response();await h({method:"POST",auth:{user:{id:staff,role:"moderator"}},body:{report_id:rid,status:"resolved"}},b);assert.equal(b.statusCode,400);});
 test("moderator can assign report for investigation and action is audited",async()=>{const calls=[];const h=createReportDecideHandler({getDatabase:()=>({async query(sql){calls.push(sql);if(sql.includes("UPDATE public.listing_reports"))return {rows:[{id:rid,status:"investigating",assigned_to:staff}]};return {rows:[]};}})});const r=response();await h({method:"POST",auth:{user:{id:staff,role:"moderator"}},body:{report_id:rid,status:"investigating"}},r);assert.equal(r.statusCode,200);assert.ok(calls.some(s=>/audit_logs/.test(s)));});
 test("moderator can resolve report with a note",async()=>{const h=createReportDecideHandler({getDatabase:()=>({async query(sql){if(sql.includes("UPDATE public.listing_reports"))return {rows:[{id:rid,status:"resolved"}]};return {rows:[]};}})});const r=response();await h({method:"POST",auth:{user:{id:staff,role:"moderator"}},body:{report_id:rid,status:"resolved",resolution_note:"Reviewed and actioned"}},r);assert.equal(r.statusCode,200);});
+
+test("report decision fails closed when atomic audit write fails",async()=>{
+ const calls=[];
+ const h=createReportDecideHandler({getDatabase:()=>({async query(sql){calls.push(sql);throw Error("audit storage unavailable");}})});
+ const r=response();
+ await h({method:"POST",auth:{user:{id:staff,role:"moderator"}},body:{report_id:rid,status:"investigating"}},r);
+ assert.equal(r.statusCode,500);
+ assert.equal(calls.length,1);
+ assert.match(calls[0],/WITH changed AS/);
+ assert.match(calls[0],/INSERT INTO public.audit_logs/);
+});
