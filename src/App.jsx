@@ -540,6 +540,27 @@ function App() {
           <button className="aloko-orbit-more" type="button" onClick={()=>{setShowAllCategories(true);document.getElementById("categories")?.scrollIntoView({behavior:"smooth"});}}>MORE <span>»</span></button>
         </section>
 
+        <section className="mobile-promo-strip wrap" aria-label="Aloko marketplace highlights">
+          <button className="mobile-promo-card promo-services" type="button" onClick={()=>navigate("services")}>
+            <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=85" alt="" loading="lazy"/>
+            <span className="promo-card-shade"/>
+            <span className="promo-card-copy"><small>BOOK A SERVICE</small><strong>Decluttering<br/>Services</strong><em>Find trusted local help ↗</em></span>
+            <span className="promo-card-icon">✦</span>
+          </button>
+          <button className="mobile-promo-card promo-giveaway" type="button" onClick={()=>{setActiveCategory("Free items");document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}}>
+            <img src="https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=900&q=85" alt="" loading="lazy"/>
+            <span className="promo-card-shade"/>
+            <span className="promo-card-copy"><small>GIVE AWAY FOR FREE</small><strong>Give useful things<br/>a new home</strong><em>List for free ↗</em></span>
+            <span className="promo-card-icon">♡</span>
+          </button>
+          <button className="mobile-promo-card promo-bulk" type="button" onClick={()=>{setActiveCategory("Bulk Deals");document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}}>
+            <img src="https://images.unsplash.com/photo-1607083206968-13611e3d76db?auto=format&fit=crop&w=900&q=85" alt="" loading="lazy"/>
+            <span className="promo-card-shade"/>
+            <span className="promo-card-copy"><small>BETTER VALUE IN VOLUME</small><strong>Bulk deals &<br/>clear-outs</strong><em>Explore deals ↗</em></span>
+            <span className="promo-card-icon">▣</span>
+          </button>
+        </section>
+
         <section className="declutter-network wrap" id="declutter"><div className="network-heading"><span className="eyebrow">One platform. Every stage of decluttering.</span><h2>Built for the people who help spaces, things and communities start fresh.</h2><p>Aloko brings decluttering businesses, professional organisers, reuse sellers, charities and people looking for a fresh start into one discoverable marketplace.</p></div><div className="service-ticker" aria-label="20 decluttering business services">{["Home decluttering","Office clear-outs","Moving & relocation","Estate clearances","Wardrobe edits","Furniture removal","Appliance reuse","Donation collection","Charity redistribution","Storage organisation","Garage clear-outs","Kitchen resets","Paperwork sorting","E-waste collection","Bulk item resale","Property staging","Student move-outs","Deep organisation","Business clear-outs","Responsible disposal"].map((item,i)=><span key={item}><i>{String(i+1).padStart(2,"0")}</i>{item}</span>)}</div></section>
 
         <section className="search-dock wrap" aria-label="Search marketplace">
