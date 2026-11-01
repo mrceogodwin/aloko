@@ -499,22 +499,36 @@ function App() {
             </div>
           </div>
         </section>
-        <section className="featured-placements wrap" aria-label="Featured Aloko promotions">
+        <section className="featured-placements wrap" aria-label="Discover Nigerian marketplace categories">
           <div className="featured-placements-head"><div><span className="eyebrow">Handpicked by Aloko</span><h2>Discover what’s worth passing on.</h2></div><span className="featured-note">FEATURED SPACES</span></div>
-          <div className="featured-portrait-grid">
-            <button className="featured-portrait-card featured-portrait-home" type="button" onClick={() => { setActiveCategory("Home & Living"); document.getElementById("explore")?.scrollIntoView({behavior:"smooth"}); }}>
-              <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=900&q=85" alt="Beautifully organised contemporary living room" loading="lazy"/>
-              <span className="featured-stamp">FEATURED</span><span className="featured-portrait-copy"><small>THE HOME EDIT</small><strong>Make room for better living.</strong><em>Explore home finds ↗</em></span>
-            </button>
-            <button className="featured-portrait-card featured-portrait-seller" type="button" onClick={() => setListingFormOpen(true)}>
-              <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=900&q=85" alt="Small business owner preparing products for customers" loading="lazy"/>
-              <span className="featured-stamp">FEATURED</span><span className="featured-portrait-copy"><small>SELLER SPOTLIGHT</small><strong>Give useful things a second story.</strong><em>Open your Aloko store ↗</em></span>
-            </button>
-            <button className="featured-portrait-card featured-portrait-services" type="button" onClick={() => document.getElementById("services")?.scrollIntoView({behavior:"smooth"})}>
-              <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=85" alt="Professional home organisation and cleaning service" loading="lazy"/>
-              <span className="featured-stamp">FEATURED</span><span className="featured-portrait-copy"><small>DECLUTTER SERVICES</small><strong>From full clear-outs to fresh starts.</strong><em>Explore services ↗</em></span>
-            </button>
+          <div className="aloko-orbit-grid">
+            {[
+              ["Home & Living","photo-1600210492486-724fe5c67fb0","Explore home finds","Home & Living"],
+              ["Phones & Gadgets","photo-1511707171634-5f897ff02aa9","Phones, tablets & more","Electronics"],
+              ["Fashion (Naija Style)","photo-1539109136881-3be0616acf4b","Ankara, aso-ebi & style","Fashion"],
+              ["Power & Energy","photo-1473341304170-971dl2e7d5a","Generators & inverters","Electronics"],
+              ["Electronics & Appliances","photo-1593359677879-a4bb92f829d1","TVs & appliances","Electronics"],
+              ["Cars & Vehicles","photo-1492144534655-ae79c964c9d7","Cars & mobility","Vehicles"],
+              ["Property","photo-1600596542815-ffad4c1539a9","Homes for sale & rent","Property"],
+              ["Food & Catering","photo-1512621776951-a57141f2eefd","Food vendors & catering","Kitchenware"],
+              ["Beauty & Personal Care","photo-1522335789203-aabd1fc54bc9","Beauty & self-care","Health & Beauty"],
+              ["Farm Produce","photo-1540420773420-3366772f4999","Yam, garri & fresh produce","Home & Living"],
+              ["Books & Learning","photo-1507842217343-583bb7270b66","Books & study materials","Books"],
+              ["Sports & Fitness","photo-1517836357463-d25dfeac3438","Fitness & sports gear","Sports & Hobbies"],
+              ["Office & Business","photo-1497366754035-f200968a6e72","Office & business equipment","Bulk Deals"],
+              ["Baby & Kids","photo-1516627145497-ae6968895b74","Baby essentials","Baby & Kids"],
+              ["Free Items (Giveaway)","photo-1607082349566-187342175e2f","Give useful things a new home","Free items"]
+            ].map(([label,photo,caption,category])=>(
+              <button className="aloko-orbit-item" key={label} type="button" onClick={()=>{
+                setActiveCategory(category);
+                document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});
+              }}>
+                <span className="aloko-orbit-image"><img src={`https://images.unsplash.com/${photo}?auto=format&fit=crop&w=480&q=85`} alt="" loading="lazy"/><span className="aloko-orbit-gloss"/></span>
+                <strong>{label}</strong><small>{caption}</small>
+              </button>
+            ))}
           </div>
+          <button className="aloko-orbit-more" type="button" onClick={()=>{setShowAllCategories(true);document.getElementById("categories")?.scrollIntoView({behavior:"smooth"});}}>MORE <span>»</span></button>
         </section>
 
         <section className="declutter-network wrap" id="declutter"><div className="network-heading"><span className="eyebrow">One platform. Every stage of decluttering.</span><h2>Built for the people who help spaces, things and communities start fresh.</h2><p>Aloko brings decluttering businesses, professional organisers, reuse sellers, charities and people looking for a fresh start into one discoverable marketplace.</p></div><div className="service-ticker" aria-label="20 decluttering business services">{["Home decluttering","Office clear-outs","Moving & relocation","Estate clearances","Wardrobe edits","Furniture removal","Appliance reuse","Donation collection","Charity redistribution","Storage organisation","Garage clear-outs","Kitchen resets","Paperwork sorting","E-waste collection","Bulk item resale","Property staging","Student move-outs","Deep organisation","Business clear-outs","Responsible disposal"].map((item,i)=><span key={item}><i>{String(i+1).padStart(2,"0")}</i>{item}</span>)}</div></section>
