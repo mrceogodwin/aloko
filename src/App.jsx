@@ -8,6 +8,7 @@ import BuyerPreferences from "./BuyerPreferences.jsx";
 import ServiceRequests from "./ServiceRequests.jsx";
 import ServiceProviders from "./ServiceProviders.jsx";
 import AdminServiceProviderReview from "./AdminServiceProviderReview.jsx";
+import ModeratorDesk from "./ModeratorDesk.jsx";
 import RoleMenuDrawer from "./RoleMenuDrawer.jsx";
 
 const nigeriaStates = ["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","FCT","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"];
@@ -138,7 +139,7 @@ function WorkspaceScreen({ screen, authUser, onLogin, onSell, onSellerOnboarding
   }, [authUser, screen, localSaved.length]);
 
   useEffect(() => {
-    if (!authUser || !["account", "admin-verification", "admin-service-providers"].includes(screen)) return;
+    if (!authUser || !["account", "admin-verification", "admin-service-providers", "moderator-desk"].includes(screen)) return;
     let cancelled = false;
     getMarketplaceProfile().then(result => { if (!cancelled && result.ok) setProfile(result.data?.user || null); });
     return () => { cancelled = true; };
@@ -181,7 +182,7 @@ function WorkspaceScreen({ screen, authUser, onLogin, onSell, onSellerOnboarding
   };
 
   const localSavedListings = localListings.filter(item => localSaved.includes(item.id));
-  const titleMap = { "buyer-dashboard": "My Aloko", seller: "Seller workspace", "seller-onboarding": "Become an Aloko seller", "admin-verification": "Seller verification", "buyer-preferences": "Your shopping preferences", services: "Services & professionals", "admin-service-providers": "Provider applications", providers: "Service provider network", inbox: "Messages", saved: "Saved items", account: "My account", store: storeData?.store?.display_name ? `${storeData.store.display_name}’s store` : "Seller storefront" };
+  const titleMap = { "buyer-dashboard": "My Aloko", seller: "Seller workspace", "seller-onboarding": "Become an Aloko seller", "admin-verification": "Seller verification", "moderator-desk": "Moderator Desk", "buyer-preferences": "Your shopping preferences", services: "Services & professionals", "admin-service-providers": "Provider applications", providers: "Service provider network", inbox: "Messages", saved: "Saved items", account: "My account", store: storeData?.store?.display_name ? `${storeData.store.display_name}’s store` : "Seller storefront" };
   if (!authUser && ["buyer-dashboard", "seller", "seller-onboarding", "inbox", "account", "buyer-preferences", "services", "admin-service-providers"].includes(screen)) {
     return <section className="workspace-page"><div className="workspace-gate"><span className="workspace-icon">✦</span><span className="eyebrow">YOUR ALOKO ACCOUNT</span><h1>Everything in its right place.</h1><p>Sign in to manage your listings, talk to buyers and keep your Aloko activity together.</p><button className="workspace-primary" onClick={onLogin}>Sign in to continue <span>→</span></button><button className="workspace-link" onClick={onLogin}>New to Aloko? Create an account</button></div></section>;
   }
@@ -197,6 +198,7 @@ function WorkspaceScreen({ screen, authUser, onLogin, onSell, onSellerOnboarding
     {screen === "providers" && <ServiceProviders authUser={authUser} onLogin={onLogin} onNotice={onNotice} />}
     {screen === "admin-service-providers" && (profile?.role === "admin" ? <AdminServiceProviderReview onNotice={onNotice} /> : <div className="workspace-panel"><div className="workspace-empty"><h3>Administrator access required</h3></div></div>)}
     {screen === "admin-verification" && (["admin","moderator"].includes(profile?.role || authUser?.role) ? <AdminSellerVerification canDecide={(profile?.role || authUser?.role) === "admin"} onNotice={onNotice} /> : <div className="workspace-panel"><div className="workspace-empty"><h3>Staff access required</h3><p>This area is available to authorised Aloko moderators and administrators.</p></div></div>)}
+    {screen === "moderator-desk" && (["admin","moderator"].includes(profile?.role || authUser?.role) ? <ModeratorDesk onNotice={onNotice} onSellerApplications={() => onNavigate("admin-verification")} /> : <div className="workspace-panel"><div className="workspace-empty"><h3>Staff access required</h3><p>This area is available to authorised Aloko moderators and administrators.</p></div></div>)}
     {screen === "seller" && <div className="workspace-panel">
       <div className="seller-onboarding-entry"><div><span className="eyebrow">GROW WITH ALOKO</span><strong>Start selling with a verified store</strong><p>Complete your seller details to unlock listing access after review.</p></div><button className="workspace-secondary" onClick={onSellerOnboarding}>Set up seller account →</button></div>
       <div className="workspace-stats"><div><span>ALL LISTINGS</span><strong>{myListings.length}</strong></div><div><span>ACTIVE</span><strong>{myListings.filter(x=>x.status==="active").length}</strong></div><div><span>UNDER REVIEW</span><strong>{myListings.filter(x=>x.status==="pending_review").length}</strong></div><div><span>SOLD</span><strong>{myListings.filter(x=>x.status==="sold").length}</strong></div></div>

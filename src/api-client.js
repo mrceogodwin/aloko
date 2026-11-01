@@ -226,3 +226,12 @@ export function updateAccountType(accountType) {
     body: { account_type: accountType },
   });
 }
+
+
+export function listModerationQueue() {
+  return request("/api/moderation-queue");
+}
+
+export function decideListingModeration(listing_id, decision, reason = "") {
+  return request("/api/moderation-decide", { method: "POST", body: { listing_id, decision, reason } });
+}
