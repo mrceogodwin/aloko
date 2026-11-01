@@ -384,7 +384,7 @@ function App() {
                       else await signInWithEmail({ email: authEmail.trim(), password: authPassword });
                       const data = await getAuthSession();
                       const user = data?.user || null;
-                      const token = data?.session?.token;
+                      const token = await getAuthJWTToken();
                       if (token) { try { window.localStorage.setItem("aloko:access-token", token); } catch {} }
                       if (!token) throw new Error("No active session token was returned. Please sign in again.");
                       const onboarding = await updateAccountType(accountMode === "signup" ? accountRole : undefined);
