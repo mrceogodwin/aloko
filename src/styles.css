@@ -1196,3 +1196,22 @@
 @media (prefers-reduced-motion:reduce) {
   .guest-shell * { animation-duration:.01ms!important; animation-iteration-count:1!important; scroll-behavior:auto!important; transition-duration:.01ms!important; }
 }
+
+
+/* Correct the mobile guest home: render only the requested marketplace first screen. */
+@media (max-width:760px) {
+  .guest-shell { position:fixed; inset:0; width:100%; height:100dvh; overflow:hidden!important; }
+  .guest-shell>main { position:relative; flex:1 1 0; min-height:0!important; max-height:none; overflow:hidden!important; grid-auto-rows:0; }
+  .guest-shell>main > section:not(.flagship-hero):not(.flagship-categories):not(.mobile-promo-strip):not(.listings) { display:none!important; }
+  .guest-shell .benefits-section,.guest-shell .subscribe-section,.guest-shell .seller-cta,.guest-shell .guest-legal-footer { display:none!important; }
+  .guest-shell .topbar.flagship-topbar { flex:0 0 calc(104px + env(safe-area-inset-top)); height:calc(104px + env(safe-area-inset-top)); padding-top:env(safe-area-inset-top); box-sizing:border-box; }
+  .guest-shell .brand { display:flex; align-items:center; gap:7px; }
+  .guest-shell .brand-mark-image { width:38px; height:38px; filter:none; }
+  .guest-shell .brand-lockup { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:0; }
+  .guest-shell .brand-text { font-size:24px; line-height:1; letter-spacing:-.8px; }
+  .guest-shell .brand-lockup small { display:block; margin-top:2px; color:#f0fff6; font-size:8px; line-height:1; white-space:nowrap; }
+  .guest-shell .flagship-hero { grid-row:1; }
+  .guest-shell .flagship-categories { grid-row:2; }
+  .guest-shell .mobile-promo-strip { grid-row:3; }
+  .guest-shell .listings { grid-row:4; }
+}
