@@ -452,7 +452,7 @@ function App() {
           <button type="button" className="brand flagship-brand" onClick={()=>navigate("home")} aria-label="Aloko home">
             <img className="brand-mark-image" src="/aloko-mark.svg" alt="" /><span className="brand-text">Aloko</span>
           </button>
-          {!authUser && <div className="guest-header-search"><span>⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search items, services or sellers…" aria-label="Search items, services or sellers"/><button type="button" onClick={()=>document.getElementById("explore")?.scrollIntoView({behavior:"smooth"})}>Search</button></div>}
+          {!authUser && <div className="guest-header-search"><label className="mobile-location-picker" aria-label="Choose location"><span>⌖</span><select value={selectedLocation} onChange={e=>setSelectedLocation(e.target.value)}><option value="All locations">Nigeria</option>{nigeriaStates.map(state=><option key={state} value={state}>{state}</option>)}</select></label><span className="mobile-search-icon" aria-hidden="true">⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}} placeholder="Search for items, services or sellers…" aria-label="Search items, services or sellers"/><button className="mobile-camera-search" type="button" aria-label="Camera search (stub)" onClick={()=>showNotice("Camera search is not available yet.")}>▧</button><button className="mobile-search-submit" type="button" onClick={()=>document.getElementById("explore")?.scrollIntoView({behavior:"smooth"})}>Search</button></div>}
           <nav className="main-nav app-main-nav" aria-label="Main navigation">
             <button className={activeScreen==="home"?"nav-current":""} onClick={()=>navigate("home")}>Home</button>
             <button className={activeScreen==="home"?"":" "} onClick={()=>{navigate("home");setTimeout(()=>document.getElementById("explore")?.scrollIntoView({behavior:"smooth"}),80);}}>Discover</button>
@@ -461,6 +461,7 @@ function App() {
             <button className={activeScreen==="saved"?"nav-current":""} onClick={()=>navigate("saved")}>Saved</button>
           </nav>
           <nav className="nav-actions" aria-label="Account">
+            {!authUser && <><button type="button" className="mobile-header-action notification-stub" aria-label="Notifications (stub)" onClick={()=>showNotice("Notifications are not available yet.")}>♧</button><button type="button" className="mobile-header-action" aria-label="Saved listings" aria-pressed={savedOnly} onClick={()=>{setSavedOnly(v=>!v);setActiveCategory("All");}}>♡</button><button type="button" className="mobile-header-action mobile-menu-stub" aria-label="Account menu" onClick={()=>{setAccountMode("login");setAccountModalOpen(true);}}>☰</button></>}
             <label className="header-state-picker" aria-label="Choose your state"><span>⌖</span><select value={selectedLocation} onChange={e => setSelectedLocation(e.target.value)}><option value="All locations">Nigeria</option>{nigeriaStates.map(state => <option key={state} value={state}>{state}</option>)}</select></label>
             <button type="button" className="nav-search-icon" aria-label="Focus search" onClick={() => document.querySelector(".hero-search input")?.focus()}>⌕</button>
             <button type="button" className="ghost-button" onClick={() => authUser ? navigate("account") : (setAccountMode("login"), setAccountModalOpen(true))}>{authUser ? "My account" : "Login"}</button>
@@ -490,7 +491,7 @@ function App() {
               <p>Buy and sell pre-owned items, give usable things away for free, discover bulk deals, or book decluttering services — all in one place.</p>
               <div className="hero-actions">
                 <button className="hero-primary" onClick={() => authUser ? setListingFormOpen(true) : (setAccountMode("signup"), setAccountModalOpen(true))}>♢ &nbsp; Start Selling <span>→</span></button>
-                <button className="hero-secondary" onClick={() => authUser ? document.getElementById("explore")?.scrollIntoView({behavior:"smooth"}) : (setAccountMode("signup"), setAccountModalOpen(true))}>Browse Listings <span>→</span></button>
+                <button className="hero-secondary" onClick={() => {document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}}>Browse Listings <span>→</span></button>
               </div>
               <div className="hero-trust"><span>✦ Safe &amp; verified community</span><span>▣ Free &amp; paid listings</span><span>◉ Support local sustainability</span></div>
             </div>
@@ -578,7 +579,6 @@ function App() {
                   return;
                 }
                 setActiveCategory(label);
-                document.getElementById("explore")?.scrollIntoView({ behavior: "smooth" });
               }}
               >
                 <span className="category-icon" aria-hidden="true">{icon}</span>
@@ -596,25 +596,25 @@ function App() {
                 : listingLoadState === "error" ? "Listings temporarily unavailable"
                 : "Loading listings…"}
             </h2>
-            <button className="view-all" type="button" onClick={() => setListingReloadKey(k => k + 1)}>Refresh</button>
+            <button className="view-all" type="button" onClick={() => {setActiveCategory("All");setSavedOnly(false);setQuery("");setListingReloadKey(k => k + 1);}}>View More →</button>
           </div>
 
           <div className="product-grid">
             {visibleProducts.map(p => (
-              <article className="product-card" key={p.id}>
+              <article className="product-card" key={p.id} role="button" tabIndex={0} onClick={() => setSelectedListing(p)} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();setSelectedListing(p);}}}>
                 <div className="product-image">
                   {p.image
                     ? <img src={p.image.startsWith("http") ? p.image : `https://images.unsplash.com/${p.image}?auto=format&fit=crop&w=700&q=80`} alt={p.title} loading="lazy"/>
                     : <div className="product-image-placeholder" role="img" aria-label="No photo"><span>aloko.</span></div>}
                   <span className="condition">{p.kind === "giveaway" ? "Free giveaway" : p.condition}</span>
-                  <button className={saved.includes(p.id) ? "save saved" : "save"} aria-label="Save" onClick={() => toggleSaved(p.id)}>{saved.includes(p.id) ? "♥" : "♡"}</button>
+                  <button className={saved.includes(p.id) ? "save saved" : "save"} aria-label={saved.includes(p.id) ? "Remove from favourites" : "Add to favourites"} onClick={e=>{e.stopPropagation();toggleSaved(p.id);}}>{saved.includes(p.id) ? "♥" : "♡"}</button>
                 </div>
                 <div className="product-info">
                   <span className="product-place">⌖ {p.place}</span>
                   <h3>{p.title}</h3>
                   <div className="product-bottom">
                     <strong>{p.price}</strong>
-                    <button onClick={() => setSelectedListing(p)}>View item</button>
+                    <button onClick={e => {e.stopPropagation();setSelectedListing(p);}}>View item</button>
                   </div>
                 </div>
               </article>
@@ -697,7 +697,7 @@ function App() {
         {!authUser && <div className="guest-legal-footer"><span className="guest-powered">Powered by <strong>Squadglobal</strong></span><nav aria-label="Legal information">{["Terms of Use","Privacy Policy","Community Guidelines","Safety & Transactions"].map(label=><button type="button" key={label} onClick={()=>setLegalPage(label)}>{label}</button>)}</nav></div>}
         </> : <WorkspaceScreen screen={activeScreen} authUser={authUser} onNavigate={navigate} onLogin={() => { setAccountMode("login"); setAccountModalOpen(true); }} onSell={() => setListingFormOpen(true)} onSellerOnboarding={() => navigate("seller-onboarding")} onAdminVerification={() => navigate("admin-verification")} onBuyerPreferences={() => navigate("buyer-preferences")} onServices={() => navigate("services")} onProviders={() => navigate("providers")} onAdminServiceProviders={() => navigate("admin-service-providers")} onNotice={showNotice} localSaved={saved} localListings={liveProducts} initialConversationId={activeConversationId} onConversationOpened={setActiveConversationId} sellerStoreId={sellerStoreId} onOpenListing={(item) => { setActiveScreen("home"); setSelectedListing(normalizeLiveListing(item)); window.scrollTo({ top: 0, behavior: "smooth" }); }} onSignOut={async () => { await signOutFromAloko(); setAuthUser(null); try { window.localStorage.removeItem("aloko:access-token"); } catch {} navigate("home"); showNotice("You have signed out."); }} />}
       </main>
-      <nav className="mobile-app-nav" aria-label="App navigation">{(authUser?[["home","⌂","Home"],["seller","＋","Sell"],["inbox","✉","Messages"],["saved","♡","Saved"],["account","◉","Account"]]:[["home","⌂","Home"],["buy","▣","Buy"],["sell","＋","Sell"],["inbox","✉","Messages"],["account","◉","Account"]]).map(([id,icon,label])=><button key={id} className={activeScreen===id?"active":""} onClick={()=>{if(!authUser){setAccountMode("signup");setAccountModalOpen(true);}else navigate(id);}}><span>{icon}</span><small>{label}</small></button>)}</nav>
+      <nav className="mobile-app-nav" aria-label="App navigation">{(authUser?[["home","⌂","Home"],["seller","＋","Sell"],["inbox","✉","Messages"],["saved","♡","Saved"],["account","◉","Account"]]:[["home","⌂","Home"],["buy","▣","Buy"],["sell","＋","Sell"],["inbox","✉","Messages"],["account","◉","Account"]]).map(([id,icon,label])=><button key={id} className={activeScreen===id?"active":""} onClick={()=>{if(id==="buy"){document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});return;}if(!authUser){setAccountMode("signup");setAccountModalOpen(true);}else navigate(id);}}><span>{icon}</span><small>{label}</small></button>)}</nav>
 
       {authUser && <footer className="site-footer">
         <div className="wrap footer-inner">
