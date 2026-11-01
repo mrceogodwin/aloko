@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 140"><defs>
+ <linearGradient id="tile" x2="1" y2="1"><stop stop-color="#f5faef"/><stop offset="1" stop-color="#e3f0d9"/></linearGradient>
+ <linearGradient id="lime" x2="1" y2="1"><stop stop-color="#dfff2c"/><stop offset="1" stop-color="#9be500"/></linearGradient>
+ <filter id="sh"><feGaussianBlur stdDeviation="4"/></filter></defs>
+ <rect width="180" height="140" rx="20" fill="url(#tile)"/><ellipse cx="90" cy="119" rx="49" ry="8" fill="#153b281a" filter="url(#sh)"/><path d="M57 20h66l-6 88H63Z" fill="#252a2b"/><path d="M62 27h56v67H62Z" fill="#dfe9e4"/><path d="M69 34h42v51H69Z" fill="#b8d8cf"/><path d="M52 20h76v9H52Z" fill="#121a19"/><path d="M79 98h23v13H79Z" fill="#202827"/><path d="M85 13h11v7H85Z" fill="#777f7c"/><path d="M73 44h35v30H73Z" fill="#eff5ef" opacity=".5"/></svg>
