@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { matchesListingQuery, sortListings, validateListingDraft } from "./marketplace.js";
-import { hasAccessToken, openConversation, createListing } from "./api-client.js";
+import { hasAccessToken, openConversation, createListing, updateAccountType } from "./api-client.js";
 import { getAuthSession, signUpWithEmail, signInWithEmail, signOutFromAloko } from "./auth.js";
 
 const heroTypingPhrases = ["Declutter Service Marketplace","Sell It. Give It. Pass It On.","Home Decluttering","Office Clear-outs","Moving & Relocation","Estate Clearances","Wardrobe Decluttering","Furniture Removal","Appliance Reuse","Donation Collection","Charity Redistribution","Storage Organisation","Garage Clear-outs","Kitchen Decluttering","Paperwork Sorting","E-waste Collection","Bulk Item Resale","Property Staging","Student Move-outs","Professional Organisers","Business Clear-outs","Responsible Reuse & Disposal"];
@@ -386,6 +386,11 @@ function App() {
                       const user = data?.user || null;
                       const token = data?.session?.token;
                       if (token) { try { window.localStorage.setItem("aloko:access-token", token); } catch {} }
+                      if (accountMode === "signup") {
+                        if (!token) throw new Error("Your account was created, but no session token was returned. Please sign in to finish setup.");
+                        const onboarding = await updateAccountType(accountRole);
+                        if (!onboarding.ok) throw new Error(onboarding.data?.error || "Your account was created, but account setup could not be completed. Please sign in and try again.");
+                      }
                       setAuthUser(user);
                       if (!user) throw new Error("Account request completed, but no active session was returned. Please sign in.");
                       showNotice(accountMode === "signup" ? "Welcome to Aloko. Your account is ready." : "You are signed in.");
@@ -393,7 +398,7 @@ function App() {
                     } catch (error) { showNotice(error.message || "Could not complete account access."); }
                     finally { setAuthLoading(false); }
                   }}>
-                    {accountMode === "signup" && <label>Your name<input value={authName} onChange={e => setAuthName(e.target.value)} minLength={2} maxLength={80} required placeholder="Your name"/></label>}
+                    {accountMode === "signup" && <label>Account type<select value={accountRole} onChange={e => setAccountRole(e.target.value)}><option value="buyer">Buyer — browse and contact sellers</option><option value="individual">Individual seller</option><option value="reseller">Reseller</option><option value="business">Business</option><option value="bulk_distributor">Bulk distributor</option><option value="decluttering_provider">Decluttering service provider</option></select></label>}{accountMode === "signup" && <label>Your name<input value={authName} onChange={e => setAuthName(e.target.value)} minLength={2} maxLength={80} required placeholder="Your name"/></label>}
                     <label>Email<input type="email" value={authEmail} onChange={e => setAuthEmail(e.target.value)} required placeholder="you@example.com" autoComplete="email"/></label>
                     <label>Password<input type="password" value={authPassword} onChange={e => setAuthPassword(e.target.value)} required minLength={8} autoComplete={accountMode === "login" ? "current-password" : "new-password"}/></label>
                     <button type="submit" disabled={authLoading} className="modal-contact-button">{authLoading ? "Please wait…" : accountMode === "login" ? "Log in" : "Create account"}</button>
