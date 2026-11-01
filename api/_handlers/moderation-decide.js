@@ -21,7 +21,7 @@ const APPROVE_SQL = `
     SELECT $2::uuid,'approve_listing','listing',id,jsonb_build_object('decision','approve','credit_charged_at_submission',kind <> 'giveaway') FROM changed
     RETURNING target_id
   )
-  SELECT changed.* FROM changed JOIN logged ON logged.target_id=changed.id
+  SELECT changed.* FROM changed JOIN logged ON logged.target_id=changed.id::text
 `;
 const REJECT_SQL = `
   WITH changed AS (
@@ -33,7 +33,7 @@ const REJECT_SQL = `
     SELECT $3::uuid,'reject_listing','listing',id,jsonb_build_object('decision','reject','reason',$2) FROM changed
     RETURNING target_id
   )
-  SELECT changed.* FROM changed JOIN logged ON logged.target_id=changed.id
+  SELECT changed.* FROM changed JOIN logged ON logged.target_id=changed.id::text
 `;
 
 export function createModerationDecideHandler({ getDatabase = getPool } = {}) {
