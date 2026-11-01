@@ -42,10 +42,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --yes postgresql-client
-      - name: Apply foundation migration to disposable test database
-        run: psql --set ON_ERROR_STOP=1 --file=database/migrations/001_marketplace_foundation.sql
-      - name: Apply platform operations migration to disposable test database
-        run: psql --set ON_ERROR_STOP=1 --file=database/migrations/002_platform_operations.sql
+      - name: Apply all migrations in numeric order
+        run: |
+          for migration in database/migrations/*.sql; do
+            echo "Applying $migration"
+            psql --set ON_ERROR_STOP=1 --file="$migration"
+          done
       - name: Verify core tables exist
         run: |
-          psql --set ON_ERROR_STOP=1 --tuples-only --command="SELECT to_regclass('public.profiles'), to_regclass('public.listings'), to_regclass('public.listing_images'), to_regclass('public.staff_memberships'), to_regclass('public.platform_settings')" | grep -q "profiles.*listings.*listing_images.*staff_memberships.*platform_settings"
+          psql --set ON_ERROR_STOP=1 --tuples-only --command="SELECT to_regclass('public.profiles'), to_regclass('public.listings'), to_regclass('public.listing_images'), to_regclass('public.staff_memberships'), to_regclass('public.platform_settings'), EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='profiles' AND column_name='account_type_selected_at')" | grep -q "profiles.*listings.*listing_images.*staff_memberships.*platform_settings"
