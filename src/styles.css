@@ -1628,3 +1628,31 @@
     scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important;
   }
 }
+
+
+/* Listing-card detail: display verification only when the listing API confirms it. */
+@media (max-width:760px) {
+  .guest-shell .product-bottom { display:flex!important;align-items:center!important;gap:6px!important; }
+  .guest-shell .product-bottom strong { flex:1 1 auto!important;min-width:0!important; }
+  .guest-shell .seller-verified-mark {
+    display:inline-grid!important;place-items:center!important;flex:0 0 17px!important;
+    width:17px!important;height:17px!important;border-radius:50%!important;
+    background:#58b51d!important;color:#fff!important;font-size:12px!important;
+    line-height:1!important;font-weight:900!important;
+  }
+  .guest-shell .product-info { padding:6px 7px 7px!important; }
+  .guest-shell .product-info h3 { font-size:clamp(10px,2.8vw,12px)!important; }
+  .guest-shell .product-place { font-size:clamp(8px,2.2vw,9px)!important; }
+  .guest-shell .mobile-promo-card { isolation:isolate; }
+  .guest-shell .promo-card-shade { z-index:1!important; }
+  .guest-shell .promo-card-copy,.guest-shell .promo-card-icon { z-index:2!important; }
+  .guest-shell .hero-benefits>div>span { font-family:Arial,sans-serif; }
+  .guest-shell .hero-benefits>div:nth-child(2)>span { font-size:22px!important; }
+  .guest-shell .hero-benefits>div:nth-child(3)>span { font-size:23px!important; }
+  .guest-shell .hero-benefits>div:nth-child(4)>span { font-size:21px!important; }
+  .guest-shell .product-card:focus-visible,
+  .guest-shell .category-chip:focus-visible,
+  .guest-shell .mobile-app-nav button:focus-visible {
+    outline:2px solid #9adf00!important;outline-offset:2px!important;
+  }
+}
