@@ -12,7 +12,7 @@ const DASHBOARDS = Object.freeze({
   seller: { label: "Seller Studio", screen: "seller" },
   business: { label: "Business Hub", screen: "seller" },
   service_provider: { label: "Service Workspace", screen: "services" },
-  moderator: { label: "Moderator Desk", screen: "admin-verification" },
+  moderator: { label: "Moderator Desk", screen: "account" },
   admin: { label: "Aloko Control Centre", screen: "account" }
 });
 
@@ -47,7 +47,7 @@ export function getAlokoMenuItems(profile = {}) {
     items.splice(4, 0, { id: "services", label: "Service requests", screen: "services", group: "main" });
     items.splice(5, 0, { id: "providers", label: "Provider directory", screen: "providers", group: "main" });
   } else if (role === "moderator") {
-    items.splice(4, 0, { id: "moderation", label: "Listing review", screen: "admin-verification", group: "staff" });
+    items.splice(4, 0, { id: "seller-review-queue", label: "Seller application queue", screen: "admin-verification", group: "staff" });
   } else if (role === "admin") {
     items.splice(4, 0, { id: "seller-review", label: "Seller applications", screen: "admin-verification", group: "staff" });
     items.splice(5, 0, { id: "provider-review", label: "Provider applications", screen: "admin-service-providers", group: "staff" });
