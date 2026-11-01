@@ -39,7 +39,7 @@ test("seller, provider and staff menus expose only their role-appropriate entry 
   assert.ok(seller.some(item => item.id === "dashboard" && item.label === "Seller Studio"));
   assert.ok(!seller.some(item => item.id === "become-seller"));
   assert.ok(provider.some(item => item.id === "services"));
-  assert.ok(moderator.some(item => item.id === "moderation"));
+  assert.ok(moderator.some(item => item.id === "seller-review-queue"));
   assert.ok(!moderator.some(item => item.id === "provider-review"));
   assert.ok(admin.some(item => item.id === "provider-review"));
 });
