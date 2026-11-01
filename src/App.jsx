@@ -486,7 +486,7 @@ function App() {
           <div className="hero-inner wrap">
             <div className="hero-copy">
               <span className="eyebrow hero-eyebrow">Nigeria’s Reuse &amp; Decluttering Marketplace</span>
-              <h1 className="hero-typing-headline"><span>{typedHeadline.includes("Give It.") ? <>{typedHeadline.split("Give It.")[0]}<em className="hero-highlight">Give It.</em>{typedHeadline.split("Give It.").slice(1).join("Give It.")}</> : typedHeadline}</span><i aria-hidden="true" /></h1>
+              <h1 className="hero-typing-headline"><span>Find it. Sell it.<br/>Give it a <em className="hero-highlight">new home.</em></span></h1>
               <p>Buy and sell pre-owned items, give usable things away for free, discover bulk deals, or book decluttering services — all in one place.</p>
               <div className="hero-actions">
                 <button className="hero-primary" onClick={() => authUser ? setListingFormOpen(true) : (setAccountMode("signup"), setAccountModalOpen(true))}>♢ &nbsp; Start Selling <span>→</span></button>
