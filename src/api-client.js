@@ -235,3 +235,6 @@ export function listModerationQueue() {
 export function decideListingModeration(listing_id, decision, reason = "") {
   return request("/api/moderation-decide", { method: "POST", body: { listing_id, decision, reason } });
 }
+
+export function listModerationReports() { return request("/api/report-queue"); }
+export function updateModerationReport(report_id, status, resolution_note = "") { return request("/api/report-decide", { method: "POST", body: { report_id, status, resolution_note } }); }
