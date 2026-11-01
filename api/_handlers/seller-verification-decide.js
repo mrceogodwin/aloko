@@ -52,11 +52,17 @@ export function createSellerVerificationDecideHandler({ getDatabase = getPool } 
            WHERE s.user_id = r.applicant_id
            RETURNING s.user_id
          ),
+         credit_lock AS MATERIALIZED (
+           SELECT pg_advisory_xact_lock(hashtextextended(r.applicant_id::text, 0)) AS locked
+           FROM reviewed r
+           WHERE r.status = 'approved'
+         ),
          intro_account AS (
            INSERT INTO public.listing_credit_accounts (seller_id, balance, updated_at)
            SELECT r.applicant_id, 3, now()
            FROM reviewed r
            JOIN store_update s ON s.user_id = r.applicant_id
+           CROSS JOIN credit_lock
            WHERE r.status = 'approved'
              AND NOT EXISTS (
                SELECT 1 FROM public.credit_ledger l
