@@ -697,3 +697,27 @@
 .buyer-dashboard-actions .workspace-secondary{min-height:58px;display:flex;align-items:center;justify-content:space-between;text-align:left;border:1px solid #e9dff2;border-radius:13px;padding:15px 17px;background:#fff;color:#49315f;font-weight:750;box-shadow:0 5px 16px #26094b08}
 .buyer-dashboard-actions .workspace-secondary:hover{border-color:#cdb0e5;background:#fbf7ff}
 @media(max-width:620px){.buyer-dashboard-actions{grid-template-columns:1fr}.buyer-dashboard-actions .workspace-secondary{min-height:52px}}
+
+/* Aloko 3D circular discovery collection */
+.featured-placements{padding:54px 0 44px}
+.featured-placements-head{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:28px}
+.featured-placements-head h2{font:800 clamp(27px,3.4vw,43px)/1.08 Manrope,sans-serif;letter-spacing:-1.6px;color:#241044;margin:10px 0 0;max-width:620px}
+.featured-note{flex:0 0 auto;border:1px solid #d9b8f3;border-radius:999px;padding:12px 20px;color:#8a36bc;font-size:11px;font-weight:800;letter-spacing:2px}
+.aloko-orbit-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:25px 16px;align-items:start}
+.aloko-orbit-item{min-width:0;display:flex;flex-direction:column;align-items:center;gap:8px;border:0;background:transparent;padding:4px 5px 8px;color:#241044;text-align:center;transition:transform .22s ease}
+.aloko-orbit-image{width:clamp(100px,13vw,168px);aspect-ratio:1;border-radius:50%;position:relative;display:block;padding:7px;background:linear-gradient(145deg,#fff,#eadbfa 55%,#c79be9);box-shadow:8px 12px 24px #30104b20,-5px -5px 14px #fff,inset 0 0 0 1px #fff;transform:translateZ(0);transition:transform .25s ease,box-shadow .25s ease}
+.aloko-orbit-item:nth-child(5n+2) .aloko-orbit-image{background:linear-gradient(145deg,#fff,#dbe8ff 60%,#a8c4ef)}
+.aloko-orbit-item:nth-child(5n+3) .aloko-orbit-image{background:linear-gradient(145deg,#fff,#ffe0ed 60%,#f0a9cb)}
+.aloko-orbit-item:nth-child(5n+4) .aloko-orbit-image{background:linear-gradient(145deg,#fff,#ffebd4 60%,#e9bd8b)}
+.aloko-orbit-item:nth-child(5n) .aloko-orbit-image{background:linear-gradient(145deg,#fff,#dff3e5 60%,#9fd1ad)}
+.aloko-orbit-image img{width:100%;height:100%;display:block;object-fit:cover;border-radius:50%;border:3px solid #ffffffd9;box-shadow:inset 0 2px 8px #18052b26}
+.aloko-orbit-gloss{position:absolute;inset:8px 9px auto auto;width:42%;height:24%;border-radius:100%;background:linear-gradient(160deg,#ffffff9c,#ffffff05);transform:rotate(-28deg);pointer-events:none}
+.aloko-orbit-item strong{font:800 clamp(12px,1.2vw,16px)/1.18 Manrope,sans-serif;max-width:155px;letter-spacing:-.25px}
+.aloko-orbit-item small{font-size:10px;line-height:1.25;color:#827493;max-width:155px}
+.aloko-orbit-item:hover,.aloko-orbit-item:focus-visible{transform:translateY(-5px)}
+.aloko-orbit-item:hover .aloko-orbit-image,.aloko-orbit-item:focus-visible .aloko-orbit-image{transform:scale(1.055) rotate(-2deg);box-shadow:12px 18px 30px #30104b2b,-5px -5px 14px #fff,inset 0 0 0 1px #fff}
+.aloko-orbit-item:focus-visible{outline:2px solid #8b26d8;outline-offset:4px;border-radius:16px}
+.aloko-orbit-more{display:flex;align-items:center;justify-content:center;gap:17px;margin:25px auto 0;min-width:175px;padding:12px 23px;border:1.5px solid #9d4ad1;border-radius:999px;background:#fff;color:#7220a8;font-weight:900;letter-spacing:1.5px;box-shadow:0 5px 16px #4810780c}
+.aloko-orbit-more span{font-size:23px;line-height:14px}
+@media(max-width:760px){.featured-placements{padding:38px 0 32px}.featured-placements-head{align-items:flex-start;margin-bottom:21px}.featured-placements-head h2{font-size:29px;max-width:340px}.featured-note{font-size:9px;letter-spacing:1px;padding:9px 12px;margin-top:9px}.aloko-orbit-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:19px 5px}.aloko-orbit-image{width:clamp(54px,17vw,104px);padding:4px}.aloko-orbit-image img{border-width:2px}.aloko-orbit-item{gap:6px;padding:2px 1px}.aloko-orbit-item strong{font-size:10px;line-height:1.12;max-width:72px}.aloko-orbit-item small{font-size:8px;max-width:75px}.aloko-orbit-more{margin-top:19px}}
+@media(max-width:370px){.aloko-orbit-grid{gap:16px 2px}.aloko-orbit-item strong{font-size:9px}.aloko-orbit-item small{font-size:7px}.featured-placements-head h2{font-size:26px}.featured-note{padding:8px 9px}}
