@@ -31,7 +31,9 @@ export default function ModeratorDesk({ onNotice, onSellerApplications }) {
     }
   };
 
-  const refreshReports = async () => { setReportsLoading(true); try { const result = await listModerationReports(); if (!result.ok) setError(result.data?.error || "Could not load reports."); else setReports(result.data?.items || []); } catch { setError("Network error loading reports."); } finally { setReportsLoading(false); } };\n\n  useEffect(() => { refresh(); refreshReports(); }, []);
+  const refreshReports = async () => { setReportsLoading(true); try { const result = await listModerationReports(); if (!result.ok) setError(result.data?.error || "Could not load reports."); else setReports(result.data?.items || []); } catch { setError("Network error loading reports."); } finally { setReportsLoading(false); } };
+
+  useEffect(() => { refresh(); refreshReports(); }, []);
 
   const decide = async (item, decision) => {
     if (busyId) return;
