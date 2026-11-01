@@ -386,11 +386,9 @@ function App() {
                       const user = data?.user || null;
                       const token = data?.session?.token;
                       if (token) { try { window.localStorage.setItem("aloko:access-token", token); } catch {} }
-                      if (accountMode === "signup") {
-                        if (!token) throw new Error("Your account was created, but no session token was returned. Please sign in to finish setup.");
-                        const onboarding = await updateAccountType(accountRole);
-                        if (!onboarding.ok) throw new Error(onboarding.data?.error || "Your account was created, but account setup could not be completed. Please sign in and try again.");
-                      }
+                      if (!token) throw new Error("No active session token was returned. Please sign in again.");
+                      const onboarding = await updateAccountType(accountMode === "signup" ? accountRole : undefined);
+                      if (!onboarding.ok) throw new Error(onboarding.data?.error || "Account setup could not be completed. Please try again.");
                       setAuthUser(user);
                       if (!user) throw new Error("Account request completed, but no active session was returned. Please sign in.");
                       showNotice(accountMode === "signup" ? "Welcome to Aloko. Your account is ready." : "You are signed in.");
