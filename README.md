@@ -53,10 +53,10 @@ At launch, buyers arrange item purchases directly with sellers (for example, ban
 
 ## Next implementation sequence
 
-1. Choose and enable an authentication provider (Neon Auth recommended) with trusted server-side identity.
-2. Turn on real JWT verification (`jose` + JWKS) and wire `populateAuth` into protected handlers.
-3. Add frontend login/register and attach Bearer tokens to protected API calls.
-4. Add private/public image storage and a validated upload flow.
-5. Implement saved-item sync, messaging, service requests, moderation, and role-specific workspaces.
-6. Implement payment verification, credit ledger writes, promotions, audit trails, and end-to-end tests.
+1. Verify Neon Auth environment configuration, email delivery/verification, JWT issuer/JWKS checks, and signup/sign-in end to end in a non-production environment.
+2. Apply and validate the ordered migrations on the dedicated development Neon branch only after confirming the intended branch and approval.
+3. Complete private/public image storage and a validated upload/scan flow.
+4. Finish moderation/admin authorization, payment verification/webhooks, credit-ledger writes, and promotion activation.
+5. Verify saved-item sync, messaging, service requests, seller onboarding, and role-specific workspaces against the development database.
+6. Complete security review, including database policies, rate limits, upload controls, and audit coverage.
 7. Deploy to Vercel only after explicit permission, then verify the actual deployment and environment configuration.
