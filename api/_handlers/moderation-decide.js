@@ -1,7 +1,6 @@
 import { getPool } from "../_lib/db.js";
 import { authorizeStaff } from "../_lib/authz.js";
 import { populateAuth } from "../_lib/populate-auth.js";
-import { spendListingCredit } from "../_lib/spend-credit.js";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -101,23 +100,14 @@ export function createModerationDecideHandler({ getDatabase = getPool } = {}) {
         });
       }
 
-      // Approve path: load seller, spend credit (except giveaways), then publish.
+      // The listing submission endpoint already debits one credit atomically
+      // when it creates the pending_review listing. Moderation must not debit
+      // a second time; approval only changes the listing's publication state.
       const pending = await database.query(LOAD_PENDING_SQL, [listingId]);
       if (!pending.rows?.length) {
         return res.status(404).json({ error: "Listing not found or not pending review" });
       }
       const listing = pending.rows[0];
-
-      if (listing.kind !== "giveaway") {
-        const spent = await spendListingCredit(database, {
-          sellerId: listing.seller_id,
-          listingId: listing.id,
-          actorId: auth.user.id,
-        });
-        if (!spent.ok) {
-          return res.status(spent.status).json({ error: spent.error });
-        }
-      }
 
       const result = await database.query(APPROVE_SQL, [listingId]);
       if (!result.rows?.length) {
@@ -131,7 +121,7 @@ export function createModerationDecideHandler({ getDatabase = getPool } = {}) {
           listingId,
           JSON.stringify({
             decision: "approve",
-            credit_spent: listing.kind !== "giveaway",
+            credit_charged_at_submission: listing.kind !== "giveaway",
           }),
         ]);
       } catch { /* audit best-effort */ }
