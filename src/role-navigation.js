@@ -10,7 +10,7 @@ const ACCOUNT_TYPE_ROLES = Object.freeze({
 const DASHBOARDS = Object.freeze({
   buyer: { label: "My Aloko", screen: "buyer-dashboard" },
   seller: { label: "Seller Studio", screen: "seller" },
-  business: { label: "Business Hub", screen: "seller" },
+  business: { label: "Business Hub", screen: "business-dashboard" },
   service_provider: { label: "Service Workspace", screen: "services" },
   moderator: { label: "Moderator Desk", screen: "account" },
   admin: { label: "Aloko Control Centre", screen: "account" }
