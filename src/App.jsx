@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { matchesListingQuery, sortListings, validateListingDraft } from "./marketplace.js";
 import { hasAccessToken, openConversation, createListing, updateAccountType } from "./api-client.js";
-import { getAuthSession, signUpWithEmail, signInWithEmail, signOutFromAloko } from "./auth.js";
+import { getAuthSession, getAuthJWTToken, signUpWithEmail, signInWithEmail, signOutFromAloko } from "./auth.js";
 
 const heroTypingPhrases = ["Declutter Service Marketplace","Sell It. Give It. Pass It On.","Home Decluttering","Office Clear-outs","Moving & Relocation","Estate Clearances","Wardrobe Decluttering","Furniture Removal","Appliance Reuse","Donation Collection","Charity Redistribution","Storage Organisation","Garage Clear-outs","Kitchen Decluttering","Paperwork Sorting","E-waste Collection","Bulk Item Resale","Property Staging","Student Move-outs","Professional Organisers","Business Clear-outs","Responsible Reuse & Disposal"];
 
@@ -115,10 +115,10 @@ function App() {
 
   useEffect(() => {
     let mounted = true;
-    getAuthSession().then(data => {
+    getAuthSession().then(async data => {
       if (!mounted) return;
       const user = data?.user || null;
-      const token = data?.session?.token;
+      const token = await getAuthJWTToken();
       setAuthUser(user);
       if (token) { try { window.localStorage.setItem("aloko:access-token", token); } catch {} }
     }).catch(() => { if (mounted) setAuthUser(null); });
