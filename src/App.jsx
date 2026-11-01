@@ -255,6 +255,8 @@ function App() {
   const [activeConversationId, setActiveConversationId] = useState("");
   const [sellerStoreId, setSellerStoreId] = useState("");
   const [showAllCategories, setShowAllCategories] = useState(false);
+  const [guestMenuOpen, setGuestMenuOpen] = useState(false);
+  const cameraInputRef = useRef(null);
   useEffect(() => {
     let phraseIndex = 0;
     let characterIndex = 0;
@@ -471,7 +473,7 @@ function App() {
           <button type="button" className="brand flagship-brand" onClick={()=>navigate("home")} aria-label="Aloko home">
             <img className="brand-mark-image" src="/aloko-mark.svg" alt="" /><span className="brand-lockup"><span className="brand-text">Aloko</span><small>Sell it. Give it. Pass it on.</small></span>
           </button>
-          {!authUser && <div className="guest-header-search"><label className="mobile-location-picker" aria-label="Choose location"><span>⌖</span><select value={selectedLocation} onChange={e=>setSelectedLocation(e.target.value)}><option value="All locations">Nigeria</option>{nigeriaStates.map(state=><option key={state} value={state}>{state}</option>)}</select></label><span className="mobile-search-icon" aria-hidden="true">⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}} placeholder="Search for items, services or sellers…" aria-label="Search items, services or sellers"/><button className="mobile-camera-search" type="button" aria-label="Camera search (stub)" onClick={()=>showNotice("Camera search is not available yet.")}>▧</button><button className="mobile-search-submit" type="button" onClick={()=>document.getElementById("explore")?.scrollIntoView({behavior:"smooth"})}>Search</button></div>}
+          {!authUser && <div className="guest-header-search"><label className="mobile-location-picker" aria-label="Choose location"><span>⌖</span><select value={selectedLocation} onChange={e=>setSelectedLocation(e.target.value)}><option value="All locations">Nigeria</option>{nigeriaStates.map(state=><option key={state} value={state}>{state}</option>)}</select></label><span className="mobile-search-icon" aria-hidden="true">⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}} placeholder="Search for items, services or sellers…" aria-label="Search items, services or sellers"/><input ref={cameraInputRef} className="camera-search-input" type="file" accept="image/*" capture="environment" aria-label="Choose a photo for visual search" onChange={e=>{if(e.target.files?.[0])showNotice("Photo selected. Image-based listing search is not connected yet.");e.target.value="";}}/><button className="mobile-camera-search" type="button" aria-label="Camera search (visual search stub)" onClick={()=>cameraInputRef.current?.click()}>▧</button><button className="mobile-search-submit" type="button" onClick={()=>document.getElementById("explore")?.scrollIntoView({behavior:"smooth"})}>Search</button></div>}
           <nav className="main-nav app-main-nav" aria-label="Main navigation">
             <button className={activeScreen==="home"?"nav-current":""} onClick={()=>navigate("home")}>Home</button>
             <button className={activeScreen==="home"?"":" "} onClick={()=>{navigate("home");setTimeout(()=>document.getElementById("explore")?.scrollIntoView({behavior:"smooth"}),80);}}>Discover</button>
@@ -480,7 +482,7 @@ function App() {
             <button className={activeScreen==="saved"?"nav-current":""} onClick={()=>navigate("saved")}>Saved</button>
           </nav>
           <nav className="nav-actions" aria-label="Account">
-            {!authUser && <><button type="button" className="mobile-header-action notification-stub" aria-label="Notifications (stub)" onClick={()=>showNotice("Notifications are not available yet.")}>♧</button><button type="button" className="mobile-header-action" aria-label="Saved listings" aria-pressed={savedOnly} onClick={()=>{setSavedOnly(v=>!v);setActiveCategory("All");}}>♡</button><button type="button" className="mobile-header-action mobile-menu-stub" aria-label="Account menu" onClick={()=>{setAccountMode("login");setAccountModalOpen(true);}}>☰</button></>}
+            {!authUser && <><button type="button" className="mobile-header-action notification-stub" aria-label="Notifications (stub)" onClick={()=>showNotice("Notifications are not available yet.")}>♧</button><button type="button" className="mobile-header-action" aria-label="Saved listings" aria-pressed={savedOnly} onClick={()=>{setSavedOnly(v=>!v);setActiveCategory("All");}}>♡</button><button type="button" className="mobile-header-action mobile-menu-stub" aria-label="Open marketplace menu" aria-expanded={guestMenuOpen} onClick={()=>setGuestMenuOpen(v=>!v)}>☰</button></>}
             <label className="header-state-picker" aria-label="Choose your state"><span>⌖</span><select value={selectedLocation} onChange={e => setSelectedLocation(e.target.value)}><option value="All locations">Nigeria</option>{nigeriaStates.map(state => <option key={state} value={state}>{state}</option>)}</select></label>
             <button type="button" className="nav-search-icon" aria-label="Focus search" onClick={() => document.querySelector(".hero-search input")?.focus()}>⌕</button>
             <button type="button" className="ghost-button" onClick={() => authUser ? navigate("account") : (setAccountMode("login"), setAccountModalOpen(true))}>{authUser ? "My account" : "Login"}</button>
@@ -488,6 +490,13 @@ function App() {
             <button className="mobile-saved-toggle" aria-pressed={savedOnly} onClick={() => { setSavedOnly(v => !v); setActiveCategory("All"); }}>{savedOnly ? "Browse all" : `Saved (${saved.length})`}</button>
             <button className="post-button" onClick={() => setListingFormOpen(true)}>Start Selling</button>
           </nav>
+          {!authUser && guestMenuOpen && <div className="guest-menu-panel" role="menu" aria-label="Marketplace menu">
+            <button type="button" role="menuitem" onClick={()=>{setGuestMenuOpen(false);navigate("home");}}>Home</button>
+            <button type="button" role="menuitem" onClick={()=>{setGuestMenuOpen(false);document.getElementById("categories")?.scrollIntoView({behavior:"smooth"});}}>Explore categories</button>
+            <button type="button" role="menuitem" onClick={()=>{setGuestMenuOpen(false);setSavedOnly(true);document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}}>Saved listings ({saved.length})</button>
+            <button type="button" role="menuitem" onClick={()=>{setGuestMenuOpen(false);setAccountMode("signup");setAccountModalOpen(true);}}>Start selling</button>
+            <button type="button" role="menuitem" onClick={()=>{setGuestMenuOpen(false);setAccountMode("login");setAccountModalOpen(true);}}>Sign in / Create account</button>
+          </div>}
         </div>
       </header>
       {authUser && <RoleMenuDrawer profile={roleProfile || authUser} onNavigate={navigate} onSignOut={async () => {
