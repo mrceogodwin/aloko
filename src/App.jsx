@@ -401,7 +401,7 @@ function App() {
                     } catch (error) { showNotice(error.message || "Could not complete account access."); }
                     finally { setAuthLoading(false); }
                   }}>
-                    {accountMode === "signup" && <label>Your name<input value={authName} onChange={e => setAuthName(e.target.value)} minLength={2} maxLength={80} required placeholder="Your name"/></label>
+                    {accountMode === "signup" && <label>Your name<input value={authName} onChange={e => setAuthName(e.target.value)} minLength={2} maxLength={80} required placeholder="Your name"/></label>}
                     {accountMode === "signup" && <label>Account type<select value={accountRole} onChange={e => setAccountRole(e.target.value)} required><option value="buyer">Buyer — browse and purchase</option><option value="individual">Individual seller — sell personal items</option><option value="reseller">Reseller — sell items regularly</option><option value="business">Business seller — sell as a registered business</option><option value="bulk_distributor">Bulk distributor — sell in bulk</option><option value="decluttering_provider">Decluttering service provider — offer services</option></select></label>}
                     <label>Email<input type="email" value={authEmail} onChange={e => setAuthEmail(e.target.value)} required placeholder="you@example.com" autoComplete="email"/></label>
                     <label>Password<input type="password" value={authPassword} onChange={e => setAuthPassword(e.target.value)} required minLength={8} autoComplete={accountMode === "login" ? "current-password" : "new-password"}/></label>
