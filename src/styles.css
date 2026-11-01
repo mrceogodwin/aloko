@@ -803,3 +803,123 @@
  .legal-reader{max-height:88svh}
  .legal-reader .listing-modal-content{max-height:88svh;padding:26px 20px}
 }
+
+/* Aloko flagship marketplace — compact, touch-first mobile viewport */
+.mobile-promo-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:18px auto 24px}
+.mobile-promo-card{position:relative;isolation:isolate;display:block;min-width:0;min-height:150px;overflow:hidden;border:1px solid #ffffffb0;border-radius:19px;padding:0;text-align:left;background:#063b2d;box-shadow:0 12px 25px #002e1b24,inset 0 1px #ffffff80;transform:translateZ(0);transition:transform .22s ease,box-shadow .22s ease}
+.mobile-promo-card:hover{transform:translateY(-4px);box-shadow:0 18px 30px #002e1b35}
+.mobile-promo-card>img{position:absolute;z-index:-2;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
+.mobile-promo-card:hover>img{transform:scale(1.06)}
+.promo-card-shade{position:absolute;z-index:-1;inset:0;background:linear-gradient(90deg,#003d2bdc 0%,#00442cb0 52%,#002a1b22 100%)}
+.promo-giveaway .promo-card-shade{background:linear-gradient(90deg,#e8f8d9f2 0%,#e8f8d9c7 55%,#d4f0b733 100%)}
+.promo-bulk .promo-card-shade{background:linear-gradient(90deg,#f4f1e4ee 0%,#eee8d4c4 55%,#e5d6b455 100%)}
+.promo-card-copy{position:absolute;left:15px;top:13px;display:flex;flex-direction:column;gap:5px;color:#fff}
+.promo-card-copy small{font-size:9px;font-weight:900;letter-spacing:1.1px}
+.promo-card-copy strong{font-size:clamp(14px,1.5vw,22px);line-height:1.05;font-weight:900;letter-spacing:-.5px}
+.promo-card-copy em{font-size:10px;font-style:normal;font-weight:800;margin-top:3px}
+.promo-giveaway .promo-card-copy,.promo-bulk .promo-card-copy{color:#123b27}
+.promo-card-icon{position:absolute;right:12px;top:10px;width:29px;height:29px;display:grid;place-items:center;border-radius:10px;background:#d5ff2f;color:#06452d;box-shadow:0 4px 10px #002b1a55;font-size:17px}
+@media(max-width:760px){
+ .member-shell{height:100svh;height:100dvh;min-height:0;overflow:hidden;display:flex;flex-direction:column;background:#f7f8f4}
+ .member-shell .topbar{flex:0 0 auto;position:relative;z-index:30}
+ .member-shell .topbar-inner{min-height:58px!important;padding:6px 12px;gap:8px;flex-wrap:nowrap}
+ .member-shell .brand-mark-image{width:34px;height:34px}
+ .member-shell .brand-text{font-size:22px}
+ .member-shell .main-nav,.member-shell .nav-search-icon,.member-shell .mobile-saved-toggle,.member-shell .post-button{display:none!important}
+ .member-shell .nav-actions{margin-left:auto;gap:6px;flex-wrap:nowrap}
+ .member-shell .header-state-picker{display:none!important}
+ .member-shell .ghost-button,.member-shell .account-create-button{padding:9px 11px;font-size:10px;white-space:nowrap}
+ .member-shell .announcement-ticker{display:none!important}
+ .member-shell>main{flex:1 1 auto;min-height:0;overflow:hidden;padding:0 0 4px}
+ .member-shell main>section{display:none!important}
+ .member-shell main>section.hero.flagship-hero,
+ .member-shell main>section.featured-placements,
+ .member-shell main>section.mobile-promo-strip,
+ .member-shell main>section.listings{display:block!important}
+ .member-shell .flagship-hero{height:clamp(168px,25svh,215px);min-height:0;overflow:hidden;position:relative;background:radial-gradient(ellipse at 78% 40%,#16845a 0%,#075039 35%,#032e22 78%);border-radius:0 0 20px 20px}
+ .member-shell .flagship-hero:after{content:"";position:absolute;inset:auto -10% -65% 25%;height:90%;border:1px solid #c4ff2f4a;border-radius:50%;transform:rotate(-12deg);pointer-events:none}
+ .member-shell .hero-inner{height:100%;min-height:0;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(100px,.85fr);align-items:center;gap:4px;padding:13px 17px}
+ .member-shell .hero-copy{min-width:0;padding:0;position:relative;z-index:2}
+ .member-shell .hero-eyebrow{display:inline-flex;font-size:7px;letter-spacing:1px;padding:5px 8px;border:1px solid #c7ff4266;border-radius:999px;color:#d6ff70}
+ .member-shell .hero-copy h1{font-size:clamp(24px,7vw,34px);line-height:.98;letter-spacing:-1.3px;margin:10px 0 7px;max-width:260px}
+ .member-shell .hero-copy h1 .hero-highlight{color:#caff31}
+ .member-shell .hero-copy p{font-size:10px;line-height:1.35;max-width:260px;margin:0;color:#f2fff8}
+ .member-shell .hero-actions{display:flex;gap:6px;margin-top:10px}
+ .member-shell .hero-primary,.member-shell .hero-secondary{min-width:0;padding:8px 9px;border-radius:10px;font-size:9px;line-height:1.1;white-space:nowrap}
+ .member-shell .hero-primary span,.member-shell .hero-secondary span{display:none}
+ .member-shell .hero-trust{display:flex;gap:7px;margin-top:8px;font-size:7px;line-height:1.1;flex-wrap:wrap}
+ .member-shell .hero-trust span{padding:0;border:0}
+ .member-shell .hero-art{height:100%;min-height:0;max-height:185px;position:relative;transform:scale(.93);transform-origin:center;margin:0 -8px 0 -2px}
+ .member-shell .hero-phone{width:clamp(105px,32vw,155px);height:90%;max-height:176px;left:50%;top:50%;transform:translate(-50%,-50%) rotate(5deg)}
+ .member-shell .phone-brand{font-size:11px}.member-shell .phone-search{font-size:6px;padding:6px}
+ .member-shell .phone-cats{gap:4px}.member-shell .phone-cats span{font-size:10px;padding:6px 3px}
+ .member-shell .phone-cats small{font-size:5px}
+ .member-shell .phone-feature{padding:7px;font-size:8px}
+ .member-shell .orb-left,.member-shell .orb-right{width:54px;height:54px;font-size:8px;padding:5px}
+ .member-shell .orb-left{left:-5px;top:18px}.member-shell .orb-right{right:-5px;bottom:14px;top:auto}
+ .member-shell .hero-ribbon{opacity:.75;transform:scale(.55)}
+ .member-shell .featured-placements{padding:10px 12px 3px;margin:0;overflow:hidden}
+ .member-shell .featured-placements-head{margin:0 0 8px;align-items:center}
+ .member-shell .featured-placements-head .eyebrow{font-size:7px;letter-spacing:1px}
+ .member-shell .featured-placements-head h2{font-size:15px;line-height:1.1;letter-spacing:-.4px;margin:2px 0 0;color:#0a3527}
+ .member-shell .featured-note{font-size:7px;padding:6px 8px;letter-spacing:.6px;margin:0}
+ .member-shell .aloko-orbit-grid{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;padding:3px 2px 8px}
+ .member-shell .aloko-orbit-grid::-webkit-scrollbar,.member-shell .mobile-promo-strip::-webkit-scrollbar,.member-shell .product-grid::-webkit-scrollbar{display:none}
+ .member-shell .aloko-orbit-item{flex:0 0 68px;width:68px;gap:4px;padding:2px;scroll-snap-align:start}
+ .member-shell .aloko-orbit-image{width:57px;padding:3px;border-radius:50%;box-shadow:5px 7px 12px #123c2b22,-2px -2px 7px #fff}
+ .member-shell .aloko-orbit-item strong{font-size:8px;line-height:1.1;max-width:65px;color:#123c2b}
+ .member-shell .aloko-orbit-item small{display:none}
+ .member-shell .aloko-orbit-more{display:none}
+ .member-shell .mobile-promo-strip{display:flex!important;gap:9px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;margin:7px 0 6px;padding:0 12px 5px}
+ .member-shell .mobile-promo-card{flex:0 0 min(76vw,270px);min-height:clamp(76px,12svh,100px);height:clamp(76px,12svh,100px);border-radius:13px;box-shadow:0 7px 14px #073c2926;scroll-snap-align:start}
+ .member-shell .promo-card-copy{left:11px;top:9px;gap:3px}
+ .member-shell .promo-card-copy small{font-size:7px}
+ .member-shell .promo-card-copy strong{font-size:14px}
+ .member-shell .promo-card-copy em{font-size:8px}
+ .member-shell .promo-card-icon{width:23px;height:23px;right:8px;top:7px;font-size:13px}
+ .member-shell .listings{padding:4px 12px 0;margin:0;overflow:hidden}
+ .member-shell .listings .section-head{margin:0 0 7px;min-height:24px}
+ .member-shell .listings .section-head h2{font-size:15px;line-height:1;color:#092f23;margin:0}
+ .member-shell .listings .section-head .view-all{font-size:9px;padding:3px 0}
+ .member-shell .product-grid{display:flex;gap:9px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;padding:2px 2px 7px}
+ .member-shell .product-card{flex:0 0 min(78vw,285px);width:min(78vw,285px);height:clamp(100px,16svh,128px);display:grid;grid-template-columns:39% minmax(0,1fr);overflow:hidden;border:1px solid #e5e9e2;border-radius:13px;background:linear-gradient(145deg,#fff,#f6f8f4);box-shadow:0 5px 12px #123b2914;scroll-snap-align:start}
+ .member-shell .product-image{height:100%;min-height:0;aspect-ratio:auto;border-radius:0;background:#eef1eb}
+ .member-shell .product-image img{width:100%;height:100%;object-fit:cover}
+ .member-shell .product-image .condition{left:5px;bottom:5px;font-size:6px;padding:3px 5px}
+ .member-shell .product-image .save{top:5px;right:5px;width:22px;height:22px;font-size:14px;background:#ffffffdf}
+ .member-shell .product-info{padding:8px 7px;min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:3px}
+ .member-shell .product-place{font-size:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .member-shell .product-info h3{font-size:10px;line-height:1.15;margin:2px 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+ .member-shell .product-bottom{display:flex;align-items:center;justify-content:space-between;gap:4px}
+ .member-shell .product-bottom strong{font-size:11px;color:#075137;white-space:nowrap}
+ .member-shell .product-bottom button{font-size:7px;padding:4px 6px;border-radius:6px}
+ .member-shell .demo-note{font-size:9px;margin:4px 0}
+ .member-shell .mobile-app-nav{position:relative;z-index:35;flex:0 0 auto;height:54px;padding:4px 8px max(4px,env(safe-area-inset-bottom));display:flex;justify-content:space-around;background:#fff;border-top:1px solid #e4eae3;box-shadow:0 -5px 16px #073b2510}
+ .member-shell .mobile-app-nav button{min-width:0;flex:1;color:#557065}
+ .member-shell .mobile-app-nav button.active{color:#075137}
+ .member-shell .mobile-app-nav button span{font-size:18px}
+ .member-shell .mobile-app-nav button small{font-size:8px}
+ .member-shell .site-footer{display:none!important}
+}
+@media(max-width:390px){
+ .member-shell .flagship-hero{height:clamp(158px,23svh,190px)}
+ .member-shell .hero-inner{padding:10px 13px;grid-template-columns:minmax(0,1.2fr) minmax(92px,.8fr)}
+ .member-shell .hero-copy h1{font-size:clamp(22px,6.7vw,28px)}
+ .member-shell .hero-copy p{font-size:9px}
+ .member-shell .hero-art{transform:scale(.82);margin-left:-10px;margin-right:-12px}
+ .member-shell .featured-placements-head h2{font-size:14px}
+ .member-shell .aloko-orbit-item{flex-basis:63px;width:63px}
+ .member-shell .aloko-orbit-image{width:53px}
+ .member-shell .mobile-promo-card{flex-basis:78vw}
+ .member-shell .product-card{flex-basis:82vw}
+}
+@media(max-height:740px) and (max-width:760px){
+ .member-shell .flagship-hero{height:155px}
+ .member-shell .hero-copy h1{font-size:23px;margin:6px 0}
+ .member-shell .hero-copy p{font-size:8px}
+ .member-shell .hero-art{transform:scale(.76)}
+ .member-shell .featured-placements{padding-top:7px}
+ .member-shell .mobile-promo-card{height:68px;min-height:68px}
+ .member-shell .product-card{height:92px}
+ .member-shell .mobile-app-nav{height:48px}
+}
