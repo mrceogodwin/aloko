@@ -563,3 +563,21 @@
 .provider-enquiry-form label{display:grid;gap:7px;color:#51415f;font-size:12px;font-weight:800}
 .provider-enquiry-form textarea,.provider-enquiry-form input{width:100%;border:1px solid #e7dced;border-radius:10px;padding:12px;background:#fff;color:#2c1946;font:inherit;font-size:13px}
 .provider-enquiry-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap}
+
+
+/* Aloko visual balance: retain the signature violet, reduce the full-page purple wash. */
+:root{--purple:#7134b8;--violet:#a36bd0;--deep:#24143b;--paper:#fcfbfd;--lav:#f5f0f9}
+.flagship-topbar{background:linear-gradient(105deg,#211331 0%,#332047 58%,#49305f 100%)}
+.flagship-hero{background:radial-gradient(ellipse at 76% 22%,#78539a 0%,transparent 38%),radial-gradient(ellipse at 95% 90%,#684487 0%,transparent 34%),linear-gradient(112deg,#241632 0%,#30203f 52%,#433052 100%)}
+.hero-eyebrow{background:#65447a44;border-color:#c4a2d8a0}
+.hero-primary,.account-create-button,.post-button{background:linear-gradient(105deg,#9861c2,#70429b);box-shadow:0 7px 20px #6541842b}
+.hero-secondary{border-color:#b99acb;background:#30203f66}
+.hero-orb{background:linear-gradient(145deg,#b78bd4,#76509b 75%);box-shadow:0 10px 30px #65418438}
+.hero-ribbon{filter:drop-shadow(0 0 9px #8f68ae55)}
+.category-icon{background:linear-gradient(145deg,#f5f0f8,#ebe3f1);color:#76508e}
+.category-chip:nth-child(2n) .category-icon{background:linear-gradient(145deg,#fbf0f5,#f3e4ed);color:#a45e83}
+.category-chip:nth-child(3n) .category-icon{background:linear-gradient(145deg,#eef3f8,#e3ebf3);color:#587b9b}
+.condition,.showcase-live-kind{background:#79549a}
+.giveaway-card{background:radial-gradient(circle at 80% 15%,#8a6ba3,transparent 36%),linear-gradient(110deg,#332442,#51405f)}
+.subscribe-section{background:radial-gradient(circle at 90% 10%,#806493,transparent 34%),linear-gradient(110deg,#30213d,#4a3a57)}
+.site-footer{background:#21172b}
