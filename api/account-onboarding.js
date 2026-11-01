@@ -39,14 +39,16 @@ export function createAccountOnboardingHandler({ getDatabase = getPool, authenti
     const result = accountType
       ? await database.query(
           `UPDATE public.profiles
-           SET account_type = $1, updated_at = now()
+           SET account_type = $1,
+               account_type_selected_at = COALESCE(account_type_selected_at, now()),
+               updated_at = now()
            WHERE id = $2::uuid
-             AND (account_type = 'buyer' OR account_type = $1)
-           RETURNING id, display_name, account_type, city, state`,
+             AND (account_type_selected_at IS NULL OR account_type = $1)
+           RETURNING id, display_name, account_type, city, state, account_type_selected_at`,
           [accountType, auth.user.id],
         )
       : await database.query(
-          `SELECT id, display_name, account_type, city, state
+          `SELECT id, display_name, account_type, city, state, account_type_selected_at
            FROM public.profiles WHERE id = $1::uuid LIMIT 1`,
           [auth.user.id],
         );
