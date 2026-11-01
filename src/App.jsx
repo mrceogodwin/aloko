@@ -488,8 +488,8 @@ function App() {
               <h1 className="hero-typing-headline"><span>{typedHeadline.includes("Give It.") ? <>{typedHeadline.split("Give It.")[0]}<em className="hero-highlight">Give It.</em>{typedHeadline.split("Give It.").slice(1).join("Give It.")}</> : typedHeadline}</span><i aria-hidden="true" /></h1>
               <p>Buy and sell pre-owned items, give usable things away for free, discover bulk deals, or book decluttering services — all in one place.</p>
               <div className="hero-actions">
-                <button className="hero-primary" onClick={() => setListingFormOpen(true)}>♢ &nbsp; Start Selling <span>→</span></button>
-                <button className="hero-secondary" onClick={() => document.getElementById("explore")?.scrollIntoView({behavior:"smooth"})}>Browse Listings <span>→</span></button>
+                <button className="hero-primary" onClick={() => authUser ? setListingFormOpen(true) : (setAccountMode("signup"), setAccountModalOpen(true))}>♢ &nbsp; Start Selling <span>→</span></button>
+                <button className="hero-secondary" onClick={() => authUser ? document.getElementById("explore")?.scrollIntoView({behavior:"smooth"}) : (setAccountMode("signup"), setAccountModalOpen(true))}>Browse Listings <span>→</span></button>
               </div>
               <div className="hero-trust"><span>✦ Safe &amp; verified community</span><span>▣ Free &amp; paid listings</span><span>◉ Support local sustainability</span></div>
             </div>
