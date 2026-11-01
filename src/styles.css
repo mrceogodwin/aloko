@@ -631,3 +631,41 @@
   .featured-portrait-grid{display:flex;gap:16px;overflow-x:auto;overflow-y:hidden;padding:2px 2px 18px;scroll-snap-type:x mandatory;scrollbar-width:thin}
   .featured-portrait-card{flex:0 0 calc((100% - 32px)/2);scroll-snap-align:start}
 }
+
+
+/* Mobile-first header rail and true horizontal featured carousel. */
+@media(max-width:760px){
+  .topbar-inner{width:calc(100% - 16px);min-height:66px;flex-wrap:nowrap;align-items:center;gap:5px;padding:8px 0}
+  .flagship-brand{flex:0 0 auto;gap:4px;white-space:nowrap}
+  .flagship-brand .brand-mark-image{width:29px;height:29px;flex:0 0 29px}
+  .flagship-brand .brand-text{font-size:20px;letter-spacing:-1.1px}
+  .topbar-inner .nav-actions{flex:1 1 auto;min-width:0;gap:4px;justify-content:flex-end}
+  .topbar-inner .header-state-picker{flex:0 1 auto;padding:7px 6px;min-width:0}
+  .topbar-inner .header-state-picker select{max-width:64px;font-size:9px}
+  .topbar-inner .ghost-button{padding:8px 8px;font-size:9px}
+  .topbar-inner .account-create-button{padding:8px 8px;font-size:9px}
+  .featured-portrait-grid{display:flex!important;flex-flow:row nowrap!important;gap:13px;overflow-x:auto!important;overflow-y:hidden!important;width:100%;padding:2px 2px 16px;scroll-snap-type:x mandatory;scroll-padding-inline:2px;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:none}
+  .featured-portrait-grid::-webkit-scrollbar{display:none}
+  .featured-portrait-card{display:block;flex:0 0 86%!important;width:86%!important;min-width:86%;height:370px;scroll-snap-align:center;scroll-snap-stop:always}
+}
+@media(max-width:390px){
+  .topbar-inner{width:calc(100% - 12px);gap:3px}
+  .flagship-brand .brand-mark-image{width:25px;height:25px;flex-basis:25px}
+  .flagship-brand .brand-text{font-size:18px}
+  .topbar-inner .header-state-picker{padding:7px 4px}
+  .topbar-inner .header-state-picker select{max-width:55px;font-size:8px}
+  .topbar-inner .ghost-button,.topbar-inner .account-create-button{padding:7px 6px;font-size:8px}
+  .featured-portrait-card{flex-basis:90%!important;width:90%!important;min-width:90%;height:340px}
+}
+/* Continuously scrolling circular decluttering-business discovery rail. */
+.declutter-logo-marquee{position:relative;overflow:hidden;min-width:0;padding:12px 0 8px;mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)}
+.declutter-logo-track{display:flex;align-items:flex-start;gap:17px;width:max-content;animation:aloko-business-logos 34s linear infinite}
+.declutter-logo-marquee:hover .declutter-logo-track,.declutter-logo-marquee:focus-within .declutter-logo-track{animation-play-state:paused}
+.declutter-logo-item{display:flex;flex:0 0 88px;flex-direction:column;align-items:center;gap:8px;border:0;background:transparent;padding:4px 2px;color:#4a315f;cursor:pointer}
+.declutter-logo-orb{width:68px;height:68px;display:grid;place-items:center;border-radius:50%;font:800 28px Manrope,sans-serif;color:#6c25a4;background:radial-gradient(circle at 30% 22%,#fff 0%,#f6eaff 38%,#dfc4f2 100%);border:1px solid #d9b9ee;box-shadow:7px 9px 18px rgba(55,25,78,.15),inset 2px 2px 5px #fff,inset -3px -4px 8px rgba(104,54,143,.12)}
+.declutter-logo-item:nth-child(4n+2) .declutter-logo-orb{color:#237a69;background:radial-gradient(circle at 30% 22%,#fff 0%,#e5f8f0 42%,#c5e8d9 100%)}
+.declutter-logo-item:nth-child(4n+3) .declutter-logo-orb{color:#9a5b20;background:radial-gradient(circle at 30% 22%,#fff 0%,#fff2df 42%,#f1d9b5 100%)}
+.declutter-logo-item small{max-width:88px;font-size:9px;line-height:1.25;text-align:center;font-weight:800;color:#715d80}
+@keyframes aloko-business-logos{to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.declutter-logo-track{animation:none}.featured-portrait-grid{scroll-behavior:auto}}
+@media(max-width:650px){.community-showcase{overflow:hidden}.declutter-logo-item{flex-basis:80px}.declutter-logo-orb{width:62px;height:62px}}
