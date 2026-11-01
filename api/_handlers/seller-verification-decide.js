@@ -79,20 +79,24 @@ export function createSellerVerificationDecideHandler({ getDatabase = getPool } 
                   'Three introductory listing credits after seller approval'
            FROM intro_account
            RETURNING seller_id
+         ),
+         logged AS (
+           INSERT INTO public.audit_logs (actor_id, action, target_type, target_id, details)
+           SELECT $3::uuid, 'seller_verification_' || $5, 'seller_verification',
+                  r.id::text,
+                  jsonb_build_object('status', r.status, 'note', r.reviewer_note,
+                                     'applicant_id', r.applicant_id, 'subject_type', r.subject_type)
+           FROM reviewed r
+           RETURNING target_id
          )
          SELECT r.id, r.applicant_id, r.subject_type, r.status,
                 r.reviewer_note, r.reviewed_at
-         FROM reviewed r JOIN store_update s ON s.user_id = r.applicant_id`,
-        [applicationId, status, auth.user.id, note || null],
+         FROM reviewed r
+         JOIN store_update s ON s.user_id = r.applicant_id
+         JOIN logged l ON l.target_id = r.id::text`,
+        [applicationId, status, auth.user.id, note || null, decision],
       );
       if (!result.rows?.length) return res.status(404).json({ error: "Application not found or already reviewed" });
-      try {
-        await database.query(
-          `INSERT INTO public.audit_logs (actor_id, action, target_type, target_id, details)
-           VALUES ($1::uuid, $2, 'seller_verification', $3, $4::jsonb)`,
-          [auth.user.id, `seller_verification_${decision}`, applicationId, JSON.stringify({ status, note })],
-        );
-      } catch { /* audit logging must not expose internal database errors to reviewers */ }
       return res.status(200).json({
         application: result.rows[0],
         message: decision === "approve" ? "Seller verification approved" :
