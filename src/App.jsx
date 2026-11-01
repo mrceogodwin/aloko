@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { matchesListingQuery, sortListings, validateListingDraft } from "./marketplace.js";
-import { hasAccessToken, openConversation, createListing, listConversations, listMessages, sendMessage, fetchMyListings, setListingStatus, listSavedListings, saveListing, unsaveListing, getMarketplaceProfile, getSellerStore } from "./api-client.js";
+import { hasAccessToken, openConversation, createListing, listConversations, listMessages, sendMessage, fetchMyListings, setListingStatus, listSavedListings, saveListing, unsaveListing, getMarketplaceProfile, getSellerStore, getAccountOnboarding, updateAccountType } from "./api-client.js";
 import { getAuthSession, getAuthJWTToken, signUpWithEmail, signInWithEmail, signOutFromAloko } from "./auth.js";
 import SellerOnboarding from "./SellerOnboarding.jsx";
 import AdminSellerVerification from "./AdminSellerVerification.jsx";
@@ -280,6 +280,7 @@ function App() {
   const [accountModalOpen, setAccountModalOpen] = useState(false);
   const [accountMode, setAccountMode] = useState("login");
   const [accountRole, setAccountRole] = useState("buyer");
+  const [accountTypeRequired, setAccountTypeRequired] = useState(false);
   const [authUser, setAuthUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(false);
   const [authEmail, setAuthEmail] = useState("");
@@ -293,8 +294,18 @@ function App() {
       const user = data?.user || null;
       const token = user ? await getAuthJWTToken() : null;
       setAuthUser(user);
-      if (token) { try { window.localStorage.setItem("aloko:access-token", token); } catch {} }
-      else { try { window.localStorage.removeItem("aloko:access-token"); } catch {} }
+      if (token) {
+        try { window.localStorage.setItem("aloko:access-token", token); } catch {}
+        try {
+          const onboarding = await getAccountOnboarding();
+          if (mounted && onboarding.ok && onboarding.data?.profile?.onboarding_complete === false) {
+            setAccountTypeRequired(true);
+            setAccountModalOpen(true);
+          }
+        } catch {}
+      } else {
+        try { window.localStorage.removeItem("aloko:access-token"); } catch {}
+      }
     }).catch(() => { if (mounted) setAuthUser(null); });
     return () => { mounted = false; };
   }, []);
@@ -604,10 +615,42 @@ function App() {
               {authUser ? (
                 <>
                   <p className="listing-demo-note">Signed in as {authUser.email || "Aloko member"}.</p>
+                  {accountTypeRequired && (
+                    <form className="listing-create-form" onSubmit={async e => {
+                      e.preventDefault();
+                      if (authLoading) return;
+                      setAuthLoading(true);
+                      try {
+                        const onboarding = await updateAccountType(accountRole);
+                        if (!onboarding.ok) throw new Error(onboarding.data?.error || "Account setup could not be completed.");
+                        setAccountTypeRequired(false);
+                        showNotice("Your Aloko account type is saved.");
+                        setAccountModalOpen(false);
+                      } catch (error) { showNotice(error.message || "Could not complete account setup."); }
+                      finally { setAuthLoading(false); }
+                    }}>
+                      <p className="listing-demo-note">Choose your primary account type to finish setting up Aloko.</p>
+                      <label>Account type<select value={accountRole} onChange={e => setAccountRole(e.target.value)} required>
+                        <option value="buyer">Buyer — browse and contact sellers</option>
+                        <option value="individual">Individual seller</option>
+                        <option value="reseller">Reseller</option>
+                        <option value="business">Business</option>
+                        <option value="bulk_distributor">Bulk distributor</option>
+                        <option value="decluttering_provider">Decluttering service provider</option>
+                      </select></label>
+                      <button type="submit" disabled={authLoading} className="modal-contact-button">{authLoading ? "Please wait…" : "Complete account setup"}</button>
+                    </form>
+                  )}
                   <button className="modal-contact-button" disabled={authLoading} onClick={async () => {
                     setAuthLoading(true);
-                    try { await signOutFromAloko(); setAuthUser(null); try { window.localStorage.removeItem("aloko:access-token"); } catch {} showNotice("You have signed out."); setAccountModalOpen(false); }
-                    catch (error) { showNotice(error.message); }
+                    try {
+                      await signOutFromAloko();
+                      setAuthUser(null);
+                      setAccountTypeRequired(false);
+                      try { window.localStorage.removeItem("aloko:access-token"); } catch {}
+                      showNotice("You have signed out.");
+                      setAccountModalOpen(false);
+                    } catch (error) { showNotice(error.message); }
                     finally { setAuthLoading(false); }
                   }}>Sign out</button>
                 </>
@@ -618,27 +661,58 @@ function App() {
                     e.preventDefault();
                     if (authLoading) return;
                     setAuthLoading(true);
+                    const mode = accountMode;
                     try {
-                      if (accountMode === "signup") await signUpWithEmail({ email: authEmail.trim(), password: authPassword, name: authName.trim() || authEmail.split("@")[0] });
-                      else await signInWithEmail({ email: authEmail.trim(), password: authPassword });
+                      if (mode === "signup") {
+                        await signUpWithEmail({ email: authEmail.trim(), password: authPassword, name: authName.trim() || authEmail.split("@")[0] });
+                      } else {
+                        await signInWithEmail({ email: authEmail.trim(), password: authPassword });
+                      }
                       const data = await getAuthSession();
                       const user = data?.user || null;
-                      if (!user && accountMode === "signup") {
+                      const token = user ? await getAuthJWTToken() : null;
+                      if ((!user || !token) && mode === "signup") {
+                        try { window.localStorage.removeItem("aloko:access-token"); } catch {}
                         setAccountMode("login");
-                        showNotice("Account created. Check your email for a verification link, then sign in.");
+                        showNotice("Account created. Verify your email if requested, then sign in to finish account setup.");
                         return;
                       }
-                      const token = user ? await getAuthJWTToken() : null;
-                      if (token) { try { window.localStorage.setItem("aloko:access-token", token); } catch {} }
-                      else { try { window.localStorage.removeItem("aloko:access-token"); } catch {} }
+                      if (!user || !token) {
+                        try { window.localStorage.removeItem("aloko:access-token"); } catch {}
+                        throw new Error("Sign-in did not return an active secure session. Check your email verification and try again.");
+                      }
+                      try { window.localStorage.setItem("aloko:access-token", token); } catch {}
                       setAuthUser(user);
-                      if (!user) throw new Error("Sign-in did not return an active session. Check your email verification and try again.");
-                      if (!token) throw new Error("You are signed in, but Aloko could not obtain a secure API token. Please refresh and try again.");
-                      showNotice(accountMode === "signup" ? "Welcome to Aloko. Your account is ready." : "You are signed in.");
+                      if (mode === "signup") {
+                        const onboarding = await updateAccountType(accountRole);
+                        if (!onboarding.ok) {
+                          setAccountTypeRequired(true);
+                          showNotice(onboarding.data?.error || "Choose your account type to finish setup.");
+                          return;
+                        }
+                        setAccountTypeRequired(false);
+                      } else {
+                        const onboarding = await getAccountOnboarding();
+                        if (!onboarding.ok) throw new Error(onboarding.data?.error || "Could not verify your account setup.");
+                        if (onboarding.data?.profile?.onboarding_complete === false) {
+                          setAccountTypeRequired(true);
+                          showNotice("Sign-in successful. Choose your account type to finish setting up Aloko.");
+                          return;
+                        }
+                      }
+                      showNotice(mode === "signup" ? "Welcome to Aloko. Your account is ready." : "You are signed in.");
                       setAccountModalOpen(false);
                     } catch (error) { showNotice(error.message || "Could not complete account access."); }
                     finally { setAuthLoading(false); }
                   }}>
+                    {accountMode === "signup" && <label>Account type<select value={accountRole} onChange={e => setAccountRole(e.target.value)} required>
+                      <option value="buyer">Buyer — browse and contact sellers</option>
+                      <option value="individual">Individual seller</option>
+                      <option value="reseller">Reseller</option>
+                      <option value="business">Business</option>
+                      <option value="bulk_distributor">Bulk distributor</option>
+                      <option value="decluttering_provider">Decluttering service provider</option>
+                    </select></label>}
                     {accountMode === "signup" && <label>Your name<input value={authName} onChange={e => setAuthName(e.target.value)} minLength={2} maxLength={80} required placeholder="Your name"/></label>}
                     <label>Email<input type="email" value={authEmail} onChange={e => setAuthEmail(e.target.value)} required placeholder="you@example.com" autoComplete="email"/></label>
                     <label>Password<input type="password" value={authPassword} onChange={e => setAuthPassword(e.target.value)} required minLength={8} autoComplete={accountMode === "login" ? "current-password" : "new-password"}/></label>
@@ -646,7 +720,7 @@ function App() {
                   </form>
                   <p className="listing-demo-note">{accountMode === "login" ? "New to Aloko?" : "Already have an account?"} <button type="button" className="inline-auth-switch" onClick={() => setAccountMode(mode => mode === "login" ? "signup" : "login")}>{accountMode === "login" ? "Create an account" : "Log in"}</button></p>
                 </>
-              )}
+              )})}
             </div>
           </section>
         </div>
