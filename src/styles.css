@@ -594,3 +594,40 @@
   .mobile-app-nav button:active{transform:translateY(1px) scale(.97)}
 }
 @media(max-width:900px){.workspace-page{padding-bottom:112px}.site-footer{padding-bottom:112px}}
+
+
+/* Mobile flagship polish: keep the brand/actions on one rail and make featured spaces swipeable. */
+@media(max-width:760px){
+  .topbar-inner{width:calc(100% - 20px);min-height:66px;padding:8px 0;display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;gap:8px}
+  .flagship-brand{flex:0 0 auto;gap:5px;min-width:0}
+  .flagship-brand .brand-mark-image{width:32px;height:32px;flex:0 0 32px}
+  .flagship-brand .brand-text{font-size:22px;letter-spacing:-1.2px}
+  .topbar-inner .app-main-nav{display:none}
+  .topbar-inner .nav-actions{display:flex;flex:0 0 auto;align-items:center;justify-content:flex-end;gap:5px;margin-left:auto;min-width:0}
+  .topbar-inner .header-state-picker{flex:0 1 auto;min-width:0;gap:3px;padding:7px 8px;font-size:10px;white-space:nowrap}
+  .topbar-inner .header-state-picker span{display:none}
+  .topbar-inner .header-state-picker select{max-width:72px;font-size:10px}
+  .topbar-inner .ghost-button{padding:8px 10px;font-size:10px;white-space:nowrap}
+  .topbar-inner .account-create-button{padding:8px 10px;font-size:10px;white-space:nowrap}
+  .topbar-inner .nav-search-icon,.topbar-inner .mobile-saved-toggle,.topbar-inner .post-button{display:none}
+  .featured-placements{padding:22px 0 32px}
+  .featured-placements-head{align-items:center}
+  .featured-note{font-size:8px;padding:7px 9px;white-space:nowrap}
+  .featured-portrait-grid{display:flex;gap:13px;overflow-x:auto;overflow-y:hidden;padding:2px 2px 16px;scroll-snap-type:x mandatory;scroll-padding-inline:2px;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:none}
+  .featured-portrait-grid::-webkit-scrollbar{display:none}
+  .featured-portrait-card{flex:0 0 86%;width:86%;height:390px;scroll-snap-align:start;scroll-snap-stop:always}
+}
+@media(max-width:390px){
+  .topbar-inner{width:calc(100% - 14px);gap:5px}
+  .flagship-brand .brand-mark-image{width:28px;height:28px;flex-basis:28px}
+  .flagship-brand .brand-text{font-size:20px}
+  .topbar-inner .header-state-picker{padding:7px 6px}
+  .topbar-inner .header-state-picker select{max-width:61px}
+  .topbar-inner .ghost-button{padding:8px 8px;font-size:9px}
+  .topbar-inner .account-create-button{padding:8px 8px;font-size:9px}
+  .featured-portrait-card{flex-basis:90%;width:90%;height:350px}
+}
+@media(min-width:761px){
+  .featured-portrait-grid{display:flex;gap:16px;overflow-x:auto;overflow-y:hidden;padding:2px 2px 18px;scroll-snap-type:x mandatory;scrollbar-width:thin}
+  .featured-portrait-card{flex:0 0 calc((100% - 32px)/2);scroll-snap-align:start}
+}
