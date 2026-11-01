@@ -721,3 +721,54 @@
 .aloko-orbit-more span{font-size:23px;line-height:14px}
 @media(max-width:760px){.featured-placements{padding:38px 0 32px}.featured-placements-head{align-items:flex-start;margin-bottom:21px}.featured-placements-head h2{font-size:29px;max-width:340px}.featured-note{font-size:9px;letter-spacing:1px;padding:9px 12px;margin-top:9px}.aloko-orbit-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:19px 5px}.aloko-orbit-image{width:clamp(54px,17vw,104px);padding:4px}.aloko-orbit-image img{border-width:2px}.aloko-orbit-item{gap:6px;padding:2px 1px}.aloko-orbit-item strong{font-size:10px;line-height:1.12;max-width:72px}.aloko-orbit-item small{font-size:8px;max-width:75px}.aloko-orbit-more{margin-top:19px}}
 @media(max-width:370px){.aloko-orbit-grid{gap:16px 2px}.aloko-orbit-item strong{font-size:9px}.aloko-orbit-item small{font-size:7px}.featured-placements-head h2{font-size:26px}.featured-note{padding:8px 9px}}
+
+/* Guest experience: a single-screen brand gateway; full marketplace unlocks after sign-in */
+.guest-shell{height:100svh;min-height:100svh;overflow:hidden;display:flex;flex-direction:column;background:#21083f}
+.guest-shell .flagship-topbar{flex:0 0 auto;z-index:10}
+.guest-shell .topbar-inner{min-height:78px}
+.guest-shell .main-nav,.guest-shell .nav-search-icon,.guest-shell .mobile-saved-toggle,.guest-shell .post-button{display:none!important}
+.guest-shell .nav-actions{margin-left:auto}
+.guest-shell .header-state-picker{display:flex}
+.guest-shell .announcement-ticker,.guest-shell .site-footer,.guest-shell .mobile-app-nav{display:none!important}
+.guest-shell>main{flex:1 1 auto;min-height:0;overflow:hidden}
+.guest-shell .flagship-hero{height:100%;min-height:0}
+.guest-shell .hero-inner{height:100%;min-height:0;grid-template-columns:1fr 1fr;align-items:center}
+.guest-shell .hero-copy{padding:28px 0;max-width:620px}
+.guest-shell .hero-art{height:min(62vh,560px)}
+.guest-shell .hero-actions button{cursor:pointer}
+@media(max-width:760px){
+ .guest-shell .topbar-inner{min-height:78px;flex-wrap:nowrap;gap:6px;padding:9px 0}
+ .guest-shell .brand-mark-image{width:39px;height:39px}
+ .guest-shell .brand-text{font-size:25px}
+ .guest-shell .nav-actions{gap:6px;flex-wrap:nowrap}
+ .guest-shell .header-state-picker{max-width:112px}
+ .guest-shell .header-state-picker select{max-width:82px;font-size:11px}
+ .guest-shell .ghost-button,.guest-shell .account-create-button{padding:10px 11px;font-size:11px;white-space:nowrap}
+ .guest-shell .hero-inner{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:0;padding-top:clamp(28px,5vh,54px)}
+ .guest-shell .hero-copy{padding:0;max-width:none}
+ .guest-shell .hero-eyebrow{font-size:9px;letter-spacing:1px;padding:7px 10px}
+ .guest-shell .hero-copy h1{font-size:clamp(39px,9vw,60px);line-height:.98;letter-spacing:-2.4px;margin:18px 0 12px}
+ .guest-shell .hero-copy p{font-size:clamp(13px,3.6vw,16px);line-height:1.48;max-width:590px}
+ .guest-shell .hero-actions{gap:10px;margin-top:19px}
+ .guest-shell .hero-primary,.guest-shell .hero-secondary{flex:1;min-width:0;padding:13px 10px;border-radius:15px;font-size:12px}
+ .guest-shell .hero-trust{gap:8px 12px;margin-top:15px;font-size:9px}
+ .guest-shell .hero-trust span{padding-right:8px}
+ .guest-shell .hero-art{height:min(39svh,350px);min-height:190px;flex:1 1 auto;transform:scale(.88);transform-origin:top center;margin:12px -20px 0}
+ .guest-shell .hero-phone{max-height:100%;max-width:62vw}
+ .guest-shell .orb-left{width:94px;height:94px;left:5%;top:22px}
+ .guest-shell .orb-right{width:100px;height:100px;right:4%;top:18px;font-size:14px}
+ .guest-shell .ribbon-one,.guest-shell .ribbon-two{transform:scale(.78)}
+}
+@media(max-width:390px){
+ .guest-shell .topbar-inner{min-height:70px}
+ .guest-shell .brand-text{font-size:22px}
+ .guest-shell .header-state-picker{max-width:91px}
+ .guest-shell .header-state-picker select{max-width:64px}
+ .guest-shell .ghost-button,.guest-shell .account-create-button{padding:9px 8px;font-size:10px}
+ .guest-shell .hero-inner{padding-top:22px}
+ .guest-shell .hero-trust{font-size:8px}
+ .guest-shell .hero-art{height:34svh;margin-top:7px}
+}
+@media(min-width:761px){
+ .guest-shell .hero-inner{grid-template-columns:1.05fr .95fr}
+}
