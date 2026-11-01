@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { decideListingModeration, listModerationQueue, listModerationReports, updateModerationReport } from "./api-client.js";
+import { decideListingModeration, listModerationQueue, listModerationReports, updateModerationReport, searchModerationUsers, setModerationUserSuspension } from "./api-client.js";
 
 function money(value) {
   if (value == null || value === "") return "Free";
@@ -16,6 +16,10 @@ export default function ModeratorDesk({ onNotice, onSellerApplications }) {
   const [reportNotes, setReportNotes] = useState({});
   const [activeTab, setActiveTab] = useState("listings");
   const [reportsLoading, setReportsLoading] = useState(false);
+  const [userQuery, setUserQuery] = useState("");
+  const [userResults, setUserResults] = useState([]);
+  const [userSearchLoading, setUserSearchLoading] = useState(false);
+  const [userReason, setUserReason] = useState("");
 
   const refresh = async () => {
     setLoading(true);
@@ -59,7 +63,7 @@ export default function ModeratorDesk({ onNotice, onSellerApplications }) {
     }
   };
 
-  const updateReport = async (report, status) => {
+  const searchUsers = async () => {\n    if (userQuery.trim().length < 2) { setError("Enter at least 2 characters to search."); return; }\n    setUserSearchLoading(true); setError("");\n    try { const result = await searchModerationUsers(userQuery.trim()); if (!result.ok) setError(result.data?.error || "Could not search members."); else setUserResults(result.data?.items || []); }\n    catch { setError("Network error searching members."); } finally { setUserSearchLoading(false); }\n  };\n\n  const toggleSuspension = async (user) => {\n    const reason = userReason.trim();\n    if (reason.length < 3) { setError("Enter a reason of at least 3 characters."); return; }\n    if (!window.confirm(`${user.is_suspended ? "Reinstate" : "Suspend"} ${user.display_name || "this member"}?`)) return;\n    setBusyId(user.id); setError("");\n    try { const result = await setModerationUserSuspension(user.id, !user.is_suspended, reason); if (!result.ok) setError(result.data?.error || "Could not update member status."); else { setUserResults(rows => rows.map(row => row.id === user.id ? { ...row, is_suspended: result.data.user.is_suspended } : row)); onNotice?.(result.data?.message || "Member status updated."); } }\n    catch { setError("Network error. Member status was not confirmed."); } finally { setBusyId(""); }\n  };\n\n  const updateReport = async (report, status) => {
     if (busyId) return;
     const note = (reportNotes[report.id] || "").trim();
     if (["resolved", "dismissed"].includes(status) && note.length < 3) { setError("Add a resolution note before closing a report."); return; }
@@ -73,7 +77,7 @@ export default function ModeratorDesk({ onNotice, onSellerApplications }) {
       <div><span className="eyebrow">ALOKO TRUST & SAFETY</span><h2>Moderator Desk</h2><p>Review listings and manage member reports with server-checked permissions.</p></div>
       <button className="workspace-secondary" onClick={() => activeTab === "listings" ? refresh() : refreshReports()} disabled={loading || reportsLoading}>↻ Refresh</button>
     </div>
-    <div className="buyer-dashboard-actions"><button className="workspace-secondary" onClick={() => setActiveTab("listings")}>Listing moderation ({items.length})</button><button className="workspace-secondary" onClick={() => setActiveTab("reports")}>Member reports ({reports.length})</button></div>
+    <div className="buyer-dashboard-actions"><button className="workspace-secondary" onClick={() => setActiveTab("listings")}>Listing moderation ({items.length})</button><button className="workspace-secondary" onClick={() => setActiveTab("reports")}>Member reports ({reports.length})</button><button className="workspace-secondary" onClick={() => setActiveTab("users")}>Member management</button></div>
     <div className="workspace-stats">
       <div><span>AWAITING REVIEW</span><strong>{loading ? "…" : items.length}</strong></div>
       <div><span>QUEUE SOURCE</span><strong>Live</strong></div>
@@ -97,6 +101,6 @@ export default function ModeratorDesk({ onNotice, onSellerApplications }) {
       <label className="admin-verification-note-field">Resolution note<textarea rows="2" maxLength="2000" value={reportNotes[report.id] || ""} onChange={event => setReportNotes(current => ({...current,[report.id]:event.target.value}))} placeholder="Required to resolve or dismiss…"/></label>
       <div className="admin-verification-actions"><button disabled={busyId === report.id} onClick={() => updateReport(report,"investigating")}>Take ownership</button><button disabled={busyId === report.id} onClick={() => updateReport(report,"resolved")}>Resolve</button><button disabled={busyId === report.id} onClick={() => updateReport(report,"dismissed")}>Dismiss</button></div>
     </article>)}</div> : <div className="workspace-empty"><span>✓</span><h3>No open reports.</h3><p>There are no reports awaiting staff action.</p></div>)}
-    <p className="seller-onboarding-footnote">Report handling is enabled. User suspension, payment visibility, credit adjustments, promotions and moderation-history browsing still require secured workflows.</p>
+    {activeTab === "users" && <section className="admin-verification-list"><div className="admin-verification-card"><h3>Find a member</h3><p>Search by display name or exact member ID. Staff accounts are excluded from moderator actions.</p><div className="admin-verification-actions"><input value={userQuery} onChange={event => setUserQuery(event.target.value)} onKeyDown={event => { if (event.key === "Enter") searchUsers(); }} placeholder="Name or exact member ID" maxLength={80}/><button disabled={userSearchLoading} onClick={searchUsers}>{userSearchLoading ? "Searching…" : "Search members"}</button></div><label className="admin-verification-note-field">Reason for status change<textarea rows="2" maxLength="1000" value={userReason} onChange={event => setUserReason(event.target.value)} placeholder="Explain the policy or safety reason…"/></label></div>{userResults.map(user => <article className="admin-verification-card" key={user.id}><div className="admin-verification-card-head"><div><h3>{user.display_name || "Aloko member"}</h3><p>{user.account_type || "Member"} · Joined {user.created_at ? new Date(user.created_at).toLocaleDateString() : "date unavailable"}</p></div><span className="workspace-status">{user.is_suspended ? "Suspended" : "Active"}</span></div><div className="admin-verification-actions"><button disabled={busyId === user.id} onClick={() => toggleSuspension(user)}>{user.is_suspended ? "Reinstate member" : "Suspend member"}</button></div></article>)}</section>}\n    <p className="seller-onboarding-footnote">Member search and suspension are staff-only. Payment visibility, credit adjustments, promotions and moderation-history browsing remain to be implemented.</p>
   </div>;
 }
