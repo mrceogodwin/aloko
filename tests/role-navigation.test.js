@@ -19,7 +19,7 @@ test("trusted staff membership role takes precedence over marketplace account ty
 
 test("dashboard labels are role-specific without exposing account switching", () => {
   assert.deepEqual(getAlokoDashboard({ account_type: "buyer" }), { role: "buyer", label: "My Aloko", screen: "buyer-dashboard" });
-  assert.equal(getAlokoDashboard({ account_type: "business" }).label, "Business Hub");
+  assert.deepEqual(getAlokoDashboard({ account_type: "business" }), { role: "business", label: "Business Hub", screen: "business-dashboard" });
   assert.equal(getAlokoDashboard({ role: "moderator" }).label, "Moderator Desk");
   assert.equal(getAlokoDashboard({ role: "admin" }).label, "Aloko Control Centre");
 });
