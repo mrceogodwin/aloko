@@ -288,6 +288,8 @@ function App() {
     title: "", price: "", place: "", description: "", kind: "sale", category: "Home & Living", condition: "Good", quantity: "1", fulfillment: "pickup"
   });
   const [accountModalOpen, setAccountModalOpen] = useState(false);
+  const [legalPage, setLegalPage] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [accountMode, setAccountMode] = useState("login");
   const [accountRole, setAccountRole] = useState("buyer");
   const [accountTypeRequired, setAccountTypeRequired] = useState(false);
@@ -498,6 +500,12 @@ function App() {
               <div className="hero-orb orb-right">Same items,<br/> brighter futures!</div>
             </div>
           </div>
+          {!authUser && <div className="guest-legal-footer">
+            <span className="guest-powered">Powered by <strong>Squadglobal</strong></span>
+            <nav aria-label="Legal information">
+              {["Terms of Use","Privacy Policy","Community Guidelines","Safety & Transactions"].map(label=><button type="button" key={label} onClick={()=>setLegalPage(label)}>{label}</button>)}
+            </nav>
+          </div>}
         </section>
         {authUser && <>
         <section className="featured-placements wrap" aria-label="Discover Nigerian marketplace categories">
@@ -791,6 +799,7 @@ function App() {
                       <option value="decluttering_provider">Decluttering service provider</option>
                     </select></label>}
                     {accountMode === "signup" && <label>Your name<input value={authName} onChange={e => setAuthName(e.target.value)} minLength={2} maxLength={80} required placeholder="Your name"/></label>}
+                    {accountMode === "signup" && <label className="auth-terms-check"><input type="checkbox" checked={acceptedTerms} onChange={e=>setAcceptedTerms(e.target.checked)} required/><span>I agree to Aloko’s <button type="button" onClick={()=>setLegalPage("Terms of Use")}>Terms of Use</button> and <button type="button" onClick={()=>setLegalPage("Privacy Policy")}>Privacy Policy</button>.</span></label>}
                     <label>Email<input type="email" value={authEmail} onChange={e => setAuthEmail(e.target.value)} required placeholder="you@example.com" autoComplete="email"/></label>
                     <label>Password<input type="password" value={authPassword} onChange={e => setAuthPassword(e.target.value)} required minLength={8} autoComplete={accountMode === "login" ? "current-password" : "new-password"}/></label>
                     <button type="submit" disabled={authLoading} className="modal-contact-button">{authLoading ? "Please wait…" : accountMode === "login" ? "Log in" : "Create account"}</button>
@@ -929,6 +938,47 @@ function App() {
         </div>
       )}
 
+      {legalPage && (
+        <div className="listing-modal-backdrop legal-backdrop" onClick={()=>setLegalPage("")}>
+          <section className="listing-modal legal-reader" role="dialog" aria-modal="true" aria-labelledby="legal-reader-title" onClick={e=>e.stopPropagation()}>
+            <button className="listing-modal-close" type="button" onClick={()=>setLegalPage("")} aria-label="Close">×</button>
+            <div className="listing-modal-content">
+              <span className="eyebrow">ALOKO · PLATFORM INFORMATION</span>
+              <h2 id="legal-reader-title">{legalPage}</h2>
+              {legalPage === "Terms of Use" ? <>
+                <p>These terms govern your access to and use of Aloko, a marketplace for pre-owned goods, giveaways, bulk deals and decluttering services in Nigeria.</p>
+                <h3>Accounts and eligibility</h3><p>You must provide accurate registration information, keep your login credentials secure and use only the account type that truthfully describes your activity. You are responsible for activity carried out through your account.</p>
+                <h3>Listings and transactions</h3><p>Members must publish truthful descriptions, accurate prices and genuine photographs, and must have the right to offer each item or service. Aloko may review, restrict or remove listings that breach platform rules or applicable law.</p>
+                <h3>Payments and delivery</h3><p>Unless a specific Aloko checkout flow says otherwise, buyers and sellers must confirm payment, inspection, collection and delivery arrangements directly and carefully. Do not assume Aloko holds funds or guarantees a transaction.</p>
+                <h3>Verification and access</h3><p>Some seller, business and service-provider features require additional information or approval. Submission does not guarantee approval. Aloko may suspend access where necessary for safety, compliance or platform integrity.</p>
+                <h3>Acceptable use</h3><p>Do not use Aloko for fraud, stolen goods, counterfeit goods, prohibited items, harassment, misleading listings or unlawful activity. Report suspected abuse through the available platform channels.</p>
+                <h3>Changes and contact</h3><p>Platform features and these terms may be updated. Continued use after an announced update means you accept the revised terms. Contact Aloko through the support details published in the platform for questions or complaints.</p>
+              </> : legalPage === "Privacy Policy" ? <>
+                <p>This notice explains the personal information Aloko may process to provide marketplace accounts and services.</p>
+                <h3>Information we collect</h3><p>Depending on your account and activity, this may include your name, email address, phone number, location, account type, profile and verification details, listings, messages, service requests and technical/security logs.</p>
+                <h3>How information is used</h3><p>We use information to create and secure accounts, operate listings and messaging, support verification and moderation, personalise local discovery, prevent fraud and meet legal obligations.</p>
+                <h3>Sharing and visibility</h3><p>Public profile and listing information may be visible to other members. We do not publish private contact or verification information as public listing content. Information may be shared with service providers supporting the platform or where required by law.</p>
+                <h3>Security and retention</h3><p>We use reasonable technical and organisational safeguards. No online service can promise absolute security. Information is retained only as needed for platform operations, legal requirements, dispute handling and security.</p>
+                <h3>Your choices</h3><p>You may update account details and contact support about access, correction or deletion requests, subject to legal and operational retention requirements.</p>
+              </> : legalPage === "Community Guidelines" ? <>
+                <p>Aloko is built around reuse, trust and respectful local commerce. These rules apply to buyers, sellers, businesses, resellers and service providers.</p>
+                <h3>Be honest</h3><p>Use genuine photos, accurate descriptions, fair prices and clear availability. Disclose defects, ownership restrictions and relevant conditions.</p>
+                <h3>Respect people</h3><p>No threats, hate, discrimination, harassment, impersonation, spam or misuse of another member’s personal information.</p>
+                <h3>Respect property and the law</h3><p>Only list goods and services you are authorised to offer. Counterfeit, stolen, illegal, dangerous or otherwise prohibited items are not allowed.</p>
+                <h3>Keep the community safe</h3><p>Do not manipulate reviews, evade moderation, create duplicate accounts to bypass restrictions or attempt to move members into deceptive payment arrangements. Report suspicious conduct.</p>
+                <h3>Enforcement</h3><p>Aloko may review reports, remove content, limit features or suspend accounts where there is a credible safety, fraud or policy concern.</p>
+              </> : <>
+                <p>Use good judgement when arranging purchases, collections, deliveries and service appointments with other members.</p>
+                <h3>Before paying</h3><p>Inspect goods where practical, verify the seller and item, confirm the full price and agree on payment terms. Be cautious of pressure, unusual payment requests and prices that seem implausible.</p>
+                <h3>Collection and delivery</h3><p>Meet in a safe public place where appropriate, take someone with you for higher-value collections and confirm delivery details in writing. Do not share passwords or one-time verification codes.</p>
+                <h3>Service bookings</h3><p>Confirm the provider’s identity, scope of work, location, schedule, fees and cancellation terms before work begins. Do not make advance payments unless you understand and trust the arrangement.</p>
+                <h3>Report concerns</h3><p>Keep relevant messages and transaction details. Report suspicious listings, impersonation, unsafe behaviour or suspected fraud to Aloko promptly.</p>
+              </>}
+              <p className="legal-review-note">These platform notices are an initial product draft and should receive Nigerian legal review before public production launch.</p>
+            </div>
+          </section>
+        </div>
+      )}
       {notice && <div className="toast" role="status">{notice}</div>}
     </div>
   );
