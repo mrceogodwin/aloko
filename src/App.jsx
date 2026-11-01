@@ -17,8 +17,9 @@ const nigeriaStates = ["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa"
 const heroTypingPhrases = ["Declutter Service Marketplace","Sell It. Give It. Pass It On.","Home Decluttering","Office Clear-outs","Moving & Relocation","Estate Clearances","Wardrobe Decluttering","Furniture Removal","Appliance Reuse","Donation Collection","Charity Redistribution","Storage Organisation","Garage Clear-outs","Kitchen Decluttering","Paperwork Sorting","E-waste Collection","Bulk Item Resale","Property Staging","Student Move-outs","Professional Organisers","Business Clear-outs","Responsible Reuse & Disposal"];
 
 const categories = [
-  ["▣", "Electronics"], ["♧", "Fashion"], ["⌂", "Home & Living"], ["🚗", "Vehicles"],
-  ["✿", "Health & Beauty"], ["◉", "Sports & Hobbies"], ["♙", "Baby & Kids"], ["✚", "Free items"],
+  // Match the reference order; aliases are mapped to the existing marketplace categories below.
+  ["▣", "Electronics"], ["🛋", "Furniture"], ["👟", "Fashion"], ["⌂", "Home & Living"],
+  ["◉", "Sports"], ["🧸", "Kids"], ["🚗", "Auto"], ["✚", "Free items"],
   ["▦", "Bulk Deals"], ["↗", "Services"], ["🪑", "Furniture"], ["🍳", "Kitchenware"],
   ["📚", "Books"], ["🏡", "Property & Garden"], ["🧸", "Toys & Games"], ["🧰", "Tools"],
   ["🎨", "Art & Collectibles"], ["🧳", "Travel & Luggage"], ["🍼", "Baby Essentials"], ["🌿", "Garden & Outdoor"],
@@ -30,17 +31,19 @@ const categories = [
 ];
 
 const categoryArtwork = {
-  "Electronics":"photo-1511707171634-5f897ff02aa9",
-  "Fashion":"photo-1490481651871-ab68de25d43d",
-  "Home & Living":"photo-1600210492486-724fe5c67fb0",
-  "Vehicles":"photo-1492144534655-ae79c964c9d7",
-  "Health & Beauty":"photo-1522335789203-aabd1fc54bc9",
-  "Sports & Hobbies":"photo-1517836357463-d25dfeac3438",
-  "Baby & Kids":"photo-1516627145497-ae6968895b74",
-  "Free items":"photo-1607082349566-187342175e2f",
-  "Bulk Deals":"photo-1607083206968-13611e3d76db",
-  "Furniture":"photo-1555041469-a586c61ea9bc",
-  "Kitchenware":"photo-1556911220-bff31c812dba"
+  "Electronics":"/category-electronics.svg",
+  "Furniture":"/category-furniture.svg",
+  "Fashion":"/category-fashion.svg",
+  "Home & Living":"/category-home.svg",
+  "Sports":"/category-sports.svg",
+  "Sports & Hobbies":"/category-sports.svg",
+  "Kids":"/category-kids.svg",
+  "Baby & Kids":"/category-kids.svg",
+  "Auto":"/category-auto.svg",
+  "Vehicles":"/category-auto.svg",
+  "Free items":"/category-kids.svg",
+  "Bulk Deals":"/promo-bulk.svg",
+  "Kitchenware":"/category-home.svg"
 };
 
 
@@ -403,10 +406,11 @@ function App() {
       (activeCategory === "Free items" ? p.kind === "giveaway" :
         activeCategory === "Bulk Deals" ? p.kind === "bulk" :
         activeCategory === "Services" ? false :
-        activeCategory === "Electronics" ? /electronics|phones|tech/i.test(p.category) :
+        activeCategory === "Electronics" ? /electronics|phones|tech|computer|gadget/i.test(p.category) :
+        activeCategory === "Auto" ? /vehicle|car|motor|auto|bicycle|mobility/i.test(p.category) :
         activeCategory === "Health & Beauty" ? /health|beauty/i.test(p.category) :
-        activeCategory === "Sports & Hobbies" ? /sports|hobbies/i.test(p.category) :
-        activeCategory === "Baby & Kids" || activeCategory === "Baby, Kids & Maternity" ? /baby|kids|children|maternity/i.test(p.category) :
+        (activeCategory === "Sports" || activeCategory === "Sports & Hobbies") ? /sports|hobbies|fitness/i.test(p.category) :
+        activeCategory === "Kids" || activeCategory === "Baby & Kids" || activeCategory === "Baby, Kids & Maternity" ? /baby|kids|children|maternity|toys/i.test(p.category) :
         activeCategory === "Electronics & Gadgets" ? /electronics|phones|tech|computer|gadget/i.test(p.category) :
         activeCategory === "Automotive & Mobility" ? /vehicle|car|motor|auto|bicycle|mobility/i.test(p.category) :
         activeCategory === "Tools, Equipment & Machinery" ? /tool|equipment|machinery|industrial/i.test(p.category) :
@@ -541,7 +545,7 @@ function App() {
                 setActiveCategory(label);
               }}
               >
-                <span className="category-icon"><img className="category-art-image" src={`https://images.unsplash.com/${categoryArtwork[label] || "photo-1600210492486-724fe5c67fb0"}?auto=format&fit=crop&w=180&q=80`} alt="" loading="lazy"/></span>
+                <span className="category-icon"><img className="category-art-image" src={categoryArtwork[label] || "/category-home.svg"} alt="" loading="lazy"/></span>
                 <span>{label}</span>
               </button>
             ))}
@@ -584,19 +588,19 @@ function App() {
 
         <section className="mobile-promo-strip wrap" aria-label="Aloko marketplace highlights">
           <button className="mobile-promo-card promo-services" type="button" onClick={()=>navigate("services")}>
-            <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=85" alt="" loading="lazy"/>
+            <img src="/promo-services.svg" alt="" loading="lazy"/>
             <span className="promo-card-shade"/>
             <span className="promo-card-copy"><small>BOOK A SERVICE</small><strong>Decluttering<br/>Services</strong><em>Find trusted local help ↗</em></span>
             <span className="promo-card-icon">✦</span>
           </button>
           <button className="mobile-promo-card promo-giveaway" type="button" onClick={()=>{setActiveCategory("Free items");document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}}>
-            <img src="https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=900&q=85" alt="" loading="lazy"/>
+            <img src="/promo-giveaway.svg" alt="" loading="lazy"/>
             <span className="promo-card-shade"/>
             <span className="promo-card-copy"><small>GIVE AWAY FOR FREE</small><strong>Give useful things<br/>a new home</strong><em>List for free ↗</em></span>
             <span className="promo-card-icon">♡</span>
           </button>
           <button className="mobile-promo-card promo-bulk" type="button" onClick={()=>{setActiveCategory("Bulk Deals");document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}}>
-            <img src="https://images.unsplash.com/photo-1607083206968-13611e3d76db?auto=format&fit=crop&w=900&q=85" alt="" loading="lazy"/>
+            <img src="/promo-bulk.svg" alt="" loading="lazy"/>
             <span className="promo-card-shade"/>
             <span className="promo-card-copy"><small>BETTER VALUE IN VOLUME</small><strong>Bulk deals &<br/>clear-outs</strong><em>Explore deals ↗</em></span>
             <span className="promo-card-icon">▣</span>
