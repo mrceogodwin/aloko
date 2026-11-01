@@ -690,3 +690,10 @@
 .aloko-drawer-dashboard small{font-size:10px;text-transform:uppercase;letter-spacing:.8px}
 .aloko-drawer-signout{margin-top:auto;width:100%;border:1px solid #f0dce9;border-radius:12px;padding:13px;background:#fff8fc;color:#a42b65;font-weight:800}
 @media(max-width:760px){.aloko-menu-trigger{top:auto;bottom:86px;right:14px;box-shadow:0 8px 28px #26094b30}.aloko-role-drawer{padding:20px}}
+
+
+/* Buyer My Aloko dashboard shortcuts */
+.buyer-dashboard-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.buyer-dashboard-actions .workspace-secondary{min-height:58px;display:flex;align-items:center;justify-content:space-between;text-align:left;border:1px solid #e9dff2;border-radius:13px;padding:15px 17px;background:#fff;color:#49315f;font-weight:750;box-shadow:0 5px 16px #26094b08}
+.buyer-dashboard-actions .workspace-secondary:hover{border-color:#cdb0e5;background:#fbf7ff}
+@media(max-width:620px){.buyer-dashboard-actions{grid-template-columns:1fr}.buyer-dashboard-actions .workspace-secondary{min-height:52px}}
