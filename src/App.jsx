@@ -326,10 +326,23 @@ function App() {
     if (!authUser || !hasAccessToken()) { setRoleProfile(null); return; }
     let cancelled = false;
     getMarketplaceProfile().then(result => {
-      if (!cancelled && result.ok && result.data?.user) setRoleProfile(result.data.user);
-    }).catch(() => {});
+      if (cancelled || !result.ok || !result.data?.user) return;
+      const profile = result.data.user;
+      setRoleProfile(profile);
+      if (roleRedirectRequested) {
+        const destination = getAlokoDashboard(profile);
+        navigate(destination.screen);
+        setRoleRedirectRequested(false);
+        showNotice(`Welcome to Aloko. Your ${destination.label} is ready.`);
+      }
+    }).catch(() => {
+      if (!cancelled && roleRedirectRequested) {
+        setRoleRedirectRequested(false);
+        showNotice("You are signed in. Your dashboard could not be loaded; open Menu to try again.");
+      }
+    });
     return () => { cancelled = true; };
-  }, [authUser]);
+  }, [authUser, roleRedirectRequested]);
 
   useEffect(() => {
     const controller = new AbortController();
