@@ -119,6 +119,7 @@ function App() {
   const [authEmail, setAuthEmail] = useState("");
   const [authPassword, setAuthPassword] = useState("");
   const [authName, setAuthName] = useState("");
+  const [activeBottomTab, setActiveBottomTab] = useState("home");
 
   useEffect(() => {
     let mounted = true;
@@ -548,6 +549,13 @@ function App() {
         </div>
       )}
 
+      <nav className="aloko-bottom-nav" aria-label="Quick navigation">
+        <button type="button" className={activeBottomTab === "home" ? "bottom-nav-item active" : "bottom-nav-item"} onClick={() => { setActiveBottomTab("home"); setSavedOnly(false); setActiveCategory("All"); window.scrollTo({top:0,behavior:"smooth"}); }}><span className="bottom-nav-icon" aria-hidden="true">⌂</span><span>Home</span></button>
+        <button type="button" className={activeBottomTab === "sell" ? "bottom-nav-item active" : "bottom-nav-item"} onClick={() => { setActiveBottomTab("sell"); setListingFormOpen(true); }}><span className="bottom-nav-icon" aria-hidden="true">＋</span><span>Sell</span></button>
+        <button type="button" className={activeBottomTab === "inbox" ? "bottom-nav-item active" : "bottom-nav-item"} onClick={() => { setActiveBottomTab("inbox"); if (!hasAccessToken()) { setAccountMode("login"); setAccountModalOpen(true); showNotice("Sign in to access your inbox."); } else showNotice("Your Aloko inbox is coming next."); }}><span className="bottom-nav-icon" aria-hidden="true">✉</span><span>Inbox</span></button>
+        <button type="button" className={activeBottomTab === "saved" ? "bottom-nav-item active" : "bottom-nav-item"} onClick={() => { setActiveBottomTab("saved"); setSavedOnly(true); setActiveCategory("All"); document.getElementById("explore")?.scrollIntoView({behavior:"smooth"}); }}><span className="bottom-nav-icon" aria-hidden="true">♡</span><span>Saved</span></button>
+        <button type="button" className={activeBottomTab === "account" ? "bottom-nav-item active" : "bottom-nav-item"} onClick={() => { setActiveBottomTab("account"); setAccountMode("login"); setAccountModalOpen(true); }}><span className="bottom-nav-icon" aria-hidden="true">◉</span><span>Account</span></button>
+      </nav>
       {notice && <div className="toast" role="status">{notice}</div>}
     </div>
   );
