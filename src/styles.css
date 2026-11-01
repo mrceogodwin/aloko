@@ -1572,3 +1572,59 @@
     padding-bottom:max(5px,env(safe-area-inset-bottom))!important;
   }
 }
+
+
+/* Final mobile polish: reference proportions, accessible menu, touch feedback. */
+@media (max-width:760px) {
+  .guest-shell .topbar-inner { position:relative!important; }
+  .guest-shell .mobile-header-action {
+    width:44px!important;height:44px!important;min-width:44px!important;
+    min-height:44px!important;display:grid!important;place-items:center!important;
+    border:1px solid #eaffef!important;border-radius:50%!important;
+    color:#fff!important;background:#ffffff0d!important;
+  }
+  .guest-shell .mobile-header-action svg,
+  .guest-shell .mobile-camera-search svg { width:22px;height:22px;display:block; }
+  .guest-shell .mobile-header-action i {
+    position:absolute;width:7px;height:7px;border-radius:50%;
+    top:7px;right:7px;background:#caff16;
+  }
+  .guest-shell .mobile-camera-search {
+    width:38px!important;min-width:38px!important;height:40px!important;
+    display:grid!important;place-items:center!important;
+  }
+  .guest-shell .camera-search-input { display:none!important; }
+  .guest-shell .guest-menu-panel {
+    position:absolute!important;top:calc(100% + 6px)!important;right:12px!important;
+    z-index:150!important;display:flex!important;flex-direction:column!important;
+    width:min(260px,calc(100vw - 24px))!important;padding:8px!important;
+    border:1px solid #dce9df!important;border-radius:16px!important;
+    background:#fff!important;box-shadow:0 16px 40px #001c1433!important;
+  }
+  .guest-shell .guest-menu-panel button {
+    display:flex!important;align-items:center!important;min-height:44px!important;
+    padding:10px 12px!important;border:0!important;border-radius:10px!important;
+    background:transparent!important;color:#123b29!important;text-align:left!important;
+    font-size:13px!important;font-weight:700!important;
+  }
+  .guest-shell .guest-menu-panel button:active { background:#edf6e9!important;transform:scale(.985); }
+  .guest-shell .hero-copy>p { display:none!important; }
+  .guest-shell .hero-benefits { margin:12px 0 11px!important; }
+  .guest-shell .hero-actions { margin:0!important; }
+  .guest-shell .mobile-promo-card:active,
+  .guest-shell .category-chip:active,
+  .guest-shell .hero-actions button:active,
+  .guest-shell .mobile-app-nav button:active { transform:scale(.975); }
+  .guest-shell .product-image .save:active { animation:aloko-heart-pop .28s ease-out; }
+  .guest-shell button { -webkit-tap-highlight-color:transparent; }
+}
+@keyframes aloko-heart-pop {
+  0% { transform:scale(1); }
+  45% { transform:scale(1.28); }
+  100% { transform:scale(1); }
+}
+@media (prefers-reduced-motion:reduce) {
+  .guest-shell *, .guest-shell *::before, .guest-shell *::after {
+    scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important;
+  }
+}
