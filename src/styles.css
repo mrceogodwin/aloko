@@ -669,3 +669,24 @@
 @keyframes aloko-business-logos{to{transform:translateX(-50%)}}
 @media(prefers-reduced-motion:reduce){.declutter-logo-track{animation:none}.featured-portrait-grid{scroll-behavior:auto}}
 @media(max-width:650px){.community-showcase{overflow:hidden}.declutter-logo-item{flex-basis:80px}.declutter-logo-orb{width:62px;height:62px}}
+
+
+/* Signed-in role navigation drawer */
+.aloko-menu-trigger{position:fixed;right:18px;top:94px;z-index:30;display:flex;align-items:center;gap:8px;border:1px solid #e9d9fb;border-radius:999px;padding:10px 15px;background:#fff;color:#40106f;font-size:13px;font-weight:800;box-shadow:0 8px 26px #26094b20}
+.aloko-menu-trigger span:first-child{font-size:17px}
+.aloko-drawer-backdrop{position:fixed;inset:0;z-index:1000;background:#12052680;display:flex;justify-content:flex-end}
+.aloko-role-drawer{width:min(390px,92vw);height:100%;overflow:auto;background:#fff;padding:24px;box-shadow:-18px 0 55px #10001f35;display:flex;flex-direction:column}
+.aloko-drawer-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:22px;border-bottom:1px solid #eee7f6}
+.aloko-drawer-identity{display:flex;align-items:center;gap:12px;min-width:0}
+.aloko-drawer-avatar{width:46px;height:46px;flex:0 0 46px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#f0ddff,#d9b6ff);color:#56109a;font:800 20px Manrope,sans-serif}
+.aloko-drawer-identity strong,.aloko-drawer-identity small{display:block;overflow-wrap:anywhere}
+.aloko-drawer-identity strong{font-size:15px;color:#241044}
+.aloko-drawer-identity small{margin-top:4px;color:#786a8e;font-size:11px;text-transform:capitalize}
+.aloko-drawer-close{border:0;background:#f4eefb;color:#4b2674;border-radius:50%;width:34px;height:34px;font-size:23px;line-height:1}
+.aloko-drawer-nav{display:grid;gap:6px;padding:20px 0}
+.aloko-drawer-item{display:flex;align-items:center;justify-content:space-between;text-align:left;width:100%;border:0;border-radius:12px;padding:13px 14px;background:transparent;color:#392052;font-weight:650}
+.aloko-drawer-item:hover{background:#f7f0ff}
+.aloko-drawer-dashboard{background:#f2e7ff;color:#6813bd}
+.aloko-drawer-dashboard small{font-size:10px;text-transform:uppercase;letter-spacing:.8px}
+.aloko-drawer-signout{margin-top:auto;width:100%;border:1px solid #f0dce9;border-radius:12px;padding:13px;background:#fff8fc;color:#a42b65;font-weight:800}
+@media(max-width:760px){.aloko-menu-trigger{top:auto;bottom:86px;right:14px;box-shadow:0 8px 28px #26094b30}.aloko-role-drawer{padding:20px}}
