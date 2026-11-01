@@ -100,3 +100,11 @@ export function createListing(listing) {
     body: listing,
   });
 }
+
+
+export function saveAccountType(accountType) {
+  return request("/api/profile", {
+    method: "PATCH",
+    body: { account_type: accountType },
+  });
+}
