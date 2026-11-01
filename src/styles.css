@@ -165,3 +165,15 @@
 .category-more .category-icon{border:1px dashed #a56be0;background:#f7efff;color:#7716e1}
 .category-row{align-items:start}
 @media(max-width:700px){.category-row{grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.category-chip .category-icon{width:100%;max-width:72px;height:54px}.hero-typing-headline{min-height:2em}}
+
+
+/* Aloko visual balance: retain the signature violet, reduce the full-page purple wash. */
+:root{--purple:#7134b8;--violet:#a36bd0;--deep:#24143b;--paper:#fcfbfd;--lav:#f5f0f9}
+.topbar{background:linear-gradient(105deg,#211331 0%,#332047 58%,#49305f 100%)}
+.hero{background:radial-gradient(ellipse at 76% 22%,#78539a 0%,transparent 38%),radial-gradient(ellipse at 95% 90%,#684487 0%,transparent 34%),linear-gradient(112deg,#241632 0%,#30203f 52%,#433052 100%)}
+.hero-primary,.account-create-button,.post-button,.modal-contact-button{background:linear-gradient(105deg,#9861c2,#70429b);box-shadow:0 7px 20px #6541842b}
+.hero-secondary{border-color:#b99acb;background:#30203f66}
+.category-icon{background:linear-gradient(145deg,#f5f0f8,#ebe3f1);color:#76508e}
+.category-chip:nth-child(2n) .category-icon{background:linear-gradient(145deg,#fbf0f5,#f3e4ed);color:#a45e83}
+.category-chip:nth-child(3n) .category-icon{background:linear-gradient(145deg,#eef3f8,#e3ebf3);color:#587b9b}
+.site-footer{background:#21172b}
