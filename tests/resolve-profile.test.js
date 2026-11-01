@@ -36,6 +36,7 @@ test("resolveProfile returns derived role and suspension state", async () => {
   const db = {
     async query(sql, values) {
       assert.equal(values[0], id);
+      if (/staff_memberships/.test(sql)) return { rows: [] };
       return {
         rows: [{
           id,
@@ -56,10 +57,69 @@ test("resolveProfile returns derived role and suspension state", async () => {
   });
 });
 
+test("resolveProfile derives active staff role only from staff_memberships", async () => {
+  const id = "11111111-1111-4111-8111-111111111111";
+  const db = {
+    async query(sql, values) {
+      assert.equal(values[0], id);
+      if (/staff_memberships/.test(sql)) return { rows: [{ role: "moderator" }] };
+      return {
+        rows: [{
+          id,
+          account_type: "buyer",
+          is_suspended: false,
+          display_name: "Staff member",
+        }],
+      };
+    },
+  };
+  const profile = await resolveProfile(id, db);
+  assert.equal(profile.role, "moderator");
+});
+
+test("resolveProfile does not grant staff role when membership is inactive or absent", async () => {
+  const id = "11111111-1111-4111-8111-111111111111";
+  const db = {
+    async query(sql) {
+      if (/staff_memberships/.test(sql)) return { rows: [] };
+      return {
+        rows: [{
+          id,
+          account_type: "buyer",
+          is_suspended: false,
+          display_name: "Buyer",
+        }],
+      };
+    },
+  };
+  const profile = await resolveProfile(id, db);
+  assert.equal(profile.role, "buyer");
+});
+
+test("resolveProfile falls back safely when migration 002 is not installed", async () => {
+  const id = "11111111-1111-4111-8111-111111111111";
+  const db = {
+    async query(sql) {
+      if (/staff_memberships/.test(sql)) throw new Error('relation "staff_memberships" does not exist');
+      return {
+        rows: [{
+          id,
+          account_type: "business",
+          is_suspended: false,
+          display_name: "Business",
+        }],
+      };
+    },
+  };
+  const profile = await resolveProfile(id, db);
+  assert.equal(profile.role, "business");
+});
+
 test("resolveProfile marks suspended accounts", async () => {
   const id = "22222222-2222-4222-8222-222222222222";
   const db = {
-    async query() {
+    async query(sql) {
+      if (/staff_memberships/.test(sql)) return { rows: [] };
       return {
         rows: [{
           id,
@@ -75,7 +135,7 @@ test("resolveProfile marks suspended accounts", async () => {
   assert.equal(profile.suspended, true);
 });
 
-test("resolveProfile fails closed on database errors", async () => {
+test("resolveProfile fails closed on profile database errors", async () => {
   const id = "11111111-1111-4111-8111-111111111111";
   const db = { async query() { throw new Error("connection lost"); } };
   assert.equal(await resolveProfile(id, db), null);
@@ -88,6 +148,7 @@ test("ensureProfile inserts then resolves", async () => {
     async query(sql, values) {
       calls.push({ sql, values });
       if (/INSERT/i.test(sql)) return { rows: [] };
+      if (/staff_memberships/.test(sql)) return { rows: [] };
       return {
         rows: [{
           id,
@@ -101,7 +162,7 @@ test("ensureProfile inserts then resolves", async () => {
   const profile = await ensureProfile(id, db);
   assert.equal(profile.id, id);
   assert.equal(profile.role, "buyer");
-  assert.equal(calls.length, 2);
+  assert.equal(calls.length, 3);
   assert.match(calls[0].sql, /\x27buyer\x27/);
   assert.match(calls[0].sql, /ON CONFLICT \(id\) DO NOTHING/);
 });

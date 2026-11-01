@@ -1,10 +1,12 @@
 /**
  * Resolve an Aloko marketplace profile from a verified auth provider user ID.
  *
- * Role is derived server-side from profile.account_type (and later staff_memberships
- * once migration 002 is applied). Clients never supply the role.
+ * Marketplace roles come from the profile account type. Privileged staff roles
+ * come only from an active staff_memberships row; clients never supply roles.
+ * The staff lookup is optional until migration 002 is present, so older schemas
+ * continue to authenticate ordinary marketplace accounts without granting staff.
  *
- * Returns null when the profile is missing or the id is invalid so callers fail closed.
+ * Returns null when the profile is missing or the id is invalid.
  */
 
 const UUID_RE =
@@ -12,10 +14,11 @@ const UUID_RE =
 
 const SELLER_TYPES = new Set(["individual", "reseller"]);
 const BUSINESS_TYPES = new Set(["business", "bulk_distributor"]);
+const STAFF_ROLES = new Set(["moderator", "admin"]);
 
 /**
  * Map profile account_type to an application role used by authorize().
- * Staff roles (moderator/admin) are not derived here until staff_memberships exists.
+ * Staff roles are resolved separately from staff_memberships.
  * @param {string} accountType
  * @returns {string}
  */
@@ -47,9 +50,29 @@ export async function resolveProfile(userId, database) {
     const row = result?.rows?.[0];
     if (!row) return null;
 
+    let role = roleFromAccountType(row.account_type);
+
+    // Migration 002 adds this table. A missing table must not break ordinary
+    // buyer/seller authentication, but must never create a staff role.
+    try {
+      const staffResult = await database.query(
+        `SELECT role
+         FROM public.staff_memberships
+         WHERE user_id = $1::uuid
+           AND is_active = true
+           AND role IN ('moderator'::public.account_role, 'admin'::public.account_role)
+         LIMIT 1`,
+        [userId],
+      );
+      const staffRole = staffResult?.rows?.[0]?.role;
+      if (STAFF_ROLES.has(staffRole)) role = staffRole;
+    } catch {
+      // Older branches may not have migration 002 yet. Fail closed for staff.
+    }
+
     return {
       id: row.id,
-      role: roleFromAccountType(row.account_type),
+      role,
       suspended: row.is_suspended === true,
       account_type: row.account_type,
       display_name: row.display_name ?? null,
