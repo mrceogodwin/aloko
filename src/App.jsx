@@ -672,8 +672,8 @@ function App() {
                         const onboarding = await updateAccountType(accountRole);
                         if (!onboarding.ok) throw new Error(onboarding.data?.error || "Account setup could not be completed.");
                         setAccountTypeRequired(false);
-                        showNotice("Your Aloko account type is saved.");
                         setAccountModalOpen(false);
+                        setRoleRedirectRequested(true);
                       } catch (error) { showNotice(error.message || "Could not complete account setup."); }
                       finally { setAuthLoading(false); }
                     }}>
