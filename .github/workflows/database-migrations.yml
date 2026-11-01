@@ -1,4 +1,5 @@
 name: Database migration validation
+# Validate the full ordered schema chain, including account-type onboarding.
 
 on:
   push:
