@@ -1656,3 +1656,30 @@
     outline:2px solid #9adf00!important;outline-offset:2px!important;
   }
 }
+
+
+/* Bottom dock icons now use consistent crisp line artwork instead of text glyphs. */
+@media (max-width:760px) {
+  .guest-shell .mobile-app-nav .mobile-tab-icon {
+    display:grid!important;place-items:center!important;
+    width:25px!important;height:25px!important;min-width:25px!important;
+    font-size:0!important;line-height:1!important;
+  }
+  .guest-shell .mobile-app-nav .mobile-tab-icon svg {
+    display:block!important;width:24px!important;height:24px!important;
+    overflow:visible!important;
+  }
+  .guest-shell .mobile-app-nav button {
+    display:flex!important;flex:1 1 0!important;align-items:center!important;
+    justify-content:center!important;flex-direction:column!important;
+    gap:3px!important;min-width:44px!important;min-height:52px!important;
+    border-radius:999px!important;transition:background-color .16s ease,transform .16s ease!important;
+  }
+  .guest-shell .mobile-app-nav button small {
+    font-size:clamp(9px,2.5vw,11px)!important;
+    font-weight:750!important;letter-spacing:-.1px!important;
+  }
+  .guest-shell .mobile-app-nav button.active .mobile-tab-icon svg {
+    transform:translateY(-1px);
+  }
+}
