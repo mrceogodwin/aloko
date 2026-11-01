@@ -1,5 +1,6 @@
 import conversations from "./_handlers/conversations.js";
 import buyerPreferences from "./_handlers/buyer-preferences.js";
+import accountOnboarding from "./account-onboarding.js";
 import health from "./_handlers/health.js";
 import listingCredits from "./_handlers/listing-credits.js";
 import listingImages from "./_handlers/listing-images.js";
@@ -26,6 +27,7 @@ import serviceProviderReview from "./_handlers/service-provider-review.js";
 import providerAvailability from "./_handlers/provider-availability.js";
 
 const handlers = {
+  "account-onboarding": accountOnboarding,
   "buyer-preferences": buyerPreferences,
   "conversations": conversations,
   "health": health,
