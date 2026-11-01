@@ -588,9 +588,21 @@ function App() {
 
         <section className="community-showcase wrap" aria-label="Aloko people and community">
           <div className="community-copy"><span className="eyebrow">People make reuse powerful</span><h2>Good finds. Real people. Better spaces.</h2><p>Aloko brings buyers, decluttering professionals, small businesses and community givers together — helping useful things find their next home.</p><div className="community-actions"><button type="button" onClick={() => { setAccountMode("signup"); setAccountModalOpen(true); }}>Join the community <span>↗</span></button><button type="button" onClick={() => setListingFormOpen(true)}>Become a seller</button></div></div>
-          <div className="community-people">
-            <article className="community-person community-seller"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=700&q=85" alt="Portrait of a woman representing an Aloko seller" loading="lazy"/><div><span>SELLER STORIES</span><strong>Turn extra into opportunity.</strong></div></article>
-            <article className="community-person community-buyer"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=700&q=85" alt="Portrait of a man representing an Aloko buyer" loading="lazy"/><div><span>BUYER COMMUNITY</span><strong>Find value in every new-to-you item.</strong></div></article>
+          <div className="declutter-logo-marquee" aria-label="Decluttering business categories">
+            <div className="declutter-logo-track">
+              {[
+                ["⌂","Home organisers"],["▦","Office clear-outs"],["↗","Moving teams"],["✧","Estate services"],
+                ["♧","Reuse stores"],["♡","Donation partners"],["▤","Storage experts"],["✦","Cleaning teams"]
+              ].map(([mark,label])=><button type="button" className="declutter-logo-item" key={label} onClick={()=>navigate("providers")} aria-label={`Explore ${label}`}>
+                <span className="declutter-logo-orb">{mark}</span><small>{label}</small>
+              </button>)}
+              {[
+                ["⌂","Home organisers"],["▦","Office clear-outs"],["↗","Moving teams"],["✧","Estate services"],
+                ["♧","Reuse stores"],["♡","Donation partners"],["▤","Storage experts"],["✦","Cleaning teams"]
+              ].map(([mark,label])=><button type="button" className="declutter-logo-item" key={`repeat-${label}`} onClick={()=>navigate("providers")} aria-hidden="true" tabIndex={-1}>
+                <span className="declutter-logo-orb">{mark}</span><small>{label}</small>
+              </button>)}
+            </div>
           </div>
         </section>
 
