@@ -61,7 +61,6 @@ export function createAccountOnboardingHandler({ getDatabase = getPool, authenti
   } catch {
     return res.status(500).json({ error: "Could not complete account setup" });
   };
-  };
 }
 
 export default createAccountOnboardingHandler();
