@@ -100,3 +100,11 @@ export function createListing(listing) {
     body: listing,
   });
 }
+
+
+export function updateAccountType(accountType) {
+  return request("/api/account-onboarding", {
+    method: "POST",
+    body: { account_type: accountType },
+  });
+}
