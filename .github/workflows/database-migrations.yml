@@ -13,6 +13,9 @@ on:
       - ".github/workflows/database-migrations.yml"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   validate-migrations:
     runs-on: ubuntu-latest
@@ -42,10 +45,48 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --yes postgresql-client
-      - name: Apply foundation migration to disposable test database
-        run: psql --set ON_ERROR_STOP=1 --file=database/migrations/001_marketplace_foundation.sql
-      - name: Apply platform operations migration to disposable test database
-        run: psql --set ON_ERROR_STOP=1 --file=database/migrations/002_platform_operations.sql
-      - name: Verify core tables exist
+      - name: Apply every migration in filename order to disposable PostgreSQL
+        shell: bash
         run: |
-          psql --set ON_ERROR_STOP=1 --tuples-only --command="SELECT to_regclass('public.profiles'), to_regclass('public.listings'), to_regclass('public.listing_images'), to_regclass('public.staff_memberships'), to_regclass('public.platform_settings')" | grep -q "profiles.*listings.*listing_images.*staff_memberships.*platform_settings"
+          set -euo pipefail
+          for migration in database/migrations/*.sql; do
+            echo "::group::Applying ${migration}"
+            psql --set ON_ERROR_STOP=1 --file="${migration}"
+            echo "::endgroup::"
+          done
+      - name: Verify the complete marketplace schema
+        run: |
+          psql --set ON_ERROR_STOP=1 <<'SQL'
+          DO $$
+          DECLARE
+            required_table text;
+          BEGIN
+            FOREACH required_table IN ARRAY ARRAY[
+              'profiles',
+              'listings',
+              'listing_images',
+              'staff_memberships',
+              'platform_settings',
+              'buyer_preferences',
+              'seller_stores',
+              'verification_applications',
+              'marketplace_transactions',
+              'service_provider_profiles',
+              'service_provider_availability',
+              'service_provider_availability_exceptions'
+            ] LOOP
+              IF to_regclass(format('public.%I', required_table)) IS NULL THEN
+                RAISE EXCEPTION 'Required table public.% is missing', required_table;
+              END IF;
+            END LOOP;
+
+            IF NOT EXISTS (
+              SELECT 1 FROM pg_indexes
+              WHERE schemaname = 'public'
+                AND indexname = 'credit_ledger_one_intro_grant_per_seller'
+            ) THEN
+              RAISE EXCEPTION 'Introductory credit idempotency index is missing';
+            END IF;
+          END
+          $$;
+          SQL
