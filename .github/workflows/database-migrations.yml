@@ -87,6 +87,15 @@ jobs:
             ) THEN
               RAISE EXCEPTION 'Introductory credit idempotency index is missing';
             END IF;
+
+            IF NOT EXISTS (
+              SELECT 1 FROM information_schema.columns
+              WHERE table_schema = 'public'
+                AND table_name = 'profiles'
+                AND column_name = 'account_type_selected_at'
+            ) THEN
+              RAISE EXCEPTION 'Account type onboarding completion column is missing';
+            END IF;
           END
           $$;
           SQL
