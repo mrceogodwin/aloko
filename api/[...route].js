@@ -17,6 +17,7 @@ import myListings from "./_handlers/my-listings.js";
 import reportListing from "./_handlers/report-listing.js";
 import reportQueue from "./_handlers/report-queue.js";
 import reportDecide from "./_handlers/report-decide.js";
+import userSuspension from "./_handlers/user-suspension.js";
 import savedListings from "./_handlers/saved-listings.js";
 import savedSellers from "./_handlers/saved-sellers.js";
 import sellerOnboarding from "./_handlers/seller-onboarding.js";
@@ -48,6 +49,7 @@ const handlers = {
   "report-listing": reportListing,
   "report-queue": reportQueue,
   "report-decide": reportDecide,
+  "user-suspension": userSuspension,
   "saved-listings": savedListings,
   "saved-sellers": savedSellers,
   "seller-store": sellerStore,
