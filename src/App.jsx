@@ -450,7 +450,7 @@ function App() {
       <header className="topbar flagship-topbar">
         <div className="wrap topbar-inner">
           <button type="button" className="brand flagship-brand" onClick={()=>navigate("home")} aria-label="Aloko home">
-            <img className="brand-mark-image" src="/aloko-mark.svg" alt="" /><span className="brand-text">Aloko</span>
+            <img className="brand-mark-image" src="/aloko-mark.svg" alt="" /><span className="brand-lockup"><span className="brand-text">Aloko</span><small>Sell it. Give it. Pass it on.</small></span>
           </button>
           {!authUser && <div className="guest-header-search"><label className="mobile-location-picker" aria-label="Choose location"><span>⌖</span><select value={selectedLocation} onChange={e=>setSelectedLocation(e.target.value)}><option value="All locations">Nigeria</option>{nigeriaStates.map(state=><option key={state} value={state}>{state}</option>)}</select></label><span className="mobile-search-icon" aria-hidden="true">⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}} placeholder="Search for items, services or sellers…" aria-label="Search items, services or sellers"/><button className="mobile-camera-search" type="button" aria-label="Camera search (stub)" onClick={()=>showNotice("Camera search is not available yet.")}>▧</button><button className="mobile-search-submit" type="button" onClick={()=>document.getElementById("explore")?.scrollIntoView({behavior:"smooth"})}>Search</button></div>}
           <nav className="main-nav app-main-nav" aria-label="Main navigation">
