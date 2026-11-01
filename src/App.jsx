@@ -519,10 +519,10 @@ function App() {
               <h1 className="hero-typing-headline"><span>Find it. Sell it.<br/>Give it a <em className="hero-highlight">new home.</em></span></h1>
               <p>Buy and sell pre-owned items, give usable things away for free, discover bulk deals, or book decluttering services — all in one place.</p>
               <div className="hero-benefits" aria-label="Marketplace services">
-                <div><span>♻</span><small>Buy &amp; Sell<br/>Pre-owned</small></div>
-                <div><span>♧</span><small>Give Away<br/>(Free)</small></div>
-                <div><span>▱</span><small>Bulk<br/>Deals</small></div>
-                <div><span>▣</span><small>Book<br/>Decluttering</small></div>
+                <div><span><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M25 11a11 11 0 1 0 2 9M25 4v8h-8" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"/><path d="m11 15 4 4 7-8" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"/></svg></span><small>Buy &amp; Sell<br/>Pre-owned</small></div>
+                <div><span><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 13h24v15H4zM2 8h28v6H2zM16 8v20M16 8c-8 0-10-7-5-7 4 0 5 7 5 7Zm0 0c8 0 10-7 5-7-4 0-5 7-5 7Z" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round"/></svg></span><small>Give Away<br/>(Free)</small></div>
+                <div><span><svg viewBox="0 0 32 32" aria-hidden="true"><path d="m16 3 13 7-13 7L3 10l13-7Zm-13 14 13 7 13-7M3 24l13 7 13-7" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinejoin="round"/></svg></span><small>Bulk<br/>Deals</small></div>
+                <div><span><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="4" y="6" width="24" height="23" rx="3" fill="none" stroke="currentColor" strokeWidth="2.3"/><path d="M10 3v6M22 3v6M4 13h24M10 19h4M18 19h4M10 24h4" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round"/></svg></span><small>Book<br/>Decluttering</small></div>
               </div>
               <div className="hero-actions">
                 <button className="hero-primary" onClick={() => authUser ? setListingFormOpen(true) : (setAccountMode("signup"), setAccountModalOpen(true))}>♢ &nbsp; Start Selling <span>→</span></button>
@@ -598,19 +598,19 @@ function App() {
 
         <section className="mobile-promo-strip wrap" aria-label="Aloko marketplace highlights">
           <button className="mobile-promo-card promo-services" type="button" onClick={()=>navigate("services")}>
-            <img src="/promo-services.svg" alt="" loading="lazy"/>
+            <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=85" alt="Home decluttering and cleaning service" loading="lazy"/>
             <span className="promo-card-shade"/>
             <span className="promo-card-copy"><small>BOOK A SERVICE</small><strong>Decluttering<br/>Services</strong><em>Find trusted local help ↗</em></span>
             <span className="promo-card-icon">✦</span>
           </button>
           <button className="mobile-promo-card promo-giveaway" type="button" onClick={()=>{setActiveCategory("Free items");document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}}>
-            <img src="/promo-giveaway.svg" alt="" loading="lazy"/>
+            <img src="https://images.unsplash.com/photo-1513883049090-d0b7439799bf?auto=format&fit=crop&w=900&q=85" alt="Useful toys and gifts ready to be given away" loading="lazy"/>
             <span className="promo-card-shade"/>
             <span className="promo-card-copy"><small>GIVE AWAY FOR FREE</small><strong>Give useful things<br/>a new home</strong><em>List for free ↗</em></span>
             <span className="promo-card-icon">♡</span>
           </button>
           <button className="mobile-promo-card promo-bulk" type="button" onClick={()=>{setActiveCategory("Bulk Deals");document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});}}>
-            <img src="/promo-bulk.svg" alt="" loading="lazy"/>
+            <img src="https://images.unsplash.com/photo-1607166452427-5ec6f5b94f89?auto=format&fit=crop&w=900&q=85" alt="Bulk boxes and stock ready for clearance" loading="lazy"/>
             <span className="promo-card-shade"/>
             <span className="promo-card-copy"><small>BETTER VALUE IN VOLUME</small><strong>Bulk deals &<br/>clear-outs</strong><em>Explore deals ↗</em></span>
             <span className="promo-card-icon">▣</span>
