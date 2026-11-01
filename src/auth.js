@@ -11,6 +11,11 @@ export async function getAuthSession() {
   return result.data || null;
 }
 
+export async function getAuthJWTToken() {
+  if (!authClient || typeof authClient.getJWTToken !== "function") return null;
+  return await authClient.getJWTToken();
+}
+
 export async function signUpWithEmail({ email, password, name }) {
   if (!authClient) throw new Error("Authentication is not configured");
   const result = await authClient.signUp.email({ email, password, name });
