@@ -68,6 +68,8 @@ test("admin approval checks typed legal and CAC details without requiring docume
   assert.match(sqlSeen, /listing_credit_accounts/);
   assert.match(sqlSeen, /credit_ledger/);
   assert.match(sqlSeen, /introductory_grant/);
+  assert.match(sqlSeen, /pg_advisory_xact_lock\(hashtextextended\(r\.applicant_id::text, 0\)\)/);
+  assert.match(sqlSeen, /CROSS JOIN credit_lock/);
   assert.match(sqlSeen, /SELECT r\.applicant_id, 3, now\(\)/);
   assert.equal(res.statusCode, 404);
 });
