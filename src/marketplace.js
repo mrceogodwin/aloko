@@ -43,7 +43,7 @@ export function validateListingDraft(draft) {
   const price = Number(draft.price);
   const validKinds = ["sale", "giveaway", "bulk"];
   const validConditions = ["New", "Like new", "Good", "Fair", "For parts"];
-  const validCategories = ["Home & Living", "Phones & Tech", "Fashion", "Appliances", "Furniture", "Books & Hobbies", "Free items"];
+  const validCategories = ["Home & Living", "Phones & Tech", "Fashion", "Appliances", "Furniture", "Books & Hobbies", "Free items", "Electronics", "Vehicles", "Health & Beauty", "Sports & Hobbies", "Baby & Kids", "Bulk Deals", "Kitchenware", "Books", "Property & Garden", "Toys & Games", "Tools", "Art & Collectibles", "Travel & Luggage", "Baby Essentials", "Garden & Outdoor", "Computers & Office Tech", "Home Appliances", "Bedroom & Bedding", "Home Decor", "Shoes & Bags", "Jewellery & Watches", "Bicycles & Mobility", "Building Materials & Salvage", "Business & Commercial Equipment", "Restaurant & Catering Equipment", "Home Decluttering", "Business Surplus & Liquidation", "Office Furniture & Equipment", "Recycling & Responsible Disposal", "Estate Clearances", "Moving & Relocation", "Give Away & Donations"];
   const validFulfillment = ["pickup", "delivery", "both"];
 
   if (title.length < 4 || title.length > 90) errors.title = "Title must be 4–90 characters.";
