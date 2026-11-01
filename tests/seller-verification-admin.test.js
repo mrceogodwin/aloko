@@ -97,3 +97,23 @@ test("seller verification decisions reject invalid identifiers and actions", asy
   }, res);
   assert.equal(res.statusCode, 400);
 });
+
+test("seller verification decision fails closed when atomic audit write fails", async () => {
+  let sqlSeen = "";
+  const handler = createSellerVerificationDecideHandler({
+    getDatabase: () => ({ async query(sql) {
+      sqlSeen = sql;
+      throw new Error("audit storage unavailable");
+    } }),
+  });
+  const res = responseRecorder();
+  await handler({
+    method: "POST", auth: admin,
+    body: { application_id: applicationId, decision: "approve" },
+  }, res);
+  assert.equal(res.statusCode, 500);
+  assert.match(sqlSeen, /WITH reviewed AS/);
+  assert.match(sqlSeen, /INSERT INTO public.audit_logs/);
+  assert.match(sqlSeen, /JOIN logged/);
+  assert.doesNotMatch(sqlSeen, /best-effort/i);
+});
