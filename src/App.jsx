@@ -81,6 +81,7 @@ function normalizeLiveListing(item) {
     sellerName: item.seller_display_name || "Aloko seller",
     sellerAvatar: item.seller_avatar_url || item.avatar_url || "",
     sellerType: item.seller_account_type || "individual",
+    sellerVerified: item.seller_verified === true || item.seller_is_verified === true,
     state: item.state || "",
     pickupAvailable: item.pickup_available !== false,
     deliveryAvailable: item.delivery_available === true,
@@ -649,6 +650,7 @@ function App() {
                   <h3>{p.title}</h3>
                   <div className="product-bottom">
                     <strong>{p.price}</strong>
+                    {p.sellerVerified && <span className="seller-verified-mark" title="Verified seller" aria-label="Verified seller">✓</span>}
                     <button onClick={e => {e.stopPropagation();setSelectedListing(p);}}>View item</button>
                   </div>
                 </div>
