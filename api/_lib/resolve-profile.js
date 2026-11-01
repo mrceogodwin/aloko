@@ -80,7 +80,7 @@ export async function ensureProfile(userId, database, options = {}) {
   try {
     await database.query(
       `INSERT INTO public.profiles (id, display_name, account_type, is_suspended)
-       VALUES ($1::uuid, $2, 'individual', false)
+       VALUES ($1::uuid, $2, 'buyer', false)
        ON CONFLICT (id) DO NOTHING`,
       [userId, displayName],
     );
