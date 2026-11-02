@@ -13,3 +13,29 @@
 @media(max-height:620px){.aloko-first-screen{grid-template-rows:auto minmax(0,1.58fr) minmax(0,.82fr) minmax(0,1fr) minmax(0,1.42fr) auto;gap:3px}.first-header{gap:4px;padding-top:2px}.first-brand-row{min-height:32px}.first-brand img{width:32px;height:32px}.first-brand strong{font-size:23px}.first-brand small{font-size:8px}.first-round-action{width:34px;height:34px;padding:7px}.first-search-row{min-height:32px}.first-location,.first-search{min-height:32px}.first-hero h1{font-size:clamp(18px,5.3vw,25px)}.first-benefits{margin-top:5px}.first-hero-actions{margin-top:5px}.first-hero-actions button{height:27px;font-size:8px}.first-category strong{font-size:7px}.first-section-heading{min-height:22px}.first-section-heading h2{font-size:14px}.first-listing-copy{padding:3px}}
 @media(min-width:600px){.aloko-first-screen{max-width:480px;left:50%;transform:translateX(-50%);border-inline:1px solid #ffffff12}}
 @media(prefers-reduced-motion:reduce){.aloko-first-screen,.first-heart.saved{animation:none!important}.aloko-first-screen *{scroll-behavior:auto!important;transition:none!important}}
+
+/* Keep the principal controls comfortably tappable even on the smallest phones. */
+.first-round-action{width:44px;height:44px;min-width:44px;min-height:44px}
+.first-search-row{min-height:44px}
+.first-location,.first-search{min-height:44px}
+.first-search button{width:36px;height:44px;min-width:36px}
+.first-hero-actions button{height:44px;min-height:44px}
+.first-heart{width:44px;height:44px;min-width:44px;min-height:44px}
+@media(max-height:620px){
+ .first-round-action{width:44px;height:44px}
+ .first-location,.first-search{min-height:44px}
+ .first-search-row{min-height:44px}
+ .first-hero-actions button{height:44px;min-height:44px}
+}
+@media(max-width:360px){
+ .first-brand small{font-size:7px}
+ .first-header-actions{gap:4px}
+ .first-hero{grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr)}
+ .first-hero h1{font-size:clamp(17px,5.1vw,21px)}
+ .first-hero-actions button{font-size:7px;padding-inline:5px}
+ .first-benefits small{font-size:6px}
+ .first-location{flex-basis:90px}
+ .first-search{gap:4px;padding-inline:8px}
+ .first-search input:not([type=file]){font-size:9px}
+ .first-heart{width:44px;height:44px}
+}
