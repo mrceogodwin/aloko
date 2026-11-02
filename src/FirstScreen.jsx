@@ -69,7 +69,9 @@ export default function FirstScreen({
       if (image.startsWith("photo-")) {
         if (!isDemo) return "";
       } else {
-        return `https://images.unsplash.com/${image}?auto=format&fit=crop&w=620&q=85`;
+        // Never substitute unrelated stock imagery for a marketplace listing.
+        // Only render an explicitly supplied URL/path or the approved demo assets.
+        return "";
       }
     }
     if (!isDemo) return "";
