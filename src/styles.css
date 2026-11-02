@@ -2297,3 +2297,40 @@
   .guest-shell .hero-benefits { margin:9px 0 8px!important; }
   .guest-shell .mobile-promo-card { height:clamp(96px,25vw,116px)!important; }
 }
+
+
+/* Final mobile hero correction from the supplied Aloko reference comparison. */
+@media (max-width:760px) {
+  .guest-shell .flagship-hero { min-height:0!important; padding-top:18px!important; padding-bottom:15px!important; }
+  .guest-shell .hero-inner { min-height:260px!important; }
+  .guest-shell .hero-copy { width:67%!important; max-width:none!important; }
+  .guest-shell .hero-copy h1.hero-typing-headline {
+    min-height:0!important; height:auto!important; max-width:none!important;
+    overflow:visible!important; overflow-wrap:normal!important;
+    font-size:clamp(23px,6.15vw,28px)!important;
+    line-height:1.01!important; letter-spacing:-1.25px!important;
+  }
+  .guest-shell .hero-copy h1 .hero-highlight {
+    display:inline!important; background:none!important;
+    color:#caff16!important; -webkit-text-fill-color:#caff16!important;
+    font-style:normal!important;
+  }
+  .guest-shell .hero-art {
+    top:0!important; right:0!important; bottom:0!important;
+    width:100%!important; height:100%!important; min-height:260px!important;
+    margin:0!important; overflow:hidden!important;
+  }
+  .guest-shell .hero-lifestyle-image {
+    width:100%!important; height:100%!important; min-height:260px!important;
+    object-fit:cover!important; object-position:center center!important;
+    mask-image:linear-gradient(90deg,transparent 0%,#000 20%)!important;
+  }
+  .guest-shell .hero-benefits { position:relative!important; z-index:4!important; }
+  .guest-shell .hero-actions { position:relative!important; z-index:4!important; }
+}
+@media (max-width:390px) {
+  .guest-shell .hero-inner { min-height:248px!important; }
+  .guest-shell .hero-art,.guest-shell .hero-lifestyle-image { min-height:248px!important; }
+  .guest-shell .hero-copy { width:68%!important; }
+  .guest-shell .hero-copy h1.hero-typing-headline { font-size:clamp(22px,6vw,25px)!important; letter-spacing:-1.1px!important; }
+}
