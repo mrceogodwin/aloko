@@ -40,6 +40,10 @@ export default function FirstScreen({
   const browse = () => { onBrowse(); scrollListingsToStart(); };
   const chooseCategory = (label) => {
     setSavedOnly(false);
+    if (label === "Services") {
+      onNavigate("services");
+      return;
+    }
     setActiveCategory(label);
     scrollListingsToStart();
   };
