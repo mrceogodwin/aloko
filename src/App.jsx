@@ -10,6 +10,7 @@ import ServiceProviders from "./ServiceProviders.jsx";
 import AdminServiceProviderReview from "./AdminServiceProviderReview.jsx";
 import ModeratorDesk from "./ModeratorDesk.jsx";
 import RoleMenuDrawer from "./RoleMenuDrawer.jsx";
+import FirstScreen from "./FirstScreen.jsx";
 import { getAlokoDashboard } from "./role-navigation.js";
 
 const nigeriaStates = ["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","FCT","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"];
@@ -481,7 +482,28 @@ function App() {
   };
 
   return (
-    <div className={`app-shell ${authUser ? "member-shell" : "guest-shell"}`}>
+    <div className={`app-shell aloko-home-shell ${authUser ? "member-shell" : "guest-shell"}`}>
+      {activeScreen === "home" ? <FirstScreen
+        authUser={authUser}
+        query={query} setQuery={setQuery}
+        selectedLocation={selectedLocation} setSelectedLocation={setSelectedLocation}
+        nigeriaStates={nigeriaStates}
+        activeCategory={activeCategory} setActiveCategory={setActiveCategory}
+        savedOnly={savedOnly} setSavedOnly={setSavedOnly}
+        saved={saved} toggleSaved={toggleSaved}
+        visibleProducts={visibleProducts} listingLoadState={listingLoadState}
+        listingReload={() => setListingReloadKey(k => k + 1)}
+        setSelectedListing={setSelectedListing}
+        onStartSelling={() => authUser ? setListingFormOpen(true) : (setAccountMode("signup"), setAccountModalOpen(true))}
+        onBrowse={() => { setActiveCategory("All"); setSavedOnly(false); setQuery(""); }}
+        onNavigate={navigate}
+        onLogin={() => { setAccountMode("login"); setAccountModalOpen(true); }}
+        showNotice={showNotice}
+        cameraInputRef={cameraInputRef}
+        guestMenuOpen={guestMenuOpen} setGuestMenuOpen={setGuestMenuOpen}
+        showAllCategories={showAllCategories} setShowAllCategories={setShowAllCategories}
+        categories={categories}
+      /> : <>
       <header className="topbar flagship-topbar">
         <div className="wrap topbar-inner">
           <button type="button" className="brand flagship-brand" onClick={()=>navigate("home")} aria-label="Aloko home">
@@ -749,6 +771,8 @@ function App() {
       </main>
       <nav className="mobile-app-nav" aria-label="App navigation">{(authUser?[["home","home","Home"],["seller","plus","Sell"],["inbox","messages","Messages"],["saved","heart","Saved"],["account","user","Account"]]:[["home","home","Home"],["buy","bag","Buy"],["sell","plus","Sell"],["inbox","messages","Messages"],["account","user","Account"]]).map(([id,icon,label])=><button key={id} type="button" aria-label={label} aria-current={activeScreen===id?"page":undefined} className={activeScreen===id?"active":""} onClick={()=>{if(id==="buy"){document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});return;}if(!authUser){setAccountMode("signup");setAccountModalOpen(true);}else navigate(id);}}><span className="mobile-tab-icon" aria-hidden="true">{icon==="home"?<svg viewBox="0 0 24 24" width="24" height="24" focusable="false"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z" fill="currentColor" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/></svg>:icon==="bag"?<svg viewBox="0 0 24 24" width="24" height="24" focusable="false"><path d="M5 8h14l1 13H4L5 8Z M9 8V6a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>:icon==="plus"?<svg viewBox="0 0 24 24" width="24" height="24" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="1.8"/><path d="M12 7v10M7 12h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>:icon==="messages"?<svg viewBox="0 0 24 24" width="24" height="24" focusable="false"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2h9A3.5 3.5 0 0 1 20 5.5v8a3.5 3.5 0 0 1-3.5 3.5H10l-5 4v-4.5a3.5 3.5 0 0 1-1-3Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/><path d="M8 9h.01M12 9h.01M16 9h.01" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/></svg>:icon==="heart"?<svg viewBox="0 0 24 24" width="24" height="24" focusable="false"><path d="M20.8 8.8c0 5.2-8.8 11-8.8 11s-8.8-5.8-8.8-11A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/></svg>:<svg viewBox="0 0 24 24" width="24" height="24" focusable="false"><circle cx="12" cy="7.5" r="4" fill="none" stroke="currentColor" strokeWidth="1.8"/><path d="M4 21a8 8 0 0 1 16 0" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>}</span><small>{label}</small></button>)}</nav>
 
+
+      </>}
       {authUser && <footer className="site-footer">
         <div className="wrap footer-inner">
           <span>© {new Date().getFullYear()} Aloko</span>
