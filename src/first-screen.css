@@ -91,3 +91,10 @@ body:has(.aloko-first-screen){overflow:hidden!important;overscroll-behavior:none
  .first-hero-copy{padding-block:2px}
  .first-hero-actions button{min-height:30px;height:30px}
 }
+
+
+/* Strict single-viewport home: the first screen is the complete mobile home view.
+   Keep the four content bands inside the available height; no vertical page scroll. */
+.first-scroll-content{height:100%;min-height:0;overflow:hidden!important;overscroll-behavior:none!important;touch-action:pan-x pan-y}
+.first-visible-grid{height:100%;min-height:0;flex:1 1 auto;overflow:hidden}
+.first-more-listings{display:none!important}
