@@ -1,0 +1,20 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { createServiceProvidersHandler } from "../api/_handlers/service-providers.js";
+import { clearRateLimitBuckets } from "../api/_lib/rate-limit.js";
+function res(){return{statusCode:200,headers:{},body:null,setHeader(k,v){this.headers[k]=v;},status(n){this.statusCode=n;return this;},json(v){this.body=v;return this;}};}
+const id="11111111-1111-4111-8111-111111111111";
+const auth={user:{id,role:"buyer"}};
+const valid={display_name:"Fresh Space Team",slug:"fresh-space-team",provider_kind:"business",business_name:"Fresh Space Limited",description:"We provide careful home and office decluttering, sorting and responsible removal services for households and small businesses.",service_types:["decluttering","organising"],city:"Port Harcourt",state:"Rivers",service_areas:["GRA","Peter Odili Road"],years_experience:5,contact_phone:"+2348012345678"};
+
+test("provider directory returns only approved accepting profiles",async()=>{clearRateLimitBuckets();const h=createServiceProvidersHandler({getDatabase:()=>({async query(sql,values){assert.match(sql,/status='approved' AND is_accepting_requests=true/);assert.deepEqual(values,["","Rivers",""]);return{rows:[{provider_id:id,display_name:"Fresh Space Team"}]};}})});const r=res();await h({method:"GET",query:{state:"Rivers"}},r);assert.equal(r.statusCode,200);assert.equal(r.body.items[0].display_name,"Fresh Space Team");});
+
+test("provider profile details are private to authenticated account",async()=>{clearRateLimitBuckets();const h=createServiceProvidersHandler({getDatabase:()=>({async query(sql,values){assert.match(sql,/WHERE provider_id=\$1::uuid/);assert.equal(values[0],id);return{rows:[{provider_id:id,status:"pending"}]};}})});const r=res();await h({method:"GET",query:{mode:"mine"},auth},r);assert.equal(r.statusCode,200);assert.equal(r.body.provider.status,"pending");});
+
+test("decluttering provider role can access their own provider profile",async()=>{clearRateLimitBuckets();const providerAuth={user:{id,role:"service_provider"}};const h=createServiceProvidersHandler({getDatabase:()=>({async query(sql,values){assert.match(sql,/WHERE provider_id=\$1::uuid/);assert.deepEqual(values,[id]);return{rows:[{provider_id:id,status:"pending"}]};}})});const r=res();await h({method:"GET",query:{mode:"mine"},auth:providerAuth},r);assert.equal(r.statusCode,200);assert.equal(r.body.provider.status,"pending");});
+
+test("provider applications use authenticated identity and reset to pending review",async()=>{clearRateLimitBuckets();const h=createServiceProvidersHandler({getDatabase:()=>({async query(sql,values){assert.match(sql,/INSERT INTO public\.service_provider_profiles/);assert.match(sql,/FROM public\.profiles p/);assert.doesNotMatch(sql,/UPDATE public\.profiles SET account_type/);assert.match(sql,/'pending',false,NULL,NULL,NULL,now\(\)/);assert.equal(values[0],id);assert.deepEqual(values[6],["decluttering","organising"]);return{rows:[{provider_id:id,status:"pending"}]};}})});const r=res();await h({method:"POST",auth,body:valid},r);assert.equal(r.statusCode,201);assert.equal(r.body.provider.status,"pending");});
+
+test("provider application rejects unsafe slugs, empty service list and short descriptions",async()=>{clearRateLimitBuckets();const h=createServiceProvidersHandler({getDatabase:()=>({async query(){throw new Error("invalid request must not reach database");}})});for(const body of [{...valid,slug:"../bad"},{...valid,service_types:[]},{...valid,description:"Too short"}]){const r=res();await h({method:"POST",auth,body},r);assert.equal(r.statusCode,400);}});
+
+test("provider applications require authentication",async()=>{clearRateLimitBuckets();const h=createServiceProvidersHandler({getDatabase:()=>null});const r=res();await h({method:"POST",body:valid},r);assert.equal(r.statusCode,401);});

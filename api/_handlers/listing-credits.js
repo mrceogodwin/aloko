@@ -21,15 +21,28 @@ const LEDGER_SQL = `
 `;
 
 /** One-time introductory grant. Idempotent via ledger reason check. */
+const APPROVED_SELLER_SQL = `
+  SELECT 1
+  FROM public.seller_stores
+  WHERE user_id = $1::uuid
+    AND verification_status = 'approved'::public.verification_status
+  LIMIT 1
+`;
+
 const GRANT_SQL = `
-  WITH already AS (
-    SELECT 1 FROM public.credit_ledger
+  WITH lock_user AS MATERIALIZED (
+    SELECT pg_advisory_xact_lock(hashtextextended($1::text, 0))
+  ),
+  already AS MATERIALIZED (
+    SELECT 1
+    FROM public.credit_ledger, lock_user
     WHERE seller_id = $1::uuid AND reason = 'introductory_grant'
     LIMIT 1
   ),
   upsert_account AS (
     INSERT INTO public.listing_credit_accounts (seller_id, balance, updated_at)
     SELECT $1::uuid, $2, now()
+    FROM lock_user
     WHERE NOT EXISTS (SELECT 1 FROM already)
     ON CONFLICT (seller_id) DO UPDATE
       SET balance = public.listing_credit_accounts.balance + EXCLUDED.balance,
@@ -93,6 +106,10 @@ export function createListingCreditsHandler({ getDatabase = getPool } = {}) {
         const action = typeof body.action === "string" ? body.action.trim() : "";
         if (action !== "claim_introductory") {
           return res.status(400).json({ error: "action must be claim_introductory" });
+        }
+        const approved = await database.query(APPROVED_SELLER_SQL, [auth.user.id]);
+        if (!approved.rows?.length) {
+          return res.status(403).json({ error: "Introductory credits are available after your seller store is approved" });
         }
         const result = await database.query(GRANT_SQL, [auth.user.id, INTRO_GRANT]);
         const row = result.rows?.[0] || {};

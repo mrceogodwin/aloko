@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createListingCreateHandler } from "../api/listings-create.js";
+import { createListingCreateHandler } from "../api/_handlers/listings-create.js";
 
 function responseRecorder() {
   return {
@@ -74,7 +74,7 @@ test("listing creation derives seller identity and queues moderation regardless 
   const handler = createListingCreateHandler({ getDatabase: () => ({
     async query(sql, values) {
       received = { sql, values };
-      return { rows: [{ id: "listing-1", status: "pending_review" }] };
+      return { rows: [{ item: { id: "listing-1", status: "pending_review" }, eligible: true, credit_used: true, ledger_written: true }] };
     },
   }) });
   const res = responseRecorder();
@@ -86,11 +86,16 @@ test("listing creation derives seller identity and queues moderation regardless 
 
   assert.equal(res.statusCode, 201);
   assert.equal(res.body.item.status, "pending_review");
+  assert.equal(res.body.credit_balance_updated, true);
   assert.match(received.sql, /'pending_review'::public\.listing_status/);
   assert.equal(received.values[0], sellerId);
   assert.equal(received.values.length, 13);
   assert.equal(received.values[12], "seller");
   assert.match(received.sql, /p\.account_type IN/);
+  assert.match(received.sql, /seller_stores/);
+  assert.match(received.sql, /verification_status = 'approved'/);
+  assert.match(received.sql, /UPDATE public\.listing_credit_accounts/);
+  assert.match(received.sql, /INSERT INTO public\.credit_ledger/);
   assert.equal(received.values.includes("active"), false);
   assert.equal(received.values.includes("approved"), false);
 });
@@ -127,4 +132,48 @@ test("listing creation without injected auth still fails closed without a provid
   const res = responseRecorder();
   await handler({ method: "POST", body, headers: {} }, res);
   assert.equal(res.statusCode, 401);
+});
+
+import { createModerationDecideHandler } from "../api/_handlers/moderation-decide.js";
+
+test("moderation approval publishes without charging a second listing credit", async () => {
+  const calls = [];
+  const listingId = "22222222-2222-4222-8222-222222222222";
+  const database = {
+    async query(sql, values) {
+      calls.push({ sql, values });
+      if (sql.includes("SELECT id, seller_id, title, status, kind")) {
+        return { rows: [{ id: listingId, seller_id: "33333333-3333-4333-8333-333333333333", title: "Desk", status: "pending_review", kind: "sale" }] };
+      }
+      if (sql.includes("UPDATE public.listings")) return { rows: [{ id: listingId, status: "active" }] };
+      if (sql.includes("INSERT INTO public.audit_logs")) return { rows: [] };
+      throw new Error("Unexpected database query");
+    },
+  };
+  const handler = createModerationDecideHandler({ getDatabase: () => database });
+  const res = responseRecorder();
+  await handler({
+    method: "POST",
+    auth: { user: { id: "11111111-1111-4111-8111-111111111111", role: "moderator" } },
+    body: { listing_id: listingId, decision: "approve" },
+  }, res);
+  assert.equal(res.statusCode, 200);
+  assert.equal(res.body.item.status, "active");
+  assert.equal(calls.length, 3);
+  assert.ok(calls.every(call => !/listing_credit_accounts|credit_ledger|spend/i.test(call.sql)));
+});
+
+test("moderation rejects non-staff users", async () => {
+  let queried = false;
+  const handler = createModerationDecideHandler({
+    getDatabase: () => ({ async query() { queried = true; return { rows: [] }; } }),
+  });
+  const res = responseRecorder();
+  await handler({
+    method: "POST",
+    auth: { user: { id: "11111111-1111-4111-8111-111111111111", role: "seller" } },
+    body: { listing_id: "22222222-2222-4222-8222-222222222222", decision: "approve" },
+  }, res);
+  assert.equal(res.statusCode, 403);
+  assert.equal(queried, false);
 });

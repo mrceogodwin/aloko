@@ -1,4 +1,6 @@
 import conversations from "./_handlers/conversations.js";
+import buyerPreferences from "./_handlers/buyer-preferences.js";
+import accountOnboarding from "./account-onboarding.js";
 import health from "./_handlers/health.js";
 import listingCredits from "./_handlers/listing-credits.js";
 import listingImages from "./_handlers/listing-images.js";
@@ -14,8 +16,19 @@ import moderationQueue from "./_handlers/moderation-queue.js";
 import myListings from "./_handlers/my-listings.js";
 import reportListing from "./_handlers/report-listing.js";
 import savedListings from "./_handlers/saved-listings.js";
+import savedSellers from "./_handlers/saved-sellers.js";
+import sellerOnboarding from "./_handlers/seller-onboarding.js";
+import sellerVerificationQueue from "./_handlers/seller-verification-queue.js";
+import sellerVerificationDecide from "./_handlers/seller-verification-decide.js";
+import sellerStore from "./_handlers/seller-store.js";
+import serviceRequests from "./_handlers/service-requests.js";
+import serviceProviders from "./_handlers/service-providers.js";
+import serviceProviderReview from "./_handlers/service-provider-review.js";
+import providerAvailability from "./_handlers/provider-availability.js";
 
 const handlers = {
+  "account-onboarding": accountOnboarding,
+  "buyer-preferences": buyerPreferences,
   "conversations": conversations,
   "health": health,
   "listing-credits": listingCredits,
@@ -32,6 +45,15 @@ const handlers = {
   "my-listings": myListings,
   "report-listing": reportListing,
   "saved-listings": savedListings,
+  "saved-sellers": savedSellers,
+  "seller-store": sellerStore,
+  "service-requests": serviceRequests,
+  "service-providers": serviceProviders,
+  "service-provider-review": serviceProviderReview,
+  "provider-availability": providerAvailability,
+  "seller-onboarding": sellerOnboarding,
+  "seller-verification-queue": sellerVerificationQueue,
+  "seller-verification-decide": sellerVerificationDecide,
 };
 
 function getRoute(req) {

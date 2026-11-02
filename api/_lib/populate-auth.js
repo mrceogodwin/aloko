@@ -7,8 +7,8 @@
  * - profile missing and bootstrap disabled → no auth
  * - database errors → no auth
  *
- * Does not enable a live provider. verifyAccessToken still returns null until
- * NEON_AUTH_BASE_URL / JWKS is configured and jose verification is turned on.
+ * JWT verification is enabled only when a trusted Neon Auth issuer and JWKS URL
+ * are configured. Missing or invalid configuration fails closed.
  */
 
 import { verifyRequestToken } from "./verify-token.js";

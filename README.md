@@ -26,16 +26,24 @@ The active frontend is React + Vite in `src/`. The original static homepage is r
 - The core marketplace schema is applied to the dedicated Neon database. It contains profiles, listings, listing images, saved listings, conversations, messages, listing-credit accounts, platform payments, credit ledger, promotions, reports, audit logs, and decluttering service requests.
 - The original HTML homepage remains available as a design/reference artifact.
 
-## Not connected yet
+## Authentication status
 
-- Live authentication provider (Neon Auth or Clerk) and production middleware wiring.
-- Frontend login/register UI and Bearer-token attachment on protected requests.
-- Account-backed saved items, conversations, service requests, and seller dashboards.
-- Image upload/storage and serving listing images from storage keys.
-- Moderation/admin workflows, payment-provider checkout/webhooks, listing-credit purchases and deductions, and promotion activation.
-- Database row-level security or equivalent enforced policies for application access.
+- The frontend includes the Neon Auth email registration/sign-in client and Bearer-token attachment for protected API requests.
+- The signup form collects the primary account type: buyer, individual seller, reseller, business, bulk distributor, or decluttering service provider.
+- Verified first sign-in bootstraps a buyer profile. Account type completion is tracked by `012_account_type_onboarding_completion.sql`; users who must verify their email can complete account-type selection after their first verified sign-in.
+- Server-side JWT verification uses `jose` and the configured Neon Auth issuer/JWKS. The integration is fail-closed when those settings are missing or invalid.
+- Authentication is not considered production-verified until the Vercel environment variables, Neon Auth email delivery/verification settings, issuer/JWKS validation, and a real end-to-end signup/sign-in test have all been checked.
 
-The listing draft and saved items are browser-local conveniences, not persisted account data. The sell form does not publish listings or upload photos. Public listing reads only return active database listings joined to seller profiles. Do not enter real customer data until authentication, server-side authorization, storage, and write endpoints are implemented and tested.
+## Remaining launch blockers
+
+- Confirm `VITE_NEON_AUTH_URL` in the Vercel frontend environment and `NEON_AUTH_BASE_URL` / `NEON_AUTH_JWKS_URL` in the server environment. Never expose server secrets through a `VITE_` variable.
+- Verify email delivery, verification links, session restoration, JWT issuer/audience expectations, and protected API calls in a non-production environment.
+- Complete image upload/storage and serve listing images from private/public storage keys.
+- Finish moderation/admin workflows, payment-provider checkout/webhooks, listing-credit purchases and deductions, and promotion activation.
+- Add and verify database row-level security or equivalent server-enforced access controls before exposing account data.
+- Account-backed saved items, conversations, service requests, and seller workspaces require end-to-end verification against the target database.
+
+The listing draft and any explicitly browser-local convenience state are not substitutes for persisted account data. Do not enter real customer data until authentication, server-side authorization, storage, and write endpoints have been verified end to end.
 
 ## Schema and launch boundaries
 
@@ -45,10 +53,10 @@ At launch, buyers arrange item purchases directly with sellers (for example, ban
 
 ## Next implementation sequence
 
-1. Choose and enable an authentication provider (Neon Auth recommended) with trusted server-side identity.
-2. Turn on real JWT verification (`jose` + JWKS) and wire `populateAuth` into protected handlers.
-3. Add frontend login/register and attach Bearer tokens to protected API calls.
-4. Add private/public image storage and a validated upload flow.
-5. Implement saved-item sync, messaging, service requests, moderation, and role-specific workspaces.
-6. Implement payment verification, credit ledger writes, promotions, audit trails, and end-to-end tests.
+1. Verify Neon Auth environment configuration, email delivery/verification, JWT issuer/JWKS checks, and signup/sign-in end to end in a non-production environment.
+2. Apply and validate the ordered migrations on the dedicated development Neon branch only after confirming the intended branch and approval.
+3. Complete private/public image storage and a validated upload/scan flow.
+4. Finish moderation/admin authorization, payment verification/webhooks, credit-ledger writes, and promotion activation.
+5. Verify saved-item sync, messaging, service requests, seller onboarding, and role-specific workspaces against the development database.
+6. Complete security review, including database policies, rate limits, upload controls, and audit coverage.
 7. Deploy to Vercel only after explicit permission, then verify the actual deployment and environment configuration.

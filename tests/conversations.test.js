@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createConversationsHandler } from "../api/conversations.js";
+import { createConversationsHandler } from "../api/_handlers/conversations.js";
 import { clearRateLimitBuckets } from "../api/_lib/rate-limit.js";
 
 function responseRecorder() {

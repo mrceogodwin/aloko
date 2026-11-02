@@ -43,7 +43,7 @@ export function validateListingDraft(draft) {
   const price = Number(draft.price);
   const validKinds = ["sale", "giveaway", "bulk"];
   const validConditions = ["New", "Like new", "Good", "Fair", "For parts"];
-  const validCategories = ["Home & Living", "Phones & Tech", "Fashion", "Appliances", "Furniture", "Books & Hobbies", "Free items"];
+  const validCategories = ["Home & Living", "Phones & Tech", "Fashion", "Appliances", "Furniture", "Books & Hobbies", "Free items", "Electronics", "Vehicles", "Health & Beauty", "Sports & Hobbies", "Baby & Kids", "Bulk Deals", "Kitchenware", "Books", "Property & Garden", "Toys & Games", "Tools", "Art & Collectibles", "Travel & Luggage", "Baby Essentials", "Garden & Outdoor", "Property", "Cars & Motorcycles", "Bicycles & Mobility", "Phones & Accessories", "Computers & Office Tech", "Home Appliances", "Bedroom & Bedding", "Home Decor", "Shoes & Bags", "Jewellery & Watches", "Personal Care", "Kitchen & Dining", "Cleaning Equipment", "Fitness Equipment", "Gaming", "Musical Instruments", "Building Materials", "Plants & Garden", "Recycling & Scrap", "Office Clear-outs", "Estate Clearances", "Wardrobe Clear-outs", "Furniture Clear-outs", "Moving & Relocation", "Donation & Charity", "Professional Services", "Business & Commercial Equipment", "Restaurant & Catering Equipment", "Home Decluttering", "Business Surplus & Liquidation", "Building Materials & Salvage", "Office Furniture & Equipment", "Recycling & Responsible Disposal", "Baby, Kids & Maternity"];
   const validFulfillment = ["pickup", "delivery", "both"];
 
   if (title.length < 4 || title.length > 90) errors.title = "Title must be 4–90 characters.";

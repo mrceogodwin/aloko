@@ -19,20 +19,54 @@ function getPool() {
   return pool;
 }
 
+// Debit and listing creation are one PostgreSQL statement. A row lock on the
+// credit account prevents concurrent submissions from spending the same credit.
 const INSERT_LISTING = `
-  INSERT INTO public.listings (
-    seller_id, title, description, category, kind, condition, price_kobo,
-    quantity, city, state, pickup_available, delivery_available, status
+  WITH eligible_profile AS (
+    SELECT p.id
+    FROM public.profiles p
+    WHERE p.id = $1::uuid
+      AND p.is_suspended = false
+      AND (($13 = 'seller' AND p.account_type IN ('individual', 'reseller'))
+        OR ($13 = 'business' AND p.account_type IN ('business', 'bulk_distributor')))
+      AND EXISTS (
+        SELECT 1 FROM public.seller_stores s
+        WHERE s.user_id = p.id
+          AND s.verification_status = 'approved'::public.verification_status
+          AND (($13 = 'seller' AND s.account_kind = 'individual_seller'::public.verification_subject)
+            OR ($13 = 'business' AND s.account_kind = 'business_seller'::public.verification_subject))
+      )
+  ),
+  debited AS (
+    UPDATE public.listing_credit_accounts a
+    SET balance = a.balance - 1, updated_at = now()
+    FROM eligible_profile ep
+    WHERE a.seller_id = ep.id AND a.balance > 0
+    RETURNING a.seller_id
+  ),
+  created AS (
+    INSERT INTO public.listings (
+      seller_id, title, description, category, kind, condition, price_kobo,
+      quantity, city, state, pickup_available, delivery_available, status
+    )
+    SELECT ep.id, $2, $3, $4, $5::public.listing_kind, $6::public.item_condition,
+           $7, $8, $9, $10, $11, $12, 'pending_review'::public.listing_status
+    FROM eligible_profile ep
+    JOIN debited d ON d.seller_id = ep.id
+    RETURNING id, title, description, category, kind, condition, price_kobo,
+              quantity, city, state, pickup_available, delivery_available, status, created_at
+  ),
+  ledger AS (
+    INSERT INTO public.credit_ledger (seller_id, listing_id, delta, reason, note)
+    SELECT $1::uuid, c.id, -1, 'listing_publish', 'Listing credit used'
+    FROM created c
+    RETURNING id
   )
-  SELECT p.id, $2, $3, $4, $5::public.listing_kind, $6::public.item_condition,
-         $7, $8, $9, $10, $11, $12, 'pending_review'::public.listing_status
-  FROM public.profiles p
-  WHERE p.id = $1::uuid
-    AND p.is_suspended = false
-    AND (($13 = 'seller' AND p.account_type IN ('individual', 'reseller'))
-      OR ($13 = 'business' AND p.account_type IN ('business', 'bulk_distributor')))
-  RETURNING id, title, description, category, kind, condition, price_kobo,
-            quantity, city, state, pickup_available, delivery_available, status, created_at
+  SELECT
+    (SELECT to_jsonb(c) FROM created c LIMIT 1) AS item,
+    EXISTS (SELECT 1 FROM eligible_profile) AS eligible,
+    EXISTS (SELECT 1 FROM debited) AS credit_used,
+    EXISTS (SELECT 1 FROM ledger) AS ledger_written
 `;
 
 export function createListingCreateHandler({ getDatabase = getPool } = {}) {
@@ -85,10 +119,18 @@ export function createListingCreateHandler({ getDatabase = getPool } = {}) {
         value.condition, value.price_kobo, value.quantity, value.city, value.state,
         value.pickup_available, value.delivery_available, auth.user.role,
       ]);
-      if (!result.rows?.length) {
-        return res.status(403).json({ error: "Your profile type is not eligible to create this listing" });
+      const row = result.rows?.[0];
+      if (!row?.eligible) {
+        return res.status(403).json({ error: "Your seller profile must be approved before creating listings" });
       }
-      return res.status(201).json({ item: result.rows[0], message: "Listing submitted for review" });
+      if (!row.credit_used || !row.item || !row.ledger_written) {
+        return res.status(402).json({ error: "You have no listing credits remaining. Purchase a listing credit package to continue." });
+      }
+      return res.status(201).json({
+        item: row.item,
+        credit_balance_updated: true,
+        message: "Listing submitted for review. One listing credit was used.",
+      });
     } catch {
       return res.status(500).json({ error: "Could not create listing" });
     }

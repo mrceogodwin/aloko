@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createModerationQueueHandler } from "../api/moderation-queue.js";
-import { createModerationDecideHandler } from "../api/moderation-decide.js";
+import { createModerationQueueHandler } from "../api/_handlers/moderation-queue.js";
+import { createModerationDecideHandler } from "../api/_handlers/moderation-decide.js";
 
 function responseRecorder() {
   return {
@@ -76,7 +76,7 @@ test("moderation decide rejects without a reason", async () => {
   assert.equal(res.statusCode, 400);
 });
 
-test("moderation approve spends credit then publishes sale listing", async () => {
+test("moderation approval does not debit a second credit after submission", async () => {
   const calls = [];
   const handler = createModerationDecideHandler({
     getDatabase: () => ({
@@ -84,9 +84,6 @@ test("moderation approve spends credit then publishes sale listing", async () =>
         calls.push({ sql, values });
         if (/SELECT id, seller_id/i.test(sql)) {
           return { rows: [{ id: listingId, seller_id: sellerId, title: "Phone", status: "pending_review", kind: "sale" }] };
-        }
-        if (/listing_credit_accounts/i.test(sql) || /credit_ledger/i.test(sql)) {
-          return { rows: [{ balance: 2, ledger_id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", has_account: true, prior_balance: 3 }] };
         }
         if (/UPDATE public\.listings/i.test(sql)) {
           return { rows: [{ id: listingId, status: "active", seller_id: sellerId, kind: "sale" }] };
@@ -103,7 +100,7 @@ test("moderation approve spends credit then publishes sale listing", async () =>
   }, res);
   assert.equal(res.statusCode, 200);
   assert.equal(res.body.item.status, "active");
-  assert.ok(calls.some((c) => /listing_credit_accounts|credit_ledger/i.test(c.sql)));
+  assert.equal(calls.some((c) => /listing_credit_accounts|credit_ledger/i.test(c.sql)), false);
   assert.ok(calls.some((c) => /audit_logs/i.test(c.sql)));
 });
 

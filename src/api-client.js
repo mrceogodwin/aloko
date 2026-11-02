@@ -100,3 +100,129 @@ export function createListing(listing) {
     body: listing,
   });
 }
+
+
+export function listSavedListings() {
+  return request("/api/saved-listings");
+}
+
+export function saveListing(listingId) {
+  return request("/api/saved-listings", { method: "POST", body: { listing_id: listingId } });
+}
+
+export function unsaveListing(listingId) {
+  return request("/api/saved-listings", { method: "DELETE", body: { listing_id: listingId } });
+}
+
+export function getMarketplaceProfile() {
+  return request("/api/me");
+}
+
+export function getSellerStore(sellerId) {
+  return request(`/api/seller-store?seller_id=${encodeURIComponent(sellerId)}`);
+}
+
+ 
+export function getBuyerPreferences() {
+  return request("/api/buyer-preferences");
+}
+
+export function saveBuyerPreferences(preferences) {
+  return request("/api/buyer-preferences", { method: "PUT", body: preferences });
+}
+
+export function listFollowedSellers() {
+  return request("/api/saved-sellers");
+}
+
+export function followSeller(sellerId) {
+  return request("/api/saved-sellers", { method: "POST", body: { seller_id: sellerId } });
+}
+
+export function unfollowSeller(sellerId) {
+  return request("/api/saved-sellers", { method: "DELETE", body: { seller_id: sellerId } });
+}
+
+export function getSellerOnboarding() {
+  return request("/api/seller-onboarding");
+}
+
+export function submitSellerOnboarding(details) {
+  return request("/api/seller-onboarding", { method: "POST", body: details });
+}
+
+export function listSellerVerificationApplications() {
+  return request("/api/seller-verification-queue");
+}
+
+export function decideSellerVerification(applicationId, decision, note = "") {
+  return request("/api/seller-verification-decide", {
+    method: "POST",
+    body: { application_id: applicationId, decision, note },
+  });
+}
+
+export function createServiceRequest(details) {
+  return request("/api/service-requests", { method: "POST", body: details });
+}
+
+export function listMyServiceRequests() {
+  return request("/api/service-requests");
+}
+
+export function listServiceProviders(filters = {}) {
+  const params = new URLSearchParams();
+  if (filters.service_type) params.set("service_type", filters.service_type);
+  if (filters.state) params.set("state", filters.state);
+  if (filters.city) params.set("city", filters.city);
+  return request(`/api/service-providers?${params.toString()}`);
+}
+
+export function getMyServiceProviderProfile() {
+  return request("/api/service-providers?mode=mine");
+}
+
+export function submitServiceProviderProfile(details) {
+  return request("/api/service-providers", { method: "POST", body: details });
+}
+
+export function listServiceProviderApplications() {
+  return request("/api/service-provider-review");
+}
+
+export function reviewServiceProvider(provider_id, decision, note = "") {
+  return request("/api/service-provider-review", { method: "POST", body: { provider_id, decision, note } });
+}
+
+export function updateServiceRequest(request_id, action, amount_naira, extra = {}) {
+  return request("/api/service-requests", {
+    method: "PATCH",
+    body: { request_id, action, ...(amount_naira == null ? {} : { amount_naira }), ...extra },
+  });
+}
+
+export function getProviderAvailability() {
+  return request("/api/provider-availability");
+}
+export function saveProviderAvailability(availability, timezone = "Africa/Lagos") {
+  return request("/api/provider-availability", { method: "PUT", body: { availability, timezone } });
+}
+
+export function saveProviderAvailabilityException(exception) {
+  return request("/api/provider-availability", { method: "POST", body: exception });
+}
+export function deleteProviderAvailabilityException(id) {
+  return request("/api/provider-availability", { method: "DELETE", body: { id } });
+}
+
+
+export function getAccountOnboarding() {
+  return request("/api/account-onboarding", { method: "GET" });
+}
+
+export function updateAccountType(accountType) {
+  return request("/api/account-onboarding", {
+    method: "POST",
+    body: { account_type: accountType },
+  });
+}

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createListingUpdateHandler } from "../api/listings-update.js";
+import { createListingUpdateHandler } from "../api/_handlers/listings-update.js";
 
 function responseRecorder() {
   return {

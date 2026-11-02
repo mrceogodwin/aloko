@@ -4,11 +4,12 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-
 
 const DETAIL_SQL = `
   SELECT
-    l.id, l.title, l.description, l.category, l.kind, l.condition,
+    l.id, l.seller_id, l.title, l.description, l.category, l.kind, l.condition,
     l.price_kobo, l.quantity, l.city, l.state,
     l.pickup_available, l.delivery_available, l.status,
     l.published_at, l.created_at,
     p.display_name AS seller_display_name,
+    p.avatar_url AS seller_avatar_url,
     p.account_type AS seller_account_type
   FROM public.listings l
   JOIN public.profiles p ON p.id = l.seller_id

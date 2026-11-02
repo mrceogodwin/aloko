@@ -12,6 +12,8 @@ Serverless handlers for a Vercel-compatible runtime. Deployment remains restrict
 
 ## Authenticated (Bearer / `req.auth.user`)
 
+| `GET /api/account-onboarding` | any | Read primary account-type onboarding status |
+| `POST /api/account-onboarding` | any | Set the primary account type once after verified sign-in |
 | Route | Roles | Purpose |
 | --- | --- | --- |
 | `GET /api/me` | any | Current profile |
@@ -23,6 +25,20 @@ Serverless handlers for a Vercel-compatible runtime. Deployment remains restrict
 | `POST /api/report-listing` | any | Abuse report |
 | `GET/POST /api/conversations` | any | List threads / open thread on a listing |
 | `GET/POST /api/messages` | any | Read or send messages in a thread |
+| `GET/POST/PATCH /api/service-requests` | any | Create enquiries, view customer/provider requests, send quotes, accept quotes, or cancel open enquiries |
+| `GET /api/service-providers` | public | Browse approved providers; supports `service_type`, `state`, and `city` filters |
+| `GET /api/service-providers?mode=mine` | authenticated | Read the signed-in provider's private application/profile |
+| `POST /api/service-providers` | buyer, seller, business, decluttering_provider | Submit or update a provider application; edits return the profile to pending review |
+| `GET/POST /api/service-provider-review` | moderator/admin (approval admin only) | Review provider applications and approve/reject profiles |
+
+## Provider availability\n\n- `GET /api/provider-availability` returns the signed-in approved provider weekly schedule.\n- `PUT /api/provider-availability` replaces the schedule atomically; weekday values use Sunday=0 through Saturday=6.\n- Times are local to the submitted IANA timezone; the default is `Africa/Lagos`.\n- Availability is a provider-entered preference, not a live booking lock. Appointment proposals still require customer confirmation.\n\n## Service provider review
+
+- Provider profiles are private until their status is `approved` and they are accepting requests.
+- Public directory responses omit phone and email contact fields.
+- Provider applications use the authenticated profile ID; clients cannot choose an applicant ID.
+- Updating an approved profile resets it to `pending` and disables new requests until staff review.
+- `database/migrations/005_service_provider_marketplace.sql` is a draft migration and has not been applied to the production database.
+- Approved providers can receive assigned enquiries and submit NGN quotes. Customers can accept a quote; acceptance does not itself confirm a calendar booking or payment.
 
 ## Staff
 

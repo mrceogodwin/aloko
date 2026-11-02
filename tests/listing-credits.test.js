@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createListingCreditsHandler } from "../api/listing-credits.js";
+import { createListingCreditsHandler } from "../api/_handlers/listing-credits.js";
 import { clearRateLimitBuckets } from "../api/_lib/rate-limit.js";
 
 function responseRecorder() {
@@ -50,7 +50,8 @@ test("listing-credits claims introductory grant once", async () => {
   clearRateLimitBuckets();
   const handler = createListingCreditsHandler({
     getDatabase: () => ({
-      async query() {
+      async query(sql) {
+        if (String(sql).includes("seller_stores")) return { rows: [{ approved: 1 }] };
         return {
           rows: [{ balance: 3, grant_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", already_granted: false }],
         };
@@ -66,4 +67,27 @@ test("listing-credits claims introductory grant once", async () => {
   assert.equal(res.statusCode, 201);
   assert.equal(res.body.balance, 3);
   assert.equal(res.body.already_granted, false);
+});
+
+
+test("listing credits cannot be claimed before seller approval", async () => {
+  clearRateLimitBuckets();
+  let grantAttempted = false;
+  const handler = createListingCreditsHandler({
+    getDatabase: () => ({
+      async query(sql) {
+        if (String(sql).includes("seller_stores")) return { rows: [] };
+        grantAttempted = true;
+        return { rows: [] };
+      },
+    }),
+  });
+  const res = responseRecorder();
+  await handler({
+    method: "POST",
+    body: { action: "claim_introductory" },
+    auth: { user: { id: sellerId, role: "seller" } },
+  }, res);
+  assert.equal(res.statusCode, 403);
+  assert.equal(grantAttempted, false);
 });

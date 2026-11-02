@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createListingsStatusHandler } from "../api/listings-status.js";
+import { createListingsStatusHandler } from "../api/_handlers/listings-status.js";
 import { clearRateLimitBuckets } from "../api/_lib/rate-limit.js";
 
 function responseRecorder() {
