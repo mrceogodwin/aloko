@@ -33,7 +33,7 @@ export default function FirstScreen({
   activeCategory, setActiveCategory, savedOnly, setSavedOnly, saved, toggleSaved,
   visibleProducts, listingLoadState, listingReload, setSelectedListing, onStartSelling,
   onBrowse, onNavigate, showNotice, cameraInputRef, guestMenuOpen, setGuestMenuOpen,
-  showAllCategories, setShowAllCategories, categories,
+  showAllCategories, setShowAllCategories, categories, onLogin,
 }) {
   const listingScroller = React.useRef(null);
   const scrollListingsToStart = () => listingScroller.current?.scrollTo({ left: 0, behavior: "smooth" });
@@ -148,8 +148,8 @@ export default function FirstScreen({
         <button type="button" className="first-tab active" aria-current="page" onClick={() => onNavigate("home")}><Icon name="home"/><small>Home</small></button>
         <button type="button" className="first-tab" onClick={onBrowse}><Icon name="bag"/><small>Buy</small></button>
         <button type="button" className="first-tab" onClick={onStartSelling}><Icon name="plus"/><small>Sell</small></button>
-        <button type="button" className="first-tab" onClick={() => authUser ? onNavigate("inbox") : onNavigate("login")}><Icon name="messages"/><small>Messages</small></button>
-        <button type="button" className="first-tab" onClick={() => authUser ? onNavigate("account") : onNavigate("login")}><Icon name="user"/><small>Account</small></button>
+        <button type="button" className="first-tab" onClick={() => authUser ? onNavigate("inbox") : onLogin()}><Icon name="messages"/><small>Messages</small></button>
+        <button type="button" className="first-tab" onClick={() => authUser ? onNavigate("account") : onLogin()}><Icon name="user"/><small>Account</small></button>
       </nav>
     </div>
   );
