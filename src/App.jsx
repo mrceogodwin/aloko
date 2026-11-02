@@ -482,7 +482,7 @@ function App() {
   };
 
   return (
-    <div className={`app-shell aloko-home-shell ${authUser ? "member-shell" : "guest-shell"}`}>
+    <div className={`app-shell ${activeScreen === "home" ? "aloko-home-shell" : ""} ${authUser ? "member-shell" : "guest-shell"}`}>
       {activeScreen === "home" ? <FirstScreen
         authUser={authUser}
         query={query} setQuery={setQuery}
