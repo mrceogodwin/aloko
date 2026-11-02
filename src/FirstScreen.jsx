@@ -77,7 +77,7 @@ export default function FirstScreen({
       onClick={() => setSelectedListing(p)}
       onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedListing(p); } }}>
       <div className="first-more-image">
-        {photoSrc(p.image, p.title, Boolean(p.demo || p.isDemo || String(p.id).startsWith("demo"))) ? <img src={photoSrc(p.image, p.title)} alt={p.title} loading="lazy"/> : <span>Photo not provided</span>}
+        {photoSrc(p.image, p.title, Boolean(p.demo || p.isDemo || String(p.id).startsWith("demo"))) ? <img src={photoSrc(p.image, p.title, Boolean(p.demo || p.isDemo || String(p.id).startsWith("demo")))} alt={p.title} loading="lazy"/> : <span>Photo not provided</span>}
       </div>
       <div className="first-more-copy">
         <strong>{p.title}</strong>
