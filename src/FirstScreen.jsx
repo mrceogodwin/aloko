@@ -37,12 +37,13 @@ export default function FirstScreen({
 }) {
   const listingScroller = React.useRef(null);
   const scrollListingsToStart = () => listingScroller.current?.scrollTo({ left: 0, behavior: "smooth" });
+  const browse = () => { onBrowse(); scrollListingsToStart(); };
   const chooseCategory = (label) => {
     setSavedOnly(false);
     setActiveCategory(label);
     scrollListingsToStart();
   };
-  const photoSrc = (image) => !image ? "" : image.startsWith("http") ? image : `https://images.unsplash.com/${image}?auto=format&fit=crop&w=620&q=85`;
+  const photoSrc = (image) => !image ? "" : image.startsWith("http") || image.startsWith("/") || image.startsWith("data:") ? image : `https://images.unsplash.com/${image}?auto=format&fit=crop&w=620&q=85`;
 
   return (
     <div className="aloko-first-screen">
@@ -78,7 +79,7 @@ export default function FirstScreen({
           <button type="button" role="menuitem" onClick={() => { setGuestMenuOpen(false); onNavigate("home"); }}>Home</button>
           <button type="button" role="menuitem" onClick={() => { setGuestMenuOpen(false); setSavedOnly(true); setActiveCategory("All"); scrollListingsToStart(); }}>Saved listings ({saved.length})</button>
           <button type="button" role="menuitem" onClick={() => { setGuestMenuOpen(false); onStartSelling(); }}>Start selling</button>
-          <button type="button" role="menuitem" onClick={() => { setGuestMenuOpen(false); onNavigate("account"); }}>My account</button>
+          <button type="button" role="menuitem" onClick={() => { setGuestMenuOpen(false); authUser ? onNavigate("account") : onLogin(); }}>My account</button>
         </div>}
       </header>
 
@@ -94,7 +95,7 @@ export default function FirstScreen({
           </div>
           <div className="first-hero-actions">
             <button type="button" className="first-primary" onClick={onStartSelling}>Start Selling <span>→</span></button>
-            <button type="button" className="first-secondary" onClick={onBrowse}><Icon name="grid"/> Browse Listings</button>
+            <button type="button" className="first-secondary" onClick={browse}><Icon name="grid"/> Browse Listings</button>
           </div>
         </div>
         <div className="first-hero-art"><img src="/aloko-home-scene.svg" alt="Emerald sofa, gold lamp, Aloko reuse box, headphones and green trainers"/></div>
@@ -146,7 +147,7 @@ export default function FirstScreen({
 
       <nav className="first-bottom-nav" aria-label="App navigation">
         <button type="button" className="first-tab active" aria-current="page" onClick={() => onNavigate("home")}><Icon name="home"/><small>Home</small></button>
-        <button type="button" className="first-tab" onClick={onBrowse}><Icon name="bag"/><small>Buy</small></button>
+        <button type="button" className="first-tab" onClick={browse}><Icon name="bag"/><small>Buy</small></button>
         <button type="button" className="first-tab" onClick={onStartSelling}><Icon name="plus"/><small>Sell</small></button>
         <button type="button" className="first-tab" onClick={() => authUser ? onNavigate("inbox") : onLogin()}><Icon name="messages"/><small>Messages</small></button>
         <button type="button" className="first-tab" onClick={() => authUser ? onNavigate("account") : onLogin()}><Icon name="user"/><small>Account</small></button>
