@@ -669,3 +669,100 @@
 @keyframes aloko-business-logos{to{transform:translateX(-50%)}}
 @media(prefers-reduced-motion:reduce){.declutter-logo-track{animation:none}.featured-portrait-grid{scroll-behavior:auto}}
 @media(max-width:650px){.community-showcase{overflow:hidden}.declutter-logo-item{flex-basis:80px}.declutter-logo-orb{width:62px;height:62px}}
+
+
+/* Aloko photo-led homepage: photographic hero, categories and honest item-photo states. */
+.hero-art {
+  display:block;
+  min-width:0;
+  overflow:hidden;
+  border-radius:22px;
+  background:#063d2b;
+  box-shadow:0 24px 55px #001e1538;
+}
+.hero-lifestyle-image {
+  display:block;
+  width:100%;
+  height:100%;
+  min-height:300px;
+  object-fit:cover;
+  object-position:center 56%;
+  border-radius:22px;
+  filter:saturate(1.08) contrast(1.02);
+}
+.hero-art-badge {
+  position:absolute;
+  z-index:3;
+  top:7%;
+  right:5%;
+  display:flex;
+  flex-direction:column;
+  padding:11px 14px;
+  border:1px solid #dfff57;
+  border-radius:15px;
+  background:#073b2bdc;
+  color:#fff;
+  box-shadow:0 9px 24px #001b1270;
+  transform:rotate(6deg);
+  font-size:13px;
+  line-height:1.35;
+}
+.hero-art-badge strong:last-child { color:#d4ff26; }
+.hero-art-caption {
+  position:absolute;
+  z-index:3;
+  left:5%;
+  bottom:6%;
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  padding:12px 15px;
+  border-radius:12px;
+  background:#003c2dcc;
+  color:#fff;
+}
+.hero-art-caption span { color:#d4ff26;font-size:9px;font-weight:900;letter-spacing:1.5px; }
+.hero-art-caption b { font-size:17px;line-height:1.15; }
+.category-icon { overflow:hidden; }
+.category-photo {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+}
+.product-image-placeholder {
+  display:grid;
+  width:100%;
+  height:100%;
+  place-items:center;
+  padding:12px;
+  background:linear-gradient(145deg,#f0f5ed,#e4eee2);
+  color:#315b43;
+  text-align:center;
+  font:700 11px/1.35 Manrope,sans-serif;
+}
+.product-image-placeholder span {
+  display:inline-block;
+  padding:8px 11px;
+  border:1px solid #cbdccf;
+  border-radius:10px;
+  background:#ffffffb8;
+}
+@media(max-width:760px) {
+  .hero-art {
+    width:100%;
+    height:clamp(170px,48vw,270px);
+    min-height:0;
+    border-radius:16px;
+  }
+  .hero-lifestyle-image {
+    min-height:0;
+    height:100%;
+    object-position:center 58%;
+    border-radius:16px;
+  }
+  .hero-art-caption { padding:8px 10px; }
+  .hero-art-caption b { font-size:13px; }
+  .hero-art-badge { padding:8px 10px;font-size:10px; }
+}
