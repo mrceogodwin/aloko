@@ -129,6 +129,9 @@ export default function FirstScreen({
           {categoryTiles.map(([label,file,category]) => <button type="button" role="listitem" key={label} className={`first-category ${activeCategory === category ? "active" : ""}`} onClick={() => chooseCategory(category)}>
             <span className="first-category-image"><img src={asset(file)} alt="" loading="eager"/></span><strong>{label}</strong>
           </button>)}
+          {showAllCategories && categories.slice(7, 20).map(([icon,label],index) => <button type="button" role="listitem" key={`extra-${label}-${index}`} className={`first-category ${activeCategory === label ? "active" : ""}`} onClick={() => chooseCategory(label)}>
+            <span className="first-category-image"><img src={asset("cat-more.png")} alt="" loading="lazy"/></span><strong>{label}</strong>
+          </button>)}
         </div>
       </section>
 
