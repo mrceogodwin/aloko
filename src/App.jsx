@@ -10,6 +10,7 @@ import ServiceProviders from "./ServiceProviders.jsx";
 import AdminServiceProviderReview from "./AdminServiceProviderReview.jsx";
 import ModeratorDesk from "./ModeratorDesk.jsx";
 import RoleMenuDrawer from "./RoleMenuDrawer.jsx";
+import FirstScreen from "./FirstScreen.jsx";
 import { getAlokoDashboard } from "./role-navigation.js";
 
 const nigeriaStates = ["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","FCT","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"];
@@ -32,32 +33,32 @@ const categories = [
 
 // Real photographic category thumbnails (Unsplash photo IDs), not vector illustrations.
 const categoryArtwork = {
-  "Electronics":"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=240&q=82",
-  "Furniture":"https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=240&q=82",
-  "Fashion":"https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=240&q=82",
-  "Home & Living":"https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=240&q=82",
-  "Sports":"https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=240&q=82",
-  "Sports & Hobbies":"https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=240&q=82",
-  "Kids":"https://images.unsplash.com/photo-1559454403-b8fb88521f11?auto=format&fit=crop&w=240&q=82",
-  "Baby & Kids":"https://images.unsplash.com/photo-1559454403-b8fb88521f11?auto=format&fit=crop&w=240&q=82",
-  "Auto":"https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=240&q=82",
-  "Vehicles":"https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=240&q=82",
-  "Free items":"https://images.unsplash.com/photo-1513883049090-d0b7439799bf?auto=format&fit=crop&w=240&q=82",
-  "Bulk Deals":"https://images.unsplash.com/photo-1607166452427-5ec6f5b94f89?auto=format&fit=crop&w=240&q=82",
-  "Kitchenware":"https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=240&q=82",
-  "Books":"https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=240&q=82",
-  "Property & Garden":"https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=240&q=82",
-  "Tools":"https://images.unsplash.com/photo-1581147036324-c1c89c2c8b5c?auto=format&fit=crop&w=240&q=82",
-  "Office":"https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=240&q=82",
-  "Baby, Kids & Maternity":"https://images.unsplash.com/photo-1559454403-b8fb88521f11?auto=format&fit=crop&w=240&q=82",
-  "Sports & Fitness":"https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=240&q=82",
-  "Services":"https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=240&q=82",
-  "Phones & Accessories":"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=240&q=82",
-  "Home Appliances":"https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=240&q=82",
-  "Shoes & Bags":"https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=240&q=82",
-  "Cars & Motorcycles":"https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=240&q=82",
-  "Recycling & Responsible Disposal":"https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=240&q=82"
-};
+  "Electronics": "/assets/aloko/cat-electronics.png",
+  "Furniture": "/assets/aloko/cat-furniture.png",
+  "Fashion": "/assets/aloko/cat-fashion.png",
+  "Home & Living": "/assets/aloko/cat-home-living.png",
+  "Sports": "/assets/aloko/cat-sports.png",
+  "Sports & Hobbies": "/assets/aloko/cat-sports.png",
+  "Kids": "/assets/aloko/cat-kids.png",
+  "Baby & Kids": "/assets/aloko/cat-kids.png",
+  "Auto": "/assets/aloko/cat-auto.png",
+  "Vehicles": "/assets/aloko/cat-auto.png",
+  "Free items": "/assets/aloko/cat-more.png",
+  "Bulk Deals": "/assets/aloko/cat-more.png",
+  "Kitchenware": "/assets/aloko/cat-home-living.png",
+  "Books": "/assets/aloko/cat-more.png",
+  "Property & Garden": "/assets/aloko/cat-home-living.png",
+  "Tools": "/assets/aloko/cat-more.png",
+  "Office": "/assets/aloko/cat-more.png",
+  "Baby, Kids & Maternity": "/assets/aloko/cat-kids.png",
+  "Sports & Fitness": "/assets/aloko/cat-sports.png",
+  "Services": "/assets/aloko/cat-more.png",
+  "Phones & Accessories": "/assets/aloko/cat-electronics.png",
+  "Home Appliances": "/assets/aloko/cat-home-living.png",
+  "Shoes & Bags": "/assets/aloko/cat-fashion.png",
+  "Cars & Motorcycles": "/assets/aloko/cat-auto.png",
+  "Recycling & Responsible Disposal": "/assets/aloko/cat-more.png"
+};;
 
 
 const demoPhotoByCategory = {
@@ -481,7 +482,28 @@ function App() {
   };
 
   return (
-    <div className={`app-shell ${authUser ? "member-shell" : "guest-shell"}`}>
+    <div className={`app-shell ${activeScreen === "home" ? "aloko-home-shell" : ""} ${authUser ? "member-shell" : "guest-shell"}`}>
+      {activeScreen === "home" ? <FirstScreen
+        authUser={authUser}
+        query={query} setQuery={setQuery}
+        selectedLocation={selectedLocation} setSelectedLocation={setSelectedLocation}
+        nigeriaStates={nigeriaStates}
+        activeCategory={activeCategory} setActiveCategory={setActiveCategory}
+        savedOnly={savedOnly} setSavedOnly={setSavedOnly}
+        saved={saved} toggleSaved={toggleSaved}
+        visibleProducts={visibleProducts} listingLoadState={listingLoadState}
+        listingReload={() => setListingReloadKey(k => k + 1)}
+        setSelectedListing={setSelectedListing}
+        onStartSelling={() => authUser ? setListingFormOpen(true) : (setAccountMode("signup"), setAccountModalOpen(true))}
+        onBrowse={() => { setActiveCategory("All"); setSavedOnly(false); setQuery(""); }}
+        onNavigate={navigate}
+        onLogin={() => { setAccountMode("login"); setAccountModalOpen(true); }}
+        showNotice={showNotice}
+        cameraInputRef={cameraInputRef}
+        guestMenuOpen={guestMenuOpen} setGuestMenuOpen={setGuestMenuOpen}
+        showAllCategories={showAllCategories} setShowAllCategories={setShowAllCategories}
+        categories={categories}
+      /> : <>
       <header className="topbar flagship-topbar">
         <div className="wrap topbar-inner">
           <button type="button" className="brand flagship-brand" onClick={()=>navigate("home")} aria-label="Aloko home">
@@ -653,7 +675,7 @@ function App() {
               <article className="product-card" key={p.id} role="button" tabIndex={0} onClick={() => setSelectedListing(p)} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();setSelectedListing(p);}}}>
                 <div className="product-image">
                   {p.image
-                    ? <img src={p.image.startsWith("http") ? p.image : `https://images.unsplash.com/${p.image}?auto=format&fit=crop&w=700&q=80`} alt={p.title} loading="lazy"/>
+                    ? <img src={(p.image.startsWith("http") || p.image.startsWith("/") || p.image.startsWith("data:")) ? p.image : ""} alt={p.title} loading="lazy"/>
                     : <div className="product-image-placeholder" role="img" aria-label="Seller has not uploaded a product photo"><span>Photo not<br/>provided</span></div>}
                   <span className="condition">{p.kind === "giveaway" ? "Free giveaway" : p.condition}</span>
                   <button className={saved.includes(p.id) ? "save saved" : "save"} aria-label={saved.includes(p.id) ? "Remove from favourites" : "Add to favourites"} onClick={e=>{e.stopPropagation();toggleSaved(p.id);}}>{saved.includes(p.id) ? "♥" : "♡"}</button>
@@ -749,6 +771,8 @@ function App() {
       </main>
       <nav className="mobile-app-nav" aria-label="App navigation">{(authUser?[["home","home","Home"],["seller","plus","Sell"],["inbox","messages","Messages"],["saved","heart","Saved"],["account","user","Account"]]:[["home","home","Home"],["buy","bag","Buy"],["sell","plus","Sell"],["inbox","messages","Messages"],["account","user","Account"]]).map(([id,icon,label])=><button key={id} type="button" aria-label={label} aria-current={activeScreen===id?"page":undefined} className={activeScreen===id?"active":""} onClick={()=>{if(id==="buy"){document.getElementById("explore")?.scrollIntoView({behavior:"smooth"});return;}if(!authUser){setAccountMode("signup");setAccountModalOpen(true);}else navigate(id);}}><span className="mobile-tab-icon" aria-hidden="true">{icon==="home"?<svg viewBox="0 0 24 24" width="24" height="24" focusable="false"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z" fill="currentColor" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/></svg>:icon==="bag"?<svg viewBox="0 0 24 24" width="24" height="24" focusable="false"><path d="M5 8h14l1 13H4L5 8Z M9 8V6a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>:icon==="plus"?<svg viewBox="0 0 24 24" width="24" height="24" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="1.8"/><path d="M12 7v10M7 12h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>:icon==="messages"?<svg viewBox="0 0 24 24" width="24" height="24" focusable="false"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2h9A3.5 3.5 0 0 1 20 5.5v8a3.5 3.5 0 0 1-3.5 3.5H10l-5 4v-4.5a3.5 3.5 0 0 1-1-3Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/><path d="M8 9h.01M12 9h.01M16 9h.01" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/></svg>:icon==="heart"?<svg viewBox="0 0 24 24" width="24" height="24" focusable="false"><path d="M20.8 8.8c0 5.2-8.8 11-8.8 11s-8.8-5.8-8.8-11A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/></svg>:<svg viewBox="0 0 24 24" width="24" height="24" focusable="false"><circle cx="12" cy="7.5" r="4" fill="none" stroke="currentColor" strokeWidth="1.8"/><path d="M4 21a8 8 0 0 1 16 0" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>}</span><small>{label}</small></button>)}</nav>
 
+
+      </>}
       {authUser && <footer className="site-footer">
         <div className="wrap footer-inner">
           <span>© {new Date().getFullYear()} Aloko</span>
