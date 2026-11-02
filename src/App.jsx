@@ -30,20 +30,21 @@ const categories = [
   ["♻️", "Recycling & Responsible Disposal"], ["🧸", "Baby, Kids & Maternity"],
 ];
 
+// Real photographic category thumbnails (Unsplash photo IDs), not vector illustrations.
 const categoryArtwork = {
-  "Electronics":"/category-electronics.svg",
-  "Furniture":"/category-furniture.svg",
-  "Fashion":"/category-fashion.svg",
-  "Home & Living":"/category-home.svg",
-  "Sports":"/category-sports.svg",
-  "Sports & Hobbies":"/category-sports.svg",
-  "Kids":"/category-kids.svg",
-  "Baby & Kids":"/category-kids.svg",
-  "Auto":"/category-auto.svg",
-  "Vehicles":"/category-auto.svg",
-  "Free items":"/category-kids.svg",
-  "Bulk Deals":"/promo-bulk.svg",
-  "Kitchenware":"/category-home.svg"
+  "Electronics":"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=240&q=82",
+  "Furniture":"https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=240&q=82",
+  "Fashion":"https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=240&q=82",
+  "Home & Living":"https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=240&q=82",
+  "Sports":"https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=240&q=82",
+  "Sports & Hobbies":"https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=240&q=82",
+  "Kids":"https://images.unsplash.com/photo-1559454403-b8fb88521f11?auto=format&fit=crop&w=240&q=82",
+  "Baby & Kids":"https://images.unsplash.com/photo-1559454403-b8fb88521f11?auto=format&fit=crop&w=240&q=82",
+  "Auto":"https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=240&q=82",
+  "Vehicles":"https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=240&q=82",
+  "Free items":"https://images.unsplash.com/photo-1513883049090-d0b7439799bf?auto=format&fit=crop&w=240&q=82",
+  "Bulk Deals":"https://images.unsplash.com/photo-1607166452427-5ec6f5b94f89?auto=format&fit=crop&w=240&q=82",
+  "Kitchenware":"https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=240&q=82"
 };
 
 
@@ -86,7 +87,7 @@ function normalizeLiveListing(item) {
     pickupAvailable: item.pickup_available !== false,
     deliveryAvailable: item.delivery_available === true,
     publishedAt: item.published_at || item.created_at || null,
-    image: item.image_url || item.image_urls?.[0] || (/chair|table|shelf|cabinet|wardrobe|sofa|furniture|study desk/i.test(item.title) ? demoPhotoByCategory.Furniture : /kitchen|cook|plate|blender|stove/i.test(item.title) ? demoPhotoByCategory.Kitchenware : /box|moving|carton/i.test(item.title) ? "photo-1494438639946-1ebd1d20bf85" : /laptop|phone|tv|samsung|computer|hp elitebook/i.test(item.title) ? demoPhotoByCategory.Electronics : demoPhotoByCategory[item.category] || (item.kind === "giveaway" ? demoPhotoByCategory["Free items"] : demoPhotoByCategory["Home & Living"])),
+    image: item.image_url || item.image_urls?.[0] || item.images?.[0]?.url || "", // Never substitute an unrelated stock photo for a seller listing.
     kind: item.kind,
     quantity: item.quantity,
     live: true
@@ -530,7 +531,7 @@ function App() {
               </div>
             </div>
             <div className="hero-art" aria-label="Aloko reuse marketplace lifestyle display">
-              <img className="hero-lifestyle-image" src="/aloko-home-scene.svg" alt="Aloko reuse marketplace scene with emerald sofa, lamp, reuse box, headphones and sneakers" />
+              <img className="hero-lifestyle-image" src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1500&q=90" alt="Photograph of a carefully styled contemporary living room with sofa, plants and warm lighting" />
               <div className="hero-art-badge"><strong>Declutter.</strong><strong>Earn.</strong><strong>Reuse.</strong><strong>Sustain ♻</strong></div>
               <div className="hero-art-caption"><span>ALOKO FINDS</span><b>Give good things<br/>a new home.</b></div>
             </div>
