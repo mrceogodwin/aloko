@@ -60,3 +60,8 @@
 }
 .aloko-home-shell{overscroll-behavior:none!important;touch-action:pan-x pan-y}
 body:has(.aloko-first-screen){overflow:hidden!important;overscroll-behavior:none!important}
+
+/* The first-screen component owns its own bottom navigation; prevent the legacy dock duplicating it. */
+.aloko-home-shell>.mobile-app-nav{display:none!important}
+.aloko-first-screen{touch-action:pan-x;overscroll-behavior-y:none}
+.aloko-first-screen .first-horizontal,.aloko-first-screen .first-promos{touch-action:pan-x;overscroll-behavior-x:contain;overscroll-behavior-y:none}
