@@ -64,3 +64,30 @@
 
 .aloko-home-shell{overscroll-behavior:none!important;touch-action:auto}
 body:has(.aloko-first-screen){overflow:hidden!important;overscroll-behavior:none!important}
+
+
+/* Reference-fit refinements: keep the hero copy clear of its artwork and
+   preserve the six weighted content rows on compact mobile screens. */
+.first-hero-copy{width:58%;padding-right:2px}
+.first-hero-art{width:42%;max-width:46vw}
+.first-hero-art img{max-width:46vw}
+.first-hero h1{overflow:visible;overflow-wrap:normal}
+.first-hero-actions{position:relative;z-index:3;gap:clamp(4px,1.2vw,7px)}
+.first-hero-actions button{min-width:0;flex-shrink:1}
+.first-listing-card{flex-shrink:0}
+.first-listing-image{flex:1 1 0}
+.first-listing-copy{position:relative;min-height:0}
+.first-verified{z-index:2}
+.first-bottom-nav{flex-shrink:0}
+@media(max-width:360px){
+ .first-hero-copy{width:60%;padding-left:8px}
+ .first-hero-art{width:40%;max-width:46vw}
+ .first-hero h1{font-size:clamp(16px,5vw,20px)}
+ .first-hero-actions{gap:3px}
+ .first-hero-actions button{font-size:clamp(6px,1.9vw,7px);padding-inline:3px}
+}
+@media(max-height:600px){
+ .first-visible-grid{grid-template-rows:minmax(0,22fr) minmax(0,12fr) minmax(0,14fr) minmax(0,28fr)}
+ .first-hero-copy{padding-block:2px}
+ .first-hero-actions button{min-height:30px;height:30px}
+}
