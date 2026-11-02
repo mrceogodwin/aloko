@@ -39,3 +39,24 @@
  .first-search input:not([type=file]){font-size:9px}
  .first-heart{width:44px;height:44px}
 }
+
+@media(max-height:620px){
+ .aloko-first-screen{grid-template-rows:auto minmax(0,2fr) minmax(0,.85fr) minmax(0,1fr) minmax(0,1.35fr) auto}
+ .first-hero-copy{padding:4px 0 4px 8px}
+ .first-eyebrow{font-size:6px;margin-bottom:3px;letter-spacing:.8px}
+ .first-hero h1{font-size:clamp(17px,5.1vw,22px);line-height:.94}
+ .first-benefits{margin-top:4px}
+ .first-benefits svg{width:15px;height:15px}
+ .first-benefits small{font-size:6px}
+ .first-hero-actions{margin-top:4px}
+ .first-hero-actions button{height:44px;min-height:44px}
+ .first-promo-copy{top:5px;gap:2px}
+ .first-promo-copy small{font-size:6px}
+ .first-promo-copy strong{font-size:9px}
+ .first-promo-arrow{width:20px;height:20px;bottom:5px}
+ .first-section-heading{min-height:20px}
+ .first-section-heading h2{font-size:14px}
+ .first-listing-copy{padding:3px}
+}
+.aloko-home-shell{overscroll-behavior:none!important;touch-action:pan-x pan-y}
+body:has(.aloko-first-screen){overflow:hidden!important;overscroll-behavior:none!important}
