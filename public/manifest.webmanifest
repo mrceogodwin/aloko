@@ -1,0 +1,20 @@
+{
+  "id": "/",
+  "name": "Aloko — Sell it. Give it. Pass it on.",
+  "short_name": "Aloko",
+  "description": "Nigeria's reuse and declutter marketplace.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#012115",
+  "theme_color": "#012115",
+  "icons": [
+    {
+      "src": "/assets/aloko/logo-mark.png",
+      "sizes": "87x68",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
