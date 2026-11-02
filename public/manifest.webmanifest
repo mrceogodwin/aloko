@@ -11,10 +11,10 @@
   "theme_color": "#012115",
   "icons": [
     {
-      "src": "/assets/aloko/logo-mark.png",
-      "sizes": "87x68",
-      "type": "image/png",
-      "purpose": "any"
+      "src": "/aloko-mark.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ]
 }
