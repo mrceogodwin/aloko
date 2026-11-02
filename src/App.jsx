@@ -642,7 +642,7 @@ function App() {
                 <div className="product-image">
                   {p.image
                     ? <img src={p.image.startsWith("http") ? p.image : `https://images.unsplash.com/${p.image}?auto=format&fit=crop&w=700&q=80`} alt={p.title} loading="lazy"/>
-                    : <div className="product-image-placeholder" role="img" aria-label="No photo"><span>aloko.</span></div>}
+                    : <div className="product-image-placeholder" role="img" aria-label="Seller has not uploaded a product photo"><span>Photo not<br/>provided</span></div>}
                   <span className="condition">{p.kind === "giveaway" ? "Free giveaway" : p.condition}</span>
                   <button className={saved.includes(p.id) ? "save saved" : "save"} aria-label={saved.includes(p.id) ? "Remove from favourites" : "Add to favourites"} onClick={e=>{e.stopPropagation();toggleSaved(p.id);}}>{saved.includes(p.id) ? "♥" : "♡"}</button>
                 </div>
