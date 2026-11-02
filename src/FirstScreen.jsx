@@ -61,7 +61,7 @@ export default function FirstScreen({
     setActiveCategory(label);
     scrollListingsToStart();
   };
-  const photoSrc = (image, title = "", isDemo = false) => {
+  const photoSrc = (image, title = "", isDemo = false, demoIndex = -1) => {
     if (image) {
       if (image.startsWith("http") || image.startsWith("/") || image.startsWith("data:")) return image;
       // Preview catalogue photo IDs are intentionally replaced by the supplied
@@ -77,7 +77,11 @@ export default function FirstScreen({
     if (!isDemo) return "";
     const t = title.toLowerCase();
     const match = demoPhotos.find(([key]) => t.includes(key));
-    return match ? asset(match[1]) : "";
+    // The seeded demo catalogue is ordered to mirror the approved Aloko
+    // reference: iPhone, sofa, MacBook and fridge. Use its position only for
+    // explicitly marked demo records; never replace a real seller photo.
+    const fallback = demoIndex >= 0 ? demoPhotos[demoIndex % demoPhotos.length] : null;
+    return match ? asset(match[1]) : fallback ? asset(fallback[1]) : "";
   };
   const renderMoreCard = (p) => (
     <article className="first-more-card" key={p.id} role="button" tabIndex={0}
@@ -182,8 +186,8 @@ export default function FirstScreen({
       <section className="first-featured" aria-label="Featured listings">
         <div className="first-section-heading"><h2>Featured Listings</h2><button type="button" onClick={browse}>View More <span>→</span></button></div>
         <div className="first-horizontal first-listing-track" ref={listingScroller} aria-live="polite">
-          {visibleProducts.slice(0, 24).map(p => <article className="first-listing-card" key={p.id} role="button" tabIndex={0} onClick={() => setSelectedListing(p)} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedListing(p); } }}>
-            <div className="first-listing-image">{photoSrc(p.image,p.title,Boolean(p.demo || p.isDemo || String(p.id).startsWith("demo"))) ? <img src={photoSrc(p.image,p.title,Boolean(p.demo || p.isDemo || String(p.id).startsWith("demo")))} alt={p.title} loading="lazy"/> : <span className="first-no-photo">Photo not provided</span>}
+          {visibleProducts.slice(0, 24).map((p, index) => <article className="first-listing-card" key={p.id} role="button" tabIndex={0} onClick={() => setSelectedListing(p)} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedListing(p); } }}>
+            <div className="first-listing-image">{photoSrc(p.image,p.title,Boolean(p.demo || p.isDemo || String(p.id).startsWith("demo")),index) ? <img src={photoSrc(p.image,p.title,Boolean(p.demo || p.isDemo || String(p.id).startsWith("demo")))} alt={p.title} loading="lazy"/> : <span className="first-no-photo">Photo not provided</span>}
               <button type="button" aria-label={saved.includes(p.id) ? "Remove from favourites" : "Add to favourites"} aria-pressed={saved.includes(p.id)} className={`first-heart ${saved.includes(p.id) ? "saved" : ""}`} onClick={e => { e.stopPropagation(); toggleSaved(p.id); }}><Icon name="heart"/></button>
             </div>
             <div className={`first-listing-copy ${p.sellerVerified ? "is-verified" : ""}`}><strong className="first-listing-title">{p.title}</strong><b className="first-listing-price">{p.price}</b><span className="first-listing-place"><Icon name="pin"/>{p.place || p.city || p.state || "Nigeria"}</span></div>
