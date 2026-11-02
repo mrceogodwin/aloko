@@ -33,32 +33,32 @@ const categories = [
 
 // Real photographic category thumbnails (Unsplash photo IDs), not vector illustrations.
 const categoryArtwork = {
-  "Electronics":"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=240&q=82",
-  "Furniture":"https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=240&q=82",
-  "Fashion":"https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=240&q=82",
-  "Home & Living":"https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=240&q=82",
-  "Sports":"https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=240&q=82",
-  "Sports & Hobbies":"https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=240&q=82",
-  "Kids":"https://images.unsplash.com/photo-1559454403-b8fb88521f11?auto=format&fit=crop&w=240&q=82",
-  "Baby & Kids":"https://images.unsplash.com/photo-1559454403-b8fb88521f11?auto=format&fit=crop&w=240&q=82",
-  "Auto":"https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=240&q=82",
-  "Vehicles":"https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=240&q=82",
-  "Free items":"https://images.unsplash.com/photo-1513883049090-d0b7439799bf?auto=format&fit=crop&w=240&q=82",
-  "Bulk Deals":"https://images.unsplash.com/photo-1607166452427-5ec6f5b94f89?auto=format&fit=crop&w=240&q=82",
-  "Kitchenware":"https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=240&q=82",
-  "Books":"https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=240&q=82",
-  "Property & Garden":"https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=240&q=82",
-  "Tools":"https://images.unsplash.com/photo-1581147036324-c1c89c2c8b5c?auto=format&fit=crop&w=240&q=82",
-  "Office":"https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=240&q=82",
-  "Baby, Kids & Maternity":"https://images.unsplash.com/photo-1559454403-b8fb88521f11?auto=format&fit=crop&w=240&q=82",
-  "Sports & Fitness":"https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=240&q=82",
-  "Services":"https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=240&q=82",
-  "Phones & Accessories":"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=240&q=82",
-  "Home Appliances":"https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=240&q=82",
-  "Shoes & Bags":"https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=240&q=82",
-  "Cars & Motorcycles":"https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=240&q=82",
-  "Recycling & Responsible Disposal":"https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=240&q=82"
-};
+  "Electronics": "/assets/aloko/cat-electronics.png",
+  "Furniture": "/assets/aloko/cat-furniture.png",
+  "Fashion": "/assets/aloko/cat-fashion.png",
+  "Home & Living": "/assets/aloko/cat-home-living.png",
+  "Sports": "/assets/aloko/cat-sports.png",
+  "Sports & Hobbies": "/assets/aloko/cat-sports.png",
+  "Kids": "/assets/aloko/cat-kids.png",
+  "Baby & Kids": "/assets/aloko/cat-kids.png",
+  "Auto": "/assets/aloko/cat-auto.png",
+  "Vehicles": "/assets/aloko/cat-auto.png",
+  "Free items": "/assets/aloko/cat-more.png",
+  "Bulk Deals": "/assets/aloko/cat-more.png",
+  "Kitchenware": "/assets/aloko/cat-home-living.png",
+  "Books": "/assets/aloko/cat-more.png",
+  "Property & Garden": "/assets/aloko/cat-home-living.png",
+  "Tools": "/assets/aloko/cat-more.png",
+  "Office": "/assets/aloko/cat-more.png",
+  "Baby, Kids & Maternity": "/assets/aloko/cat-kids.png",
+  "Sports & Fitness": "/assets/aloko/cat-sports.png",
+  "Services": "/assets/aloko/cat-more.png",
+  "Phones & Accessories": "/assets/aloko/cat-electronics.png",
+  "Home Appliances": "/assets/aloko/cat-home-living.png",
+  "Shoes & Bags": "/assets/aloko/cat-fashion.png",
+  "Cars & Motorcycles": "/assets/aloko/cat-auto.png",
+  "Recycling & Responsible Disposal": "/assets/aloko/cat-more.png"
+};;
 
 
 const demoPhotoByCategory = {
@@ -675,7 +675,7 @@ function App() {
               <article className="product-card" key={p.id} role="button" tabIndex={0} onClick={() => setSelectedListing(p)} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();setSelectedListing(p);}}}>
                 <div className="product-image">
                   {p.image
-                    ? <img src={p.image.startsWith("http") ? p.image : `https://images.unsplash.com/${p.image}?auto=format&fit=crop&w=700&q=80`} alt={p.title} loading="lazy"/>
+                    ? <img src={(p.image.startsWith("http") || p.image.startsWith("/") || p.image.startsWith("data:")) ? p.image : ""} alt={p.title} loading="lazy"/>
                     : <div className="product-image-placeholder" role="img" aria-label="Seller has not uploaded a product photo"><span>Photo not<br/>provided</span></div>}
                   <span className="condition">{p.kind === "giveaway" ? "Free giveaway" : p.condition}</span>
                   <button className={saved.includes(p.id) ? "save saved" : "save"} aria-label={saved.includes(p.id) ? "Remove from favourites" : "Add to favourites"} onClick={e=>{e.stopPropagation();toggleSaved(p.id);}}>{saved.includes(p.id) ? "♥" : "♡"}</button>
