@@ -11,9 +11,9 @@
   "theme_color": "#012115",
   "icons": [
     {
-      "src": "/aloko-mark.svg",
+      "src": "/assets/aloko/logo-mark.png",
       "sizes": "any",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]
