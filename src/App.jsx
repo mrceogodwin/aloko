@@ -37,6 +37,25 @@ const demoPhotoByCategory = {
   "Free items": "photo-1494438639946-1ebd1d20bf85"
 };
 
+// Real photographic category thumbnails; seller listings below always use seller-uploaded images.
+const categoryPhotoByName = {
+  "Electronics":"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=260&q=85",
+  "Furniture":"https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=260&q=85",
+  "Fashion":"https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=260&q=85",
+  "Home & Living":"https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=260&q=85",
+  "Sports":"https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=260&q=85",
+  "Kids":"https://images.unsplash.com/photo-1559454403-b8fb88521f11?auto=format&fit=crop&w=260&q=85",
+  "Auto":"https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=260&q=85",
+  "Free items":"https://images.unsplash.com/photo-1513883049090-d0b7439799bf?auto=format&fit=crop&w=260&q=85",
+  "Bulk Deals":"https://images.unsplash.com/photo-1607166452427-5ec6f5b94f89?auto=format&fit=crop&w=260&q=85",
+  "Kitchenware":"https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=260&q=85",
+  "Books":"https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=260&q=85",
+  "Property & Garden":"https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=260&q=85",
+  "Vehicles":"https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=260&q=85",
+  "Baby, Kids & Maternity":"https://images.unsplash.com/photo-1559454403-b8fb88521f11?auto=format&fit=crop&w=260&q=85",
+  "Sports & Fitness":"https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=260&q=85"
+};
+
 function formatNaira(value) {
   if (value === null || value === undefined || value === "") return "Free";
   const amount = Number(value);
@@ -64,7 +83,7 @@ function normalizeLiveListing(item) {
     pickupAvailable: item.pickup_available !== false,
     deliveryAvailable: item.delivery_available === true,
     publishedAt: item.published_at || item.created_at || null,
-    image: item.image_url || item.image_urls?.[0] || (/chair|table|shelf|cabinet|wardrobe|sofa|furniture|study desk/i.test(item.title) ? demoPhotoByCategory.Furniture : /kitchen|cook|plate|blender|stove/i.test(item.title) ? demoPhotoByCategory.Kitchenware : /box|moving|carton/i.test(item.title) ? "photo-1494438639946-1ebd1d20bf85" : /laptop|phone|tv|samsung|computer|hp elitebook/i.test(item.title) ? demoPhotoByCategory.Electronics : demoPhotoByCategory[item.category] || (item.kind === "giveaway" ? demoPhotoByCategory["Free items"] : demoPhotoByCategory["Home & Living"])),
+    image: item.image_url || item.image_urls?.[0] || item.images?.[0]?.url || "", // Never show an unrelated stock image as the item being sold.
     kind: item.kind,
     quantity: item.quantity,
     live: true
@@ -453,11 +472,10 @@ function App() {
               </div>
               <div className="hero-trust"><span>✦ Safe &amp; verified community</span><span>▣ Free &amp; paid listings</span><span>◉ Support local sustainability</span></div>
             </div>
-            <div className="hero-art" aria-label="Aloko marketplace app preview">
-              <div className="hero-orb orb-left">♧<b>Good Things<br/>Live Longer</b></div>
-              <div className="hero-ribbon ribbon-one"></div><div className="hero-ribbon ribbon-two"></div>
-              <div className="hero-phone"><div className="phone-notch"></div><div className="phone-brand"><img src="/aloko-mark.svg" alt="" /> Aloko</div><div className="phone-search">⌕ &nbsp; Search for anything…</div><div className="phone-cats"><span>▣<small>Electronics</small></span><span>♧<small>Fashion</small></span><span>⌂<small>Home &amp; Living</small></span><span>♡<small>Free Items</small></span><span>♧<small>Bulk Deals</small></span><span>✧<small>Services</small></span></div><div className="phone-feature"><b>Give Things<br/>A New Home</b><span>↗</span></div></div>
-              <div className="hero-orb orb-right">Same items,<br/> brighter futures!</div>
+            <div className="hero-art" aria-label="Aloko reuse marketplace lifestyle photography">
+              <img className="hero-lifestyle-image" src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1500&q=90" alt="Photograph of a contemporary living room with a sofa, leafy plants and warm lighting" loading="eager"/>
+              <div className="hero-art-badge"><strong>Declutter.</strong><strong>Earn.</strong><strong>Reuse.</strong><strong>Sustain ♻</strong></div>
+              <div className="hero-art-caption"><span>ALOKO FINDS</span><b>Give good things<br/>a new home.</b></div>
             </div>
           </div>
         </section>
@@ -505,7 +523,7 @@ function App() {
                 document.getElementById("explore")?.scrollIntoView({ behavior: "smooth" });
               }}
               >
-                <span className="category-icon" aria-hidden="true">{icon}</span>
+                <span className="category-icon">{categoryPhotoByName[label] ? <img className="category-photo" src={categoryPhotoByName[label]} alt="" loading="lazy"/> : <span aria-hidden="true">{icon}</span>}</span>
                 <span>{label}</span>
               </button>
             ))}
@@ -529,7 +547,7 @@ function App() {
                 <div className="product-image">
                   {p.image
                     ? <img src={p.image.startsWith("http") ? p.image : `https://images.unsplash.com/${p.image}?auto=format&fit=crop&w=700&q=80`} alt={p.title} loading="lazy"/>
-                    : <div className="product-image-placeholder" role="img" aria-label="No photo"><span>aloko.</span></div>}
+                    : <div className="product-image-placeholder" role="img" aria-label="Seller has not uploaded a product photo"><span>Photo not<br/>provided</span></div>}
                   <span className="condition">{p.kind === "giveaway" ? "Free giveaway" : p.condition}</span>
                   <button className={saved.includes(p.id) ? "save saved" : "save"} aria-label="Save" onClick={() => toggleSaved(p.id)}>{saved.includes(p.id) ? "♥" : "♡"}</button>
                 </div>
