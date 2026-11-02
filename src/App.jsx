@@ -44,7 +44,19 @@ const categoryArtwork = {
   "Vehicles":"https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=240&q=82",
   "Free items":"https://images.unsplash.com/photo-1513883049090-d0b7439799bf?auto=format&fit=crop&w=240&q=82",
   "Bulk Deals":"https://images.unsplash.com/photo-1607166452427-5ec6f5b94f89?auto=format&fit=crop&w=240&q=82",
-  "Kitchenware":"https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=240&q=82"
+  "Kitchenware":"https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=240&q=82",
+  "Books":"https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=240&q=82",
+  "Property & Garden":"https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=240&q=82",
+  "Tools":"https://images.unsplash.com/photo-1581147036324-c1c89c2c8b5c?auto=format&fit=crop&w=240&q=82",
+  "Office":"https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=240&q=82",
+  "Baby, Kids & Maternity":"https://images.unsplash.com/photo-1559454403-b8fb88521f11?auto=format&fit=crop&w=240&q=82",
+  "Sports & Fitness":"https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=240&q=82",
+  "Services":"https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=240&q=82",
+  "Phones & Accessories":"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=240&q=82",
+  "Home Appliances":"https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=240&q=82",
+  "Shoes & Bags":"https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=240&q=82",
+  "Cars & Motorcycles":"https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=240&q=82",
+  "Recycling & Responsible Disposal":"https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=240&q=82"
 };
 
 
@@ -87,7 +99,7 @@ function normalizeLiveListing(item) {
     pickupAvailable: item.pickup_available !== false,
     deliveryAvailable: item.delivery_available === true,
     publishedAt: item.published_at || item.created_at || null,
-    image: item.image_url || item.image_urls?.[0] || item.images?.[0]?.url || "", // Never substitute an unrelated stock photo for a seller listing.
+    image: item.image_url || (Array.isArray(item.image_urls) ? item.image_urls.find(Boolean) : "") || (Array.isArray(item.images) ? (typeof item.images[0] === "string" ? item.images[0] : item.images[0]?.url || item.images[0]?.secure_url || "") : "") || "", // Never substitute an unrelated stock photo for a seller listing.
     kind: item.kind,
     quantity: item.quantity,
     live: true
@@ -556,7 +568,7 @@ function App() {
                 setActiveCategory(label);
               }}
               >
-                <span className="category-icon"><img className="category-art-image" src={categoryArtwork[label] || "/category-home.svg"} alt="" loading="lazy"/></span>
+                <span className="category-icon"><img className="category-art-image" src={categoryArtwork[label] || categoryArtwork["Home & Living"]} alt="" loading="lazy"/></span>
                 <span>{label}</span>
               </button>
             ))}
