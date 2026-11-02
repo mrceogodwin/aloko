@@ -64,8 +64,13 @@ export default function FirstScreen({
   const photoSrc = (image, title = "", isDemo = false) => {
     if (image) {
       if (image.startsWith("http") || image.startsWith("/") || image.startsWith("data:")) return image;
-      if (image.startsWith("photo-")) return "";
-      return `https://images.unsplash.com/${image}?auto=format&fit=crop&w=620&q=85`;
+      // Preview catalogue photo IDs are intentionally replaced by the supplied
+      // Aloko demo PNGs; never turn them into unrelated remote stock imagery.
+      if (image.startsWith("photo-")) {
+        if (!isDemo) return "";
+      } else {
+        return `https://images.unsplash.com/${image}?auto=format&fit=crop&w=620&q=85`;
+      }
     }
     if (!isDemo) return "";
     const t = title.toLowerCase();
