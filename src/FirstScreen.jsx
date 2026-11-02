@@ -67,6 +67,24 @@ export default function FirstScreen({
     const match = demoPhotos.find(([key]) => t.includes(key));
     return match ? asset(match[1]) : "";
   };
+  const renderMoreCard = (p) => (
+    <article className="first-more-card" key={p.id} role="button" tabIndex={0}
+      onClick={() => setSelectedListing(p)}
+      onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedListing(p); } }}>
+      <div className="first-more-image">
+        {photoSrc(p.image, p.title) ? <img src={photoSrc(p.image, p.title)} alt={p.title} loading="lazy"/> : <span>Photo not provided</span>}
+      </div>
+      <div className="first-more-copy">
+        <strong>{p.title}</strong>
+        <b>{p.price}</b>
+        <small><Icon name="pin"/>{p.place || p.city || p.state || "Nigeria"}</small>
+      </div>
+      <button type="button" aria-label={saved.includes(p.id) ? "Remove from favourites" : "Add to favourites"}
+        aria-pressed={saved.includes(p.id)} className={`first-more-heart ${saved.includes(p.id) ? "saved" : ""}`}
+        onClick={e => { e.stopPropagation(); toggleSaved(p.id); }}><Icon name="heart"/></button>
+      {p.sellerVerified && <span className="first-more-verified" aria-label="Verified seller">✓</span>}
+    </article>
+  );
 
   return (
     <div className="aloko-first-screen">
@@ -106,6 +124,8 @@ export default function FirstScreen({
         </div>}
       </header>
 
+      <main className="first-scroll-content" aria-label="Marketplace home content">
+        <div className="first-visible-grid">
       <section className="first-hero" aria-label="Aloko reuse and decluttering marketplace">
         <div className="first-hero-copy">
           <span className="first-eyebrow">NIGERIA’S REUSE &amp; DECLUTTER MARKETPLACE</span>
@@ -162,6 +182,14 @@ export default function FirstScreen({
           {listingLoadState === "live" && visibleProducts.length === 0 && <div className="first-listing-state">No approved listings yet.</div>}
         </div>
       </section>
+        </div>
+        <section className="first-more-listings" aria-label="More marketplace listings">
+          <div className="first-section-heading"><h2>More to explore</h2><button type="button" onClick={browse}>View all <span>→</span></button></div>
+          {visibleProducts.length > 4
+            ? <div className="first-more-grid">{visibleProducts.slice(4, 24).map(renderMoreCard)}</div>
+            : <p className="first-more-empty">{listingLoadState === "loading" ? "Finding more listings…" : listingLoadState === "error" ? "More listings could not be loaded. Use Retry above." : "You’re all caught up. New listings will appear here."}</p>}
+        </section>
+      </main>
 
       <nav className="first-bottom-nav" aria-label="App navigation">
         <button type="button" className="first-tab active" aria-current="page" onClick={() => onNavigate("home")}><Icon name="home" filled/><small>Home</small></button>
