@@ -1,6 +1,23 @@
 import React from "react";
 
-const asset = (name) => `/assets/aloko/${name}`;
+const asset = (name) => {
+  const files = {
+    "logo-mark.png": "/aloko-mark.svg",
+    "hero-art.png": "/aloko-home-scene.svg",
+    "cat-electronics.png": "/category-electronics.svg",
+    "cat-furniture.png": "/category-furniture.svg",
+    "cat-fashion.png": "/category-fashion.svg",
+    "cat-home-living.png": "/category-home.svg",
+    "cat-sports.png": "/category-sports.svg",
+    "cat-kids.png": "/category-kids.svg",
+    "cat-auto.png": "/category-auto.svg",
+    "cat-more.png": "/category-home.svg",
+    "promo-decluttering.png": "/promo-services.svg",
+    "promo-giveaway.png": "/promo-giveaway.svg",
+    "promo-bulk.png": "/promo-bulk.svg",
+  };
+  return files[name] || "";
+};
 const categoryTiles = [
   ["Electronics","cat-electronics.png","Electronics"],
   ["Furniture","cat-furniture.png","Furniture"],
