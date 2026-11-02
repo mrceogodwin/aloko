@@ -1,16 +1,24 @@
 import React from "react";
 
+const asset = (name) => `/assets/aloko/${name}`;
 const categoryTiles = [
-  { label: "Electronics", image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=220&q=85" },
-  { label: "Furniture", image: "https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=220&q=85" },
-  { label: "Fashion", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=220&q=85" },
-  { label: "Home & Living", image: "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=220&q=85" },
-  { label: "Sports", image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=220&q=85" },
-  { label: "Kids", image: "https://images.unsplash.com/photo-1559454403-b8fb88521f11?auto=format&fit=crop&w=220&q=85" },
-  { label: "Auto", image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=220&q=85" },
+  ["Electronics","cat-electronics.png","Electronics"],
+  ["Furniture","cat-furniture.png","Furniture"],
+  ["Fashion","cat-fashion.png","Fashion"],
+  ["Home & Living","cat-home-living.png","Home & Living"],
+  ["Sports","cat-sports.png","Sports"],
+  ["Kids","cat-kids.png","Kids"],
+  ["Auto","cat-auto.png","Auto"],
+  ["More","cat-more.png","More"],
+];
+const demoPhotos = [
+  ["iphone","listing-iphone.png"],
+  ["sofa","listing-sofa.png"],
+  ["macbook","listing-macbook.png"],
+  ["fridge","listing-fridge.png"],
 ];
 
-function Icon({ name }) {
+function Icon({ name, filled = false }) {
   const paths = {
     bell: <><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></>,
     heart: <path d="M20.8 8.8c0 5.2-8.8 11-8.8 11s-8.8-5.8-8.8-11A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" />,
@@ -25,7 +33,7 @@ function Icon({ name }) {
     user: <><circle cx="12" cy="7.5" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></>,
     grid: <><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></>,
   };
-  return <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{paths[name]}</svg>;
+  return <svg viewBox="0 0 24 24" aria-hidden="true" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{paths[name]}</svg>;
 }
 
 export default function FirstScreen({
@@ -36,10 +44,16 @@ export default function FirstScreen({
   showAllCategories, setShowAllCategories, categories, onLogin,
 }) {
   const listingScroller = React.useRef(null);
+  const categoryScroller = React.useRef(null);
+  const promoScroller = React.useRef(null);
   const scrollListingsToStart = () => listingScroller.current?.scrollTo({ left: 0, behavior: "smooth" });
   const browse = () => { onBrowse(); scrollListingsToStart(); };
   const chooseCategory = (label) => {
     setSavedOnly(false);
+    if (label === "More") {
+      setShowAllCategories(v => !v);
+      return;
+    }
     if (label === "Services") {
       onNavigate("services");
       return;
@@ -47,14 +61,19 @@ export default function FirstScreen({
     setActiveCategory(label);
     scrollListingsToStart();
   };
-  const photoSrc = (image) => !image ? "" : image.startsWith("http") || image.startsWith("/") || image.startsWith("data:") ? image : `https://images.unsplash.com/${image}?auto=format&fit=crop&w=620&q=85`;
+  const photoSrc = (image, title = "") => {
+    if (image) return image.startsWith("http") || image.startsWith("/") || image.startsWith("data:") ? image : `https://images.unsplash.com/${image}?auto=format&fit=crop&w=620&q=85`;
+    const t = title.toLowerCase();
+    const match = demoPhotos.find(([key]) => t.includes(key));
+    return match ? asset(match[1]) : "";
+  };
 
   return (
     <div className="aloko-first-screen">
       <header className="first-header">
         <div className="first-brand-row">
           <button className="first-brand" type="button" aria-label="Aloko home" onClick={() => onNavigate("home")}>
-            <img src="/aloko-mark.svg" alt="" />
+            <img src={asset("logo-mark.png")} alt="" />
             <span><strong>Aloko<sup>®</sup></strong><small>Sell it. Give it. Pass it on.</small></span>
           </button>
           <div className="first-header-actions">
@@ -102,46 +121,38 @@ export default function FirstScreen({
             <button type="button" className="first-secondary" onClick={browse}><Icon name="grid"/> Browse Listings</button>
           </div>
         </div>
-        <div className="first-hero-art"><img src="/aloko-home-scene.svg" alt="Emerald sofa, gold lamp, Aloko reuse box, headphones and green trainers"/></div>
+        <div className="first-hero-art"><img src={asset("hero-art.png")} alt="" /></div>
       </section>
 
       <section className="first-categories" aria-label="Marketplace categories">
-        <div className="first-horizontal first-category-track" role="list">
-          {categoryTiles.map(({label,image}) => <button type="button" role="listitem" key={label} className={`first-category ${activeCategory === label ? "active" : ""}`} onClick={() => chooseCategory(label)}>
-            <span className="first-category-image"><img src={image} alt="" loading="lazy"/></span><strong>{label}</strong>
+        <div className="first-horizontal first-category-track" ref={categoryScroller} role="list">
+          {categoryTiles.map(([label,file,category]) => <button type="button" role="listitem" key={label} className={`first-category ${activeCategory === category ? "active" : ""}`} onClick={() => chooseCategory(category)}>
+            <span className="first-category-image"><img src={asset(file)} alt="" loading="eager"/></span><strong>{label}</strong>
           </button>)}
-          {(showAllCategories ? categories.slice(7, 20) : []).map(([icon,label],index) => <button type="button" role="listitem" key={`${label}-${index}`} className={`first-category ${activeCategory === label ? "active" : ""}`} onClick={() => chooseCategory(label)}>
-            <span className="first-category-image first-category-extra"><Icon name="grid"/></span><strong>{label}</strong>
-          </button>)}
-          <button type="button" className="first-category first-more" aria-expanded={showAllCategories} onClick={() => setShowAllCategories(v => !v)}>
-            <span className="first-category-image"><Icon name="grid"/></span><strong>{showAllCategories ? "Less" : "More"}</strong>
-          </button>
         </div>
       </section>
 
-      <section className="first-promos" aria-label="Aloko marketplace highlights">
-        <button className="first-promo first-promo-services" type="button" onClick={() => onNavigate("services")}>
-          <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=700&q=85" alt="" loading="lazy"/>
-          <span className="first-promo-shade"/><span className="first-promo-copy"><small>BOOK</small><strong>Decluttering<br/>Services</strong></span><span className="first-promo-arrow">→</span>
+      <section className="first-promos" ref={promoScroller} aria-label="Aloko marketplace highlights">
+        <button className="first-promo" type="button" aria-label="Book decluttering services" onClick={() => onNavigate("services")}>
+          <img src={asset("promo-decluttering.png")} alt="Book decluttering services" draggable="false"/>
         </button>
-        <button className="first-promo first-promo-give" type="button" onClick={() => chooseCategory("Free items")}>
-          <img src="https://images.unsplash.com/photo-1513883049090-d0b7439799bf?auto=format&fit=crop&w=700&q=85" alt="" loading="lazy"/>
-          <span className="first-promo-shade"/><span className="first-promo-copy"><small>GIVE AWAY</small><strong>Give Away<br/>for Free</strong></span><span className="first-promo-arrow">→</span>
+        <button className="first-promo" type="button" aria-label="Give away items for free" onClick={() => chooseCategory("Free items")}>
+          <img src={asset("promo-giveaway.png")} alt="Give away for free" draggable="false"/>
         </button>
-        <button className="first-promo first-promo-bulk" type="button" onClick={() => chooseCategory("Bulk Deals")}>
-          <img src="https://images.unsplash.com/photo-1607166452427-5ec6f5b94f89?auto=format&fit=crop&w=700&q=85" alt="" loading="lazy"/>
-          <span className="first-promo-shade"/><span className="first-promo-copy"><small>BULK CLEAR-OUTS</small><strong>Bulk Deals<br/>&amp; Clear-outs</strong></span><span className="first-promo-arrow">→</span>
+        <button className="first-promo" type="button" aria-label="Browse bulk deals and clear-outs" onClick={() => chooseCategory("Bulk Deals")}>
+          <img src={asset("promo-bulk.png")} alt="Bulk deals and clear-outs" draggable="false"/>
         </button>
       </section>
 
       <section className="first-featured" aria-label="Featured listings">
-        <div className="first-section-heading"><h2>Featured Listings</h2><button type="button" onClick={() => { setActiveCategory("All"); setSavedOnly(false); setQuery(""); scrollListingsToStart(); }}>View More <span>→</span></button></div>
+        <div className="first-section-heading"><h2>Featured Listings</h2><button type="button" onClick={browse}>View More <span>→</span></button></div>
         <div className="first-horizontal first-listing-track" ref={listingScroller} aria-live="polite">
           {visibleProducts.slice(0, 24).map(p => <article className="first-listing-card" key={p.id} role="button" tabIndex={0} onClick={() => setSelectedListing(p)} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedListing(p); } }}>
-            <div className="first-listing-image">{p.image ? <img src={photoSrc(p.image)} alt={p.title} loading="lazy"/> : <span className="first-no-photo">Photo not provided</span>}
+            <div className="first-listing-image">{photoSrc(p.image,p.title) ? <img src={photoSrc(p.image,p.title)} alt={p.title} loading="lazy"/> : <span className="first-no-photo">Photo not provided</span>}
               <button type="button" aria-label={saved.includes(p.id) ? "Remove from favourites" : "Add to favourites"} aria-pressed={saved.includes(p.id)} className={`first-heart ${saved.includes(p.id) ? "saved" : ""}`} onClick={e => { e.stopPropagation(); toggleSaved(p.id); }}><Icon name="heart"/></button>
             </div>
-            <div className="first-listing-copy"><strong className="first-listing-title">{p.title}</strong><b className="first-listing-price">{p.price}</b><span className="first-listing-place"><Icon name="pin"/>{p.place || p.city || p.state || "Nigeria"}{p.sellerVerified && <i aria-label="Verified seller">✓</i>}</span></div>
+            <div className="first-listing-copy"><strong className="first-listing-title">{p.title}</strong><b className="first-listing-price">{p.price}</b><span className="first-listing-place"><Icon name="pin"/>{p.place || p.city || p.state || "Nigeria"}</span></div>
+            {p.sellerVerified && <span className="first-verified" aria-label="Verified seller">✓</span>}
           </article>)}
           {listingLoadState === "loading" && <div className="first-listing-state">Loading approved listings…</div>}
           {listingLoadState === "error" && <div className="first-listing-state"><span>Listings are temporarily unavailable.</span><button type="button" onClick={listingReload}>Retry</button></div>}
@@ -150,10 +161,10 @@ export default function FirstScreen({
       </section>
 
       <nav className="first-bottom-nav" aria-label="App navigation">
-        <button type="button" className="first-tab active" aria-current="page" onClick={() => onNavigate("home")}><Icon name="home"/><small>Home</small></button>
+        <button type="button" className="first-tab active" aria-current="page" onClick={() => onNavigate("home")}><Icon name="home" filled/><small>Home</small></button>
         <button type="button" className="first-tab" onClick={browse}><Icon name="bag"/><small>Buy</small></button>
         <button type="button" className="first-tab" onClick={onStartSelling}><Icon name="plus"/><small>Sell</small></button>
-        <button type="button" className="first-tab" onClick={() => authUser ? onNavigate("inbox") : onLogin()}><Icon name="messages"/><small>Messages</small></button>
+        <button type="button" className="first-tab first-tab-messages" onClick={() => authUser ? onNavigate("inbox") : onLogin()}><Icon name="messages"/><i/><small>Messages</small></button>
         <button type="button" className="first-tab" onClick={() => authUser ? onNavigate("account") : onLogin()}><Icon name="user"/><small>Account</small></button>
       </nav>
     </div>
